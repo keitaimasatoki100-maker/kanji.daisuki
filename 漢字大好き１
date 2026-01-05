@@ -1,0 +1,1235 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>漢字練習サイト</title>
+    <style>
+        body {
+            font-family: 'UD デジタル 教科書体 N-R', 'UD Digi Kyokasho N-R', 'UDデジタル教科書体 N-R', 'UDデジタル教科書体', '教科書体', 'Kyokasho', 'BIZ UDPGothic', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', 'Meiryo', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            writing-mode: vertical-rl;
+            text-orientation: upright;
+            padding-top: 10px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            max-height: 95vh;
+            height: 100%;
+            text-align: center;
+            writing-mode: vertical-rl;
+            text-orientation: upright;
+            overflow-y: auto;
+            margin-top: 0;
+            position: relative;
+        }
+        
+        .title {
+            color: #4a5568;
+            font-size: 2rem;
+            font-weight: bold;
+            margin-left: 10px;
+            margin-bottom: 10px;
+            writing-mode: vertical-rl;
+            text-orientation: upright;
+        }
+        
+        .sentence-card {
+            background: #f7fafc;
+            border-radius: 15px;
+            padding: 15px;
+            margin: 0 10px;
+            border-top: 5px solid #667eea;
+            writing-mode: vertical-rl;
+            text-orientation: upright;
+            display: inline-block;
+            vertical-align: top;
+            min-height: 400px;
+            width: 55px;
+            position: relative;
+        }
+        
+        .problem-number {
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #667eea;
+            background: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            border: 2px solid #667eea;
+            writing-mode: vertical-rl;
+            text-orientation: upright;
+        }
+        
+        .sentence {
+            font-size: 1.5rem;
+            line-height: 1.8;
+            color: #2d3748;
+            writing-mode: vertical-rl;
+            text-orientation: upright;
+            margin-top: 10px;
+        }
+        
+        .kanji-blank {
+            display: inline-block;
+            width: 40px;
+            min-height: 40px;
+            border: 2px dashed #cbd5e0;
+            border-radius: 8px;
+            margin: 0 2px;
+            vertical-align: middle;
+            background: white;
+            position: relative;
+            transition: all 0.3s ease;
+            padding: 8px 0;
+            text-align: center;
+            writing-mode: vertical-rl;
+            text-orientation: upright;
+        }
+        
+        .kanji-blank::before {
+            content: attr(data-reading);
+            position: absolute;
+            right: -25px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.8rem;
+            color: #2d3748;
+            background: #e2e8f0;
+            padding: 6px 2px;
+            border-radius: 4px;
+            white-space: nowrap;
+            font-weight: bold;
+            writing-mode: vertical-rl;
+            text-orientation: upright;
+        }
+        
+        .kanji-blank::after {
+            content: '';
+            position: absolute;
+            top: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .kanji-blank.revealed {
+            border: 2px solid #48bb78;
+            background: #f0fff4;
+            color: #2d3748;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .reveal-btn {
+            background: linear-gradient(135deg, #48bb78, #38a169);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 0 5px;
+            writing-mode: vertical-rl;
+            text-orientation: upright;
+        }
+        
+        .individual-btn {
+            position: absolute;
+            left: -9px;
+            top: 50%;
+            transform: translateY(-50%);
+            padding: 4px 0;
+            font-size: 0.6rem;
+            margin: 0;
+            writing-mode: vertical-rl;
+            text-orientation: upright;
+            will-change: auto;
+            white-space: nowrap;
+            z-index: 10;
+        }
+        
+        .individual-btn:hover {
+            transform: translateY(-50%);
+            box-shadow: 0 4px 12px rgba(72, 187, 120, 0.3);
+        }
+        
+        .reveal-btn:hover {
+            box-shadow: 0 8px 20px rgba(72, 187, 120, 0.3);
+        }
+        
+        .reveal-btn:disabled {
+            background: #e2e8f0;
+            color: #a0aec0;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .controls {
+            margin-right: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            writing-mode: vertical-rl;
+            text-orientation: upright;
+        }
+        
+        .reset-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            writing-mode: vertical-rl;
+            text-orientation: upright;
+        }
+        
+        .reset-btn:hover {
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .progress {
+            margin-right: 10px;
+            font-size: 1.1rem;
+            color: #4a5568;
+            font-weight: bold;
+            writing-mode: vertical-rl;
+            text-orientation: upright;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            .sentence {
+                font-size: 1.2rem;
+            }
+            
+            .title {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div style="position: absolute; top: 15px; right: 15px; display: flex; flex-direction: row; align-items: flex-start; gap: 15px; writing-mode: vertical-rl; text-orientation: upright; z-index: 100;">
+            <h1 style="color: #4a5568; font-size: 0.6rem; font-weight: bold; margin: 0; writing-mode: vertical-rl; text-orientation: upright; line-height: 1.2;">漢<br>字</h1>
+            <select id="unitSelector" onchange="filterByUnit()" style="background: white; border: 2px solid #cbd5e0; border-radius: 12px; padding: 8px 12px; font-size: 0.7rem; font-weight: bold; cursor: pointer; transition: all 0.3s ease; writing-mode: vertical-rl; text-orientation: upright; min-width: 60px; max-width: 60px; margin-top: 40px;" onmouseover="this.style.borderColor='#667eea'" onmouseout="this.style.borderColor='#cbd5e0'">
+                <option value="all">すべての単元</option>
+            </select>
+            <select id="rangeSelector" onchange="filterByUnit()" style="background: white; border: 2px solid #cbd5e0; border-radius: 12px; padding: 8px 12px; font-size: 0.7rem; font-weight: bold; cursor: pointer; transition: all 0.3s ease; writing-mode: vertical-rl; text-orientation: upright; min-width: 40px; max-width: 40px; margin-top: 10px;" onmouseover="this.style.borderColor='#667eea'" onmouseout="this.style.borderColor='#cbd5e0'">
+                <option value="up-to">まで</option>
+                <option value="only">だけ</option>
+            </select>
+            <button class="shuffle-btn" onclick="shuffleProblems()" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white; border: none; padding: 10px 20px; border-radius: 20px; font-size: 0.9rem; font-weight: bold; cursor: pointer; transition: all 0.3s ease; writing-mode: vertical-rl; text-orientation: upright; margin-top: 40px;" onmouseover="this.style.boxShadow='0 8px 20px rgba(139, 92, 246, 0.3)'" onmouseout="this.style.boxShadow='none'">シャッフル</button>
+        </div>
+        
+        <div style="margin-right: 113px;"></div>
+        
+        <div class="sentence-card">
+            <div class="problem-number">①</div>
+            <div class="sentence" id="sentence1">今日は<span class="kanji-blank" data-kanji="天気" data-reading="てんき" id="blank1"><button class="reveal-btn individual-btn" onclick="revealKanji('blank1')">答え</button></span>がとても良いです。</div>
+        </div>
+        
+        <div class="sentence-card">
+            <div class="problem-number">②</div>
+            <div class="sentence" id="sentence2"><span class="kanji-blank" data-kanji="学校" data-reading="がっこう" id="blank2"><button class="reveal-btn individual-btn" onclick="revealKanji('blank2')">答え</button></span>で<span class="kanji-blank" data-kanji="友達" data-reading="ともだち" id="blank3"><button class="reveal-btn individual-btn" onclick="revealKanji('blank3')">答え</button></span>と遊びました。</div>
+        </div>
+        
+        <div class="sentence-card">
+            <div class="problem-number">③</div>
+            <div class="sentence" id="sentence3"><span class="kanji-blank" data-kanji="本" data-reading="ほん" id="blank4"><button class="reveal-btn individual-btn" onclick="revealKanji('blank4')">答え</button></span>を<span class="kanji-blank" data-kanji="読む" data-reading="よむ" id="blank5"><button class="reveal-btn individual-btn" onclick="revealKanji('blank5')">答え</button></span>のが<span class="kanji-blank" data-kanji="好き" data-reading="すき" id="blank6"><button class="reveal-btn individual-btn" onclick="revealKanji('blank6')">答え</button></span>です。</div>
+        </div>
+        
+        <div class="sentence-card">
+            <div class="problem-number">④</div>
+            <div class="sentence" id="sentence4"><span class="kanji-blank" data-kanji="水" data-reading="みず" id="blank7"><button class="reveal-btn individual-btn" onclick="revealKanji('blank7')">答え</button></span>を<span class="kanji-blank" data-kanji="飲む" data-reading="のむ" id="blank8"><button class="reveal-btn individual-btn" onclick="revealKanji('blank8')">答え</button></span>と<span class="kanji-blank" data-kanji="元気" data-reading="げんき" id="blank9"><button class="reveal-btn individual-btn" onclick="revealKanji('blank9')">答え</button></span>になります。</div>
+        </div>
+        
+        <div class="sentence-card">
+            <div class="problem-number">⑤</div>
+            <div class="sentence" id="sentence5"><span class="kanji-blank" data-kanji="山" data-reading="やま" id="blank10"><button class="reveal-btn individual-btn" onclick="revealKanji('blank10')">答え</button></span>の<span class="kanji-blank" data-kanji="上" data-reading="うえ" id="blank11"><button class="reveal-btn individual-btn" onclick="revealKanji('blank11')">答え</button></span>に<span class="kanji-blank" data-kanji="雪" data-reading="ゆき" id="blank12"><button class="reveal-btn individual-btn" onclick="revealKanji('blank12')">答え</button></span>が積もっています。</div>
+        </div>
+        
+        <div class="sentence-card">
+            <div class="problem-number">⑥</div>
+            <div class="sentence" id="sentence6"><span class="kanji-blank" data-kanji="電車" data-reading="でんしゃ" id="blank13"><button class="reveal-btn individual-btn" onclick="revealKanji('blank13')">答え</button></span>で<span class="kanji-blank" data-kanji="駅" data-reading="えき" id="blank14"><button class="reveal-btn individual-btn" onclick="revealKanji('blank14')">答え</button></span>まで行きました。</div>
+        </div>
+        
+        <div class="sentence-card">
+            <div class="problem-number">⑦</div>
+            <div class="sentence" id="sentence7"><span class="kanji-blank" data-kanji="図書館" data-reading="としょかん" id="blank15"><button class="reveal-btn individual-btn" onclick="revealKanji('blank15')">答え</button></span>で<span class="kanji-blank" data-kanji="勉強" data-reading="べんきょう" id="blank16"><button class="reveal-btn individual-btn" onclick="revealKanji('blank16')">答え</button></span>をしています。</div>
+        </div>
+        
+        <div class="sentence-card">
+            <div class="problem-number">⑧</div>
+            <div class="sentence" id="sentence8"><span class="kanji-blank" data-kanji="料理" data-reading="りょうり" id="blank17"><button class="reveal-btn individual-btn" onclick="revealKanji('blank17')">答え</button></span>を<span class="kanji-blank" data-kanji="作る" data-reading="つくる" id="blank18"><button class="reveal-btn individual-btn" onclick="revealKanji('blank18')">答え</button></span>のが<span class="kanji-blank" data-kanji="楽しい" data-reading="たのしい" id="blank19"><button class="reveal-btn individual-btn" onclick="revealKanji('blank19')">答え</button></span>です。</div>
+        </div>
+        
+        <div class="sentence-card">
+            <div class="problem-number">⑨</div>
+            <div class="sentence" id="sentence9"><span class="kanji-blank" data-kanji="音楽" data-reading="おんがく" id="blank20"><button class="reveal-btn individual-btn" onclick="revealKanji('blank20')">答え</button></span>を<span class="kanji-blank" data-kanji="聞く" data-reading="きく" id="blank21"><button class="reveal-btn individual-btn" onclick="revealKanji('blank21')">答え</button></span>と<span class="kanji-blank" data-kanji="心" data-reading="こころ" id="blank22"><button class="reveal-btn individual-btn" onclick="revealKanji('blank22')">答え</button></span>が<span class="kanji-blank" data-kanji="落ち着く" data-reading="おちつく" id="blank23"><button class="reveal-btn individual-btn" onclick="revealKanji('blank23')">答え</button></span>。</div>
+        </div>
+        
+        <div class="sentence-card">
+            <div class="problem-number">⑩</div>
+            <div class="sentence" id="sentence10"><span class="kanji-blank" data-kanji="科学" data-reading="かがく" id="blank24"><button class="reveal-btn individual-btn" onclick="revealKanji('blank24')">答え</button></span>の<span class="kanji-blank" data-kanji="実験" data-reading="じっけん" id="blank25"><button class="reveal-btn individual-btn" onclick="revealKanji('blank25')">答え</button></span>は<span class="kanji-blank" data-kanji="興味深い" data-reading="きょうみぶかい" id="blank26"><button class="reveal-btn individual-btn" onclick="revealKanji('blank26')">答え</button></span>です。</div>
+        </div>
+        
+        <div class="controls">
+            <button class="reveal-btn" onclick="revealAll()">すべて表示</button>
+            <button class="reveal-btn" onclick="showEditDialog()" style="background: linear-gradient(135deg, #f56565, #e53e3e);">問題編集</button>
+        </div>
+    </div>
+
+    <!-- 編集ダイアログ -->
+    <div id="editDialog" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+        <div style="background: white; padding: 20px; border-radius: 15px; max-width: 95vw; width: 95%; max-height: 95vh; overflow: auto; display: flex; flex-direction: column; writing-mode: horizontal-tb; text-orientation: mixed; scroll-behavior: smooth;">
+            <h2 style="color: #4a5568; margin-bottom: 20px; text-align: center; writing-mode: horizontal-tb; text-orientation: mixed;">問題編集 - スプレッドシート</h2>
+            <div id="passwordSection" style="writing-mode: horizontal-tb; text-orientation: mixed;">
+                <label style="display: block; margin-bottom: 10px; font-weight: bold; writing-mode: horizontal-tb; text-orientation: mixed;">パスワード:</label>
+                <input type="password" id="passwordInput" style="width: 300px; padding: 10px; border: 2px solid #cbd5e0; border-radius: 8px; margin-bottom: 15px; writing-mode: horizontal-tb;" onkeypress="if(event.key==='Enter') checkPassword()">
+                <button onclick="checkPassword()" style="background: #48bb78; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; margin-right: 10px; writing-mode: horizontal-tb;">確認</button>
+                <button onclick="closeEditDialog()" style="background: #e2e8f0; color: #4a5568; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; writing-mode: horizontal-tb;">キャンセル</button>
+            </div>
+            <div id="editSection" style="display: none; flex: 1; overflow: hidden; flex-direction: column; writing-mode: horizontal-tb; text-orientation: mixed;">
+                <div style="margin-bottom: 15px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; justify-content: space-between; writing-mode: horizontal-tb; text-orientation: mixed;">
+                    <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                        <button onclick="saveAndReturn()" style="background: #3b82f6; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; margin-right: 20px; font-weight: bold; writing-mode: horizontal-tb;">💾 保存して戻る</button>
+                        <button onclick="addRow()" style="background: #3b82f6; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; writing-mode: horizontal-tb;">行を追加</button>
+                        <button onclick="deleteSelectedRows()" style="background: #ef4444; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; writing-mode: horizontal-tb;">選択行を削除</button>
+                        <button onclick="clearAll()" style="background: #6b7280; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; writing-mode: horizontal-tb;">すべてクリア</button>
+                        <span style="margin-left: 20px; color: #6b7280; writing-mode: horizontal-tb;">Excel・Googleスプレッドシートから直接コピー可能</span>
+                    </div>
+                    <button onclick="closeEditDialog()" style="background: #e2e8f0; color: #4a5568; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; writing-mode: horizontal-tb; font-weight: bold;">✕ 閉じる</button>
+                </div>
+                <div id="spreadsheetContainer" style="flex: 1; overflow: auto; border: 2px solid #d1d5db; border-radius: 8px; background: white; max-height: 60vh; scroll-behavior: smooth; padding-bottom: 20px;">
+                    <table id="spreadsheetTable" style="width: 100%; border-collapse: collapse; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; writing-mode: horizontal-tb; text-orientation: mixed;">
+                        <!-- スプレッドシートの内容がここに生成される -->
+                    </table>
+                </div>
+                <div style="margin-top: 15px; text-align: center; writing-mode: horizontal-tb; text-orientation: mixed;">
+                    <button onclick="saveProblems()" style="background: #48bb78; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; margin-right: 10px; writing-mode: horizontal-tb;">保存して適用</button>
+                    <button onclick="previewProblems()" style="background: #f59e0b; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; margin-right: 10px; writing-mode: horizontal-tb;">プレビュー</button>
+                    <button onclick="closeEditDialog()" style="background: #e2e8f0; color: #4a5568; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; writing-mode: horizontal-tb;">閉じる</button>
+                </div>
+                <div style="margin-top: 10px; padding: 15px; background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 6px; font-size: 14px; writing-mode: horizontal-tb; text-orientation: mixed;">
+                    <strong>📝 入力形式:</strong> 漢字の空欄は <code>{漢字|読み方}</code> の形式で入力してください<br>
+                    <strong>例:</strong> 今日は<code>{天気|てんき}</code>がとても良いです。<br>
+                    <strong>💡 ヒント:</strong> ExcelやGoogleスプレッドシートで作成した問題をそのままコピー&ペーストできます
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let revealedCount = 0;
+        const totalKanji = 23;
+        const correctPassword = "kanji"; // 編集用パスワード
+        
+        // 問題データ
+        let problems = [
+            {
+                sentence: "今日は{天気|てんき}がとても良いです。",
+                unit: "小学2年生"
+            },
+            {
+                sentence: "{学校|がっこう}で{友達|ともだち}と遊びました。",
+                unit: "小学2年生"
+            },
+            {
+                sentence: "{本|ほん}を{読む|よむ}のが{好き|すき}です。",
+                unit: "小学1年生"
+            },
+            {
+                sentence: "{水|みず}を{飲む|のむ}と{元気|げんき}になります。",
+                unit: "小学1年生"
+            },
+            {
+                sentence: "{山|やま}の{上|うえ}に{雪|ゆき}が積もっています。",
+                unit: "小学1年生"
+            },
+            {
+                sentence: "{電車|でんしゃ}で{駅|えき}まで行きました。",
+                unit: "小学3年生"
+            },
+            {
+                sentence: "{図書館|としょかん}で{勉強|べんきょう}をしています。",
+                unit: "小学3年生"
+            },
+            {
+                sentence: "{料理|りょうり}を{作る|つくる}のが{楽しい|たのしい}です。",
+                unit: "小学4年生"
+            },
+            {
+                sentence: "{音楽|おんがく}を{聞く|きく}と{心|こころ}が{落ち着く|おちつく}。",
+                unit: "小学4年生"
+            },
+            {
+                sentence: "{科学|かがく}の{実験|じっけん}は{興味深い|きょうみぶかい}です。",
+                unit: "小学5年生"
+            }
+        ];
+        
+        // 単元の順序定義（学習順序）
+        const unitOrder = [
+            "小学1年生",
+            "小学2年生", 
+            "小学3年生",
+            "小学4年生",
+            "小学5年生",
+            "小学6年生",
+            "中学1年生",
+            "中学2年生",
+            "中学3年生"
+        ];
+        
+        let currentProblems = [...problems]; // 現在表示中の問題
+        
+        function revealKanji(blankId) {
+            const blank = document.getElementById(blankId);
+            const button = blank.querySelector('.individual-btn');
+            
+            if (!blank.classList.contains('revealed')) {
+                // 漢字を表示
+                const kanji = blank.getAttribute('data-kanji');
+                blank.innerHTML = kanji + '<button class="reveal-btn individual-btn" onclick="revealKanji(\'' + blankId + '\')">隠す</button>';
+                blank.classList.add('revealed');
+                revealedCount++;
+                updateProgress();
+                
+                // 表示アニメーション
+                blank.style.transform = 'scale(1.2)';
+                setTimeout(() => {
+                    blank.style.transform = 'scale(1)';
+                }, 200);
+            } else {
+                // 漢字を隠す
+                blank.innerHTML = '<button class="reveal-btn individual-btn" onclick="revealKanji(\'' + blankId + '\')">答え</button>';
+                blank.classList.remove('revealed');
+                revealedCount--;
+                updateProgress();
+                
+                // 隠すアニメーション
+                blank.style.transform = 'scale(0.8)';
+                setTimeout(() => {
+                    blank.style.transform = 'scale(1)';
+                }, 200);
+            }
+        }
+        
+        function revealAll() {
+            const allRevealBtn = event.target;
+            const blanks = document.querySelectorAll('.kanji-blank');
+            
+            if (allRevealBtn.textContent === 'すべて表示') {
+                // すべて表示
+                blanks.forEach((blank, index) => {
+                    if (!blank.classList.contains('revealed')) {
+                        setTimeout(() => {
+                            const kanji = blank.getAttribute('data-kanji');
+                            const blankId = blank.id;
+                            blank.innerHTML = kanji + '<button class="reveal-btn individual-btn" onclick="revealKanji(\'' + blankId + '\')">隠す</button>';
+                            blank.classList.add('revealed');
+                            blank.style.transform = 'scale(1.2)';
+                            setTimeout(() => {
+                                blank.style.transform = 'scale(1)';
+                            }, 200);
+                        }, index * 100);
+                    }
+                });
+                
+                allRevealBtn.textContent = 'すべて隠す';
+                revealedCount = totalKanji;
+            } else {
+                // すべて隠す
+                blanks.forEach((blank, index) => {
+                    if (blank.classList.contains('revealed')) {
+                        setTimeout(() => {
+                            const blankId = blank.id;
+                            blank.innerHTML = '<button class="reveal-btn individual-btn" onclick="revealKanji(\'' + blankId + '\')">答え</button>';
+                            blank.classList.remove('revealed');
+                            blank.style.transform = 'scale(0.8)';
+                            setTimeout(() => {
+                                blank.style.transform = 'scale(1)';
+                            }, 200);
+                        }, index * 50);
+                    }
+                });
+                
+                allRevealBtn.textContent = 'すべて表示';
+                revealedCount = 0;
+            }
+            
+            updateProgress();
+        }
+        
+        function resetAll() {
+            const blanks = document.querySelectorAll('.kanji-blank');
+            const allRevealBtn = document.querySelector('.reveal-btn:not(.individual-btn)');
+            
+            blanks.forEach(blank => {
+                const blankId = blank.id;
+                blank.innerHTML = '<button class="reveal-btn individual-btn" onclick="revealKanji(\'' + blankId + '\')">答え</button>';
+                blank.classList.remove('revealed');
+                blank.style.transform = 'scale(1)';
+            });
+            
+            if (allRevealBtn && allRevealBtn.textContent === 'すべて隠す') {
+                allRevealBtn.textContent = 'すべて表示';
+            }
+            
+            revealedCount = 0;
+            updateProgress();
+        }
+        
+        function updateProgress() {
+            const progressElement = document.getElementById('progress');
+            progressElement.textContent = `進捗: ${revealedCount}/${totalKanji} 漢字`;
+            
+            if (revealedCount === totalKanji) {
+                progressElement.style.color = '#48bb78';
+                progressElement.textContent += ' 🎉 完了！';
+            }
+        }
+        
+        // 編集ダイアログ関連の関数
+        function showEditDialog() {
+            document.getElementById('editDialog').style.display = 'flex';
+            document.getElementById('passwordInput').focus();
+        }
+        
+        function closeEditDialog() {
+            document.getElementById('editDialog').style.display = 'none';
+            document.getElementById('passwordSection').style.display = 'block';
+            document.getElementById('editSection').style.display = 'none';
+            document.getElementById('passwordInput').value = '';
+        }
+        
+        function checkPassword() {
+            const password = document.getElementById('passwordInput').value;
+            if (password === correctPassword) {
+                document.getElementById('passwordSection').style.display = 'none';
+                document.getElementById('editSection').style.display = 'block';
+                loadProblemEditor();
+            } else {
+                alert('パスワードが間違っています。');
+                document.getElementById('passwordInput').value = '';
+            }
+        }
+        
+        function loadProblemEditor() {
+            createSpreadsheet();
+            setupSpreadsheetEvents();
+        }
+        
+        function createSpreadsheet() {
+            const table = document.getElementById('spreadsheetTable');
+            table.innerHTML = '';
+            
+            // ヘッダー行を作成
+            const headerRow = document.createElement('tr');
+            headerRow.innerHTML = `
+                <th style="width: 50px; background: #e5e7eb; border: 1px solid #9ca3af; padding: 10px; text-align: center; font-weight: bold; position: sticky; top: 0; z-index: 10; writing-mode: horizontal-tb; text-orientation: mixed;">選択</th>
+                <th style="width: 80px; background: #e5e7eb; border: 1px solid #9ca3af; padding: 10px; text-align: center; font-weight: bold; position: sticky; top: 0; z-index: 10; writing-mode: horizontal-tb; text-orientation: mixed;">No.</th>
+                <th style="width: 200px; background: #e5e7eb; border: 1px solid #9ca3af; padding: 10px; text-align: center; font-weight: bold; position: sticky; top: 0; z-index: 10; writing-mode: horizontal-tb; text-orientation: mixed;">単元名</th>
+                <th style="background: #e5e7eb; border: 1px solid #9ca3af; padding: 10px; text-align: center; font-weight: bold; position: sticky; top: 0; z-index: 10; writing-mode: horizontal-tb; text-orientation: mixed;">問題文</th>
+            `;
+            table.appendChild(headerRow);
+            
+            // データ行を作成（既存の問題 + 空行）
+            const totalRows = Math.max(problems.length + 10, 15);
+            
+            for (let i = 0; i < totalRows; i++) {
+                const problemText = i < problems.length ? problems[i].sentence : '';
+                const unitText = i < problems.length ? problems[i].unit : '';
+                
+                const row = document.createElement('tr');
+                row.style.backgroundColor = i % 2 === 0 ? '#ffffff' : '#f9fafb';
+                row.innerHTML = `
+                    <td style="border: 1px solid #d1d5db; padding: 8px; text-align: center; writing-mode: horizontal-tb; text-orientation: mixed;">
+                        <input type="checkbox" class="row-selector" data-row="${i}" style="margin: 0; transform: scale(1.2);">
+                    </td>
+                    <td style="border: 1px solid #d1d5db; padding: 8px; text-align: center; font-weight: bold; color: #3b82f6; writing-mode: horizontal-tb; text-orientation: mixed;">
+                        ${i + 1}
+                    </td>
+                    <td style="border: 1px solid #d1d5db; padding: 2px; writing-mode: horizontal-tb; text-orientation: mixed;">
+                        <input type="text" 
+                               class="unit-input" 
+                               data-row="${i}" 
+                               data-col="0" 
+                               value="${unitText}"
+                               style="width: 100%; border: none; padding: 10px; outline: none; background: transparent; font-size: 14px; writing-mode: horizontal-tb; text-orientation: mixed; font-family: inherit;"
+                               placeholder="単元名（例: 小学3年生）"
+                               onkeydown="handleCellKeydown(event)"
+                               onfocus="selectCell(this)"
+                               onpaste="handleMultiColumnPaste(event)">
+                    </td>
+                    <td style="border: 1px solid #d1d5db; padding: 2px; writing-mode: horizontal-tb; text-orientation: mixed;">
+                        <input type="text" 
+                               class="cell-input" 
+                               data-row="${i}" 
+                               data-col="1" 
+                               value="${problemText}"
+                               style="width: 100%; border: none; padding: 10px; outline: none; background: transparent; font-size: 14px; writing-mode: horizontal-tb; text-orientation: mixed; font-family: inherit;"
+                               placeholder="問題文を入力してください（例: 今日は{天気|てんき}がとても良いです）"
+                               onkeydown="handleCellKeydown(event)"
+                               onfocus="selectCell(this)"
+                               onpaste="handleMultiColumnPaste(event)">
+                    </td>
+                `;
+                
+                table.appendChild(row);
+            }
+        }
+        
+        function countBlanks(text) {
+            const matches = text.match(/\{[^|]+\|[^}]+\}/g);
+            return matches ? matches.length : 0;
+        }
+        
+        function setupSpreadsheetEvents() {
+            // 全体的なキーボードショートカット
+            document.addEventListener('keydown', function(e) {
+                if (document.getElementById('editDialog').style.display === 'flex') {
+                    if (e.ctrlKey && e.key === 's') {
+                        e.preventDefault();
+                        saveProblems();
+                    }
+                    if (e.ctrlKey && e.key === 'a' && e.target.classList.contains('cell-input')) {
+                        // セル内でのCtrl+Aは通常通り
+                        return;
+                    }
+                }
+            });
+        }
+        
+        function handleCellKeydown(event) {
+            const input = event.target;
+            const row = parseInt(input.dataset.row);
+            const col = parseInt(input.dataset.col);
+            
+            switch(event.key) {
+                case 'Enter':
+                    event.preventDefault();
+                    moveToCell(row + 1, col);
+                    break;
+                case 'Tab':
+                    event.preventDefault();
+                    if (event.shiftKey) {
+                        if (col === 1) {
+                            moveToUnitCell(row, 0);
+                        } else {
+                            moveToCell(row - 1, 1);
+                        }
+                    } else {
+                        if (col === 0) {
+                            moveToCell(row, 1);
+                        } else {
+                            moveToUnitCell(row + 1, 0);
+                        }
+                    }
+                    break;
+                case 'ArrowUp':
+                    if (event.ctrlKey) {
+                        event.preventDefault();
+                        moveToCell(row - 1, col);
+                    }
+                    break;
+                case 'ArrowDown':
+                    if (event.ctrlKey) {
+                        event.preventDefault();
+                        moveToCell(row + 1, col);
+                    }
+                    break;
+                case 'Escape':
+                    input.blur();
+                    break;
+            }
+        }
+        
+        function moveToCell(row, col) {
+            const nextInput = document.querySelector(`input[data-row="${row}"][data-col="${col}"]`);
+            if (nextInput) {
+                nextInput.focus();
+                nextInput.select();
+            }
+        }
+        
+        function moveToUnitCell(row, col) {
+            const nextInput = document.querySelector(`input.unit-input[data-row="${row}"][data-col="${col}"]`);
+            if (nextInput) {
+                nextInput.focus();
+                nextInput.select();
+            }
+        }
+        
+        function selectCell(input) {
+            // セルが選択されたときの処理
+            input.style.background = '#dbeafe';
+            input.style.borderRadius = '4px';
+            
+            // 他のセルの背景をリセット
+            document.querySelectorAll('.cell-input, .unit-input').forEach(cell => {
+                if (cell !== input) {
+                    cell.style.background = 'transparent';
+                    cell.style.borderRadius = '0';
+                }
+            });
+        }
+        
+        function handleMultiColumnPaste(event) {
+            event.preventDefault();
+            const pastedData = event.clipboardData.getData('text');
+            const startRow = parseInt(event.target.dataset.row);
+            const startCol = parseInt(event.target.dataset.col);
+            
+            processMultiColumnPastedData(pastedData, startRow, startCol);
+        }
+        
+        function processMultiColumnPastedData(data, startRow = 0, startCol = 0) {
+            const lines = data.split('\n').filter(line => line.trim());
+            
+            if (lines.length === 0) return;
+            
+            // 必要に応じて行を追加
+            const currentRowCount = document.querySelectorAll('.cell-input').length;
+            const neededRows = startRow + lines.length;
+            if (neededRows > currentRowCount) {
+                addRows(neededRows - currentRowCount);
+            }
+            
+            let pastedCells = 0;
+            
+            lines.forEach((line, lineIndex) => {
+                const targetRow = startRow + lineIndex;
+                const columns = line.split('\t'); // タブ区切りで分割
+                
+                columns.forEach((cellData, colIndex) => {
+                    const targetCol = startCol + colIndex;
+                    let input = null;
+                    
+                    if (targetCol === 0) {
+                        // 単元名列
+                        input = document.querySelector(`input.unit-input[data-row="${targetRow}"][data-col="0"]`);
+                    } else if (targetCol === 1) {
+                        // 問題文列
+                        input = document.querySelector(`input.cell-input[data-row="${targetRow}"][data-col="1"]`);
+                    }
+                    
+                    if (input && cellData.trim()) {
+                        input.value = cellData.trim();
+                        pastedCells++;
+                    }
+                });
+            });
+            
+            // 成功メッセージ
+            showMessage(`${pastedCells}個のセルにデータを貼り付けました`, 'success');
+        }
+        
+        function processPastedData(data, startRow = 0) {
+            const lines = data.split('\n').filter(line => line.trim());
+            
+            if (lines.length === 0) return;
+            
+            // 必要に応じて行を追加
+            const currentRowCount = document.querySelectorAll('.cell-input').length;
+            const neededRows = startRow + lines.length;
+            if (neededRows > currentRowCount) {
+                addRows(neededRows - currentRowCount);
+            }
+            
+            lines.forEach((line, index) => {
+                const targetRow = startRow + index;
+                const input = document.querySelector(`input[data-row="${targetRow}"][data-col="1"]`);
+                if (input) {
+                    input.value = line.trim();
+                }
+            });
+            
+            // 成功メッセージ
+            showMessage(`${lines.length}行のデータを貼り付けました`, 'success');
+        }
+        
+
+        
+        function addRow() {
+            const table = document.getElementById('spreadsheetTable');
+            const currentRows = table.querySelectorAll('tr').length - 1; // ヘッダーを除く
+            
+            const row = document.createElement('tr');
+            row.style.backgroundColor = currentRows % 2 === 0 ? '#ffffff' : '#f9fafb';
+            row.innerHTML = `
+                <td style="border: 1px solid #d1d5db; padding: 8px; text-align: center; writing-mode: horizontal-tb; text-orientation: mixed;">
+                    <input type="checkbox" class="row-selector" data-row="${currentRows}" style="margin: 0; transform: scale(1.2);">
+                </td>
+                <td style="border: 1px solid #d1d5db; padding: 8px; text-align: center; font-weight: bold; color: #3b82f6; writing-mode: horizontal-tb; text-orientation: mixed;">
+                    ${currentRows + 1}
+                </td>
+                <td style="border: 1px solid #d1d5db; padding: 2px; writing-mode: horizontal-tb; text-orientation: mixed;">
+                    <input type="text" 
+                           class="unit-input" 
+                           data-row="${currentRows}" 
+                           data-col="0" 
+                           value=""
+                           style="width: 100%; border: none; padding: 10px; outline: none; background: transparent; font-size: 14px; writing-mode: horizontal-tb; text-orientation: mixed; font-family: inherit;"
+                           placeholder="単元名（例: 小学3年生）"
+                           onkeydown="handleCellKeydown(event)"
+                           onfocus="selectCell(this)"
+                           onpaste="handleMultiColumnPaste(event)">
+                </td>
+                <td style="border: 1px solid #d1d5db; padding: 2px; writing-mode: horizontal-tb; text-orientation: mixed;">
+                    <input type="text" 
+                           class="cell-input" 
+                           data-row="${currentRows}" 
+                           data-col="1" 
+                           value=""
+                           style="width: 100%; border: none; padding: 10px; outline: none; background: transparent; font-size: 14px; writing-mode: horizontal-tb; text-orientation: mixed; font-family: inherit;"
+                           placeholder="問題文を入力してください（例: 今日は{天気|てんき}がとても良いです）"
+                           onkeydown="handleCellKeydown(event)"
+                           onfocus="selectCell(this)"
+                           onpaste="handleMultiColumnPaste(event)">
+                </td>
+            `;
+            
+            table.appendChild(row);
+        }
+        
+        function addRows(count) {
+            for (let i = 0; i < count; i++) {
+                addRow();
+            }
+        }
+        
+        function deleteSelectedRows() {
+            const selectedCheckboxes = document.querySelectorAll('.row-selector:checked');
+            if (selectedCheckboxes.length === 0) {
+                alert('削除する行を選択してください');
+                return;
+            }
+            
+            if (confirm(`選択した${selectedCheckboxes.length}行を削除しますか？`)) {
+                // 削除する行を配列に保存（削除中にNodeListが変わるため）
+                const rowsToDelete = [];
+                selectedCheckboxes.forEach(checkbox => {
+                    const row = checkbox.closest('tr');
+                    if (row) {
+                        rowsToDelete.push(row);
+                    }
+                });
+                
+                // 行を削除
+                rowsToDelete.forEach(row => {
+                    row.remove();
+                });
+                
+                updateRowNumbers();
+                showMessage(`${selectedCheckboxes.length}行を削除しました`, 'success');
+            }
+        }
+        
+        function clearAll() {
+            if (confirm('すべてのデータをクリアしますか？この操作は元に戻せません。')) {
+                document.querySelectorAll('.cell-input, .unit-input').forEach(input => {
+                    input.value = '';
+                });
+                showMessage('すべてのデータをクリアしました', 'success');
+            }
+        }
+        
+        function updateRowNumbers() {
+            const rows = document.querySelectorAll('#spreadsheetTable tr:not(:first-child)');
+            rows.forEach((row, index) => {
+                const numberCell = row.querySelector('td:nth-child(2)');
+                const checkbox = row.querySelector('.row-selector');
+                const unitInput = row.querySelector('.unit-input');
+                const cellInput = row.querySelector('.cell-input');
+                
+                if (numberCell) numberCell.textContent = index + 1;
+                if (checkbox) checkbox.dataset.row = index;
+                if (unitInput) {
+                    unitInput.dataset.row = index;
+                }
+                if (cellInput) {
+                    cellInput.dataset.row = index;
+                }
+                
+                // 行の背景色を更新
+                row.style.backgroundColor = index % 2 === 0 ? '#ffffff' : '#f9fafb';
+            });
+        }
+        
+        function previewProblems() {
+            const inputs = document.querySelectorAll('.cell-input');
+            const previewProblems = [];
+            
+            inputs.forEach(input => {
+                if (input.value.trim()) {
+                    previewProblems.push(input.value.trim());
+                }
+            });
+            
+            if (previewProblems.length === 0) {
+                showMessage('プレビューする問題がありません', 'error');
+                return;
+            }
+            
+            let previewText = `プレビュー（${previewProblems.length}問）:\n\n`;
+            previewProblems.forEach((problem, index) => {
+                const blankCount = countBlanks(problem);
+                previewText += `${index + 1}. ${problem} (空欄: ${blankCount}個)\n`;
+            });
+            
+            alert(previewText);
+        }
+        
+        function showMessage(message, type = 'info') {
+            // 簡単なメッセージ表示（実際のプロジェクトではより洗練されたものを使用）
+            const color = type === 'success' ? '#059669' : type === 'error' ? '#dc2626' : '#3b82f6';
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${color};
+                color: white;
+                padding: 12px 20px;
+                border-radius: 8px;
+                z-index: 10000;
+                font-weight: bold;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                writing-mode: horizontal-tb;
+                text-orientation: mixed;
+            `;
+            messageDiv.textContent = message;
+            
+            document.body.appendChild(messageDiv);
+            
+            setTimeout(() => {
+                messageDiv.remove();
+            }, 3000);
+        }
+        
+
+        
+        function saveProblems() {
+            const newProblems = [];
+            
+            // スプレッドシートの全ての入力フィールドをチェック
+            const rows = document.querySelectorAll('#spreadsheetTable tr:not(:first-child)');
+            rows.forEach(row => {
+                const unitInput = row.querySelector('.unit-input');
+                const cellInput = row.querySelector('.cell-input');
+                
+                if (cellInput && cellInput.value.trim()) {
+                    newProblems.push({
+                        sentence: cellInput.value.trim(),
+                        unit: unitInput ? unitInput.value.trim() : ''
+                    });
+                }
+            });
+            
+            if (newProblems.length > 0) {
+                problems = newProblems;
+                currentProblems = [...problems];
+                updateUnitSelector();
+                regenerateProblems();
+                closeEditDialog();
+                alert(`${newProblems.length}個の問題を保存しました！`);
+            } else {
+                alert('少なくとも1つの問題を入力してください。');
+            }
+        }
+        
+        function saveAndReturn() {
+            const newProblems = [];
+            
+            // スプレッドシートの全ての入力フィールドをチェック
+            const rows = document.querySelectorAll('#spreadsheetTable tr:not(:first-child)');
+            rows.forEach(row => {
+                const unitInput = row.querySelector('.unit-input');
+                const cellInput = row.querySelector('.cell-input');
+                
+                if (cellInput && cellInput.value.trim()) {
+                    newProblems.push({
+                        sentence: cellInput.value.trim(),
+                        unit: unitInput ? unitInput.value.trim() : ''
+                    });
+                }
+            });
+            
+            if (newProblems.length > 0) {
+                // 1. スプレッドシートの内容を出題ページに反映
+                problems = newProblems;
+                currentProblems = [...newProblems];
+                
+                // 単元セレクターを更新
+                updateUnitSelector();
+                
+                // 出題ページの問題を再生成
+                regenerateProblems();
+                
+                // 2. 編集画面を完全に閉じる
+                const editDialog = document.getElementById('editDialog');
+                editDialog.style.display = 'none';
+                
+                // パスワード画面に戻す
+                document.getElementById('passwordSection').style.display = 'block';
+                document.getElementById('editSection').style.display = 'none';
+                document.getElementById('passwordInput').value = '';
+                
+                // 成功メッセージを表示
+                showMessage(`${newProblems.length}個の問題を保存して出題ページに反映しました！`, 'success');
+                
+                // 出題ページの最初にスクロール（縦書きなので右端に移動）
+                setTimeout(() => {
+                    window.scrollTo({
+                        left: 0,
+                        top: 0,
+                        behavior: 'smooth'
+                    });
+                }, 100);
+            } else {
+                alert('少なくとも1つの問題を入力してください。');
+            }
+        }
+        
+        function filterByUnit() {
+            const selectedUnit = document.getElementById('unitSelector').value;
+            const rangeType = document.getElementById('rangeSelector').value;
+            
+            if (selectedUnit === 'all') {
+                currentProblems = [...problems];
+            } else {
+                if (rangeType === 'only') {
+                    // 「だけ」：選択された単元のみ表示
+                    currentProblems = problems.filter(problem => {
+                        return problem.unit === selectedUnit;
+                    });
+                } else {
+                    // 「まで」：選択された単元以下の問題を表示（問題編集画面の入力順序に基づく）
+                    const selectedIndex = unitOrder.indexOf(selectedUnit);
+                    
+                    // 問題編集画面での入力順序を考慮してフィルタリング
+                    currentProblems = [];
+                    for (let i = 0; i < problems.length; i++) {
+                        const problem = problems[i];
+                        const problemIndex = unitOrder.indexOf(problem.unit);
+                        
+                        // 単元順序にない場合は表示、順序がある場合は選択された単元以下のみ表示
+                        if (problemIndex === -1 || problemIndex <= selectedIndex) {
+                            currentProblems.push(problem);
+                        } else {
+                            // 選択された単元より上位の単元が見つかったら、それ以降は除外
+                            break;
+                        }
+                    }
+                }
+            }
+            
+            regenerateProblems();
+            
+            // フィルタリング完了のメッセージ
+            const selector = document.getElementById('unitSelector');
+            const rangeSelector = document.getElementById('rangeSelector');
+            const originalBorder = selector.style.borderColor;
+            const originalRangeBorder = rangeSelector.style.borderColor;
+            
+            selector.style.borderColor = '#48bb78';
+            selector.style.boxShadow = '0 0 0 3px rgba(72, 187, 120, 0.1)';
+            rangeSelector.style.borderColor = '#48bb78';
+            rangeSelector.style.boxShadow = '0 0 0 3px rgba(72, 187, 120, 0.1)';
+            
+            setTimeout(() => {
+                selector.style.borderColor = originalBorder;
+                selector.style.boxShadow = 'none';
+                rangeSelector.style.borderColor = originalRangeBorder;
+                rangeSelector.style.boxShadow = 'none';
+            }, 1000);
+        }
+        
+        function shuffleProblems() {
+            // 現在表示中の問題の順番をランダムに入れ替え
+            const shuffledProblems = [...currentProblems];
+            for (let i = shuffledProblems.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffledProblems[i], shuffledProblems[j]] = [shuffledProblems[j], shuffledProblems[i]];
+            }
+            
+            currentProblems = shuffledProblems;
+            regenerateProblems();
+            
+            // シャッフル完了のメッセージ
+            const shuffleBtn = document.querySelector('.shuffle-btn');
+            const originalText = shuffleBtn.textContent;
+            shuffleBtn.textContent = '✨ シャッフル完了！';
+            shuffleBtn.style.background = 'linear-gradient(135deg, #48bb78, #38a169)';
+            
+            setTimeout(() => {
+                shuffleBtn.textContent = originalText;
+                shuffleBtn.style.background = 'linear-gradient(135deg, #8b5cf6, #7c3aed)';
+            }, 1500);
+        }
+        
+        function updateUnitSelector() {
+            const selector = document.getElementById('unitSelector');
+            const existingUnits = [...new Set(problems.map(p => p.unit))].filter(unit => unit);
+            
+            // 既存のオプションをクリア（「すべての単元」以外）
+            while (selector.children.length > 1) {
+                selector.removeChild(selector.lastChild);
+            }
+            
+            // 実際に入力された単元名のみを単元順序に従って追加
+            unitOrder.forEach(unit => {
+                if (existingUnits.includes(unit)) {
+                    const option = document.createElement('option');
+                    option.value = unit;
+                    option.textContent = unit;
+                    selector.appendChild(option);
+                }
+            });
+            
+            // 単元順序にない単元名も追加（カスタム単元名対応）
+            existingUnits.forEach(unit => {
+                if (!unitOrder.includes(unit)) {
+                    const option = document.createElement('option');
+                    option.value = unit;
+                    option.textContent = unit;
+                    selector.appendChild(option);
+                }
+            });
+        }
+        
+        function regenerateProblems() {
+            // 既存の問題カードを削除
+            const existingCards = document.querySelectorAll('.sentence-card');
+            existingCards.forEach(card => card.remove());
+            
+            // 問題数を最大20問に制限（21問以上の場合はランダムに20問選択）
+            let displayProblems = [...currentProblems];
+            if (displayProblems.length > 20) {
+                // ランダムに20問を選択
+                const shuffled = [...displayProblems];
+                for (let i = shuffled.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+                }
+                displayProblems = shuffled.slice(0, 20);
+            }
+            
+            // 新しい問題カードを生成
+            const container = document.querySelector('.container');
+            const controlsElement = document.querySelector('.controls');
+            
+            let blankCounter = 1;
+            let totalBlanks = 0;
+            
+            displayProblems.forEach((problem, problemIndex) => {
+                const card = document.createElement('div');
+                card.className = 'sentence-card';
+                
+                // 問題文を解析して空欄を作成
+                let processedSentence = problem.sentence;
+                const blanks = [];
+                
+                // {漢字|読み方} の形式を検索
+                const regex = /\{([^|]+)\|([^}]+)\}/g;
+                let match;
+                
+                while ((match = regex.exec(problem.sentence)) !== null) {
+                    const kanji = match[1];
+                    const reading = match[2];
+                    const blankId = `blank${blankCounter}`;
+                    
+                    blanks.push({
+                        id: blankId,
+                        kanji: kanji,
+                        reading: reading
+                    });
+                    
+                    processedSentence = processedSentence.replace(match[0], 
+                        `<span class="kanji-blank" data-kanji="${kanji}" data-reading="${reading}" id="${blankId}">` +
+                        `<button class="reveal-btn individual-btn" onclick="revealKanji('${blankId}')">答え</button></span>`
+                    );
+                    
+                    blankCounter++;
+                    totalBlanks++;
+                }
+                
+                // 丸囲み数字を生成（①②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬⑭⑮⑯⑰⑱⑲⑳）
+                const circledNumbers = ['①', '②', '③', '④', '⑤', '⑥', '⑦', '⑧', '⑨', '⑩', '⑪', '⑫', '⑬', '⑭', '⑮', '⑯', '⑰', '⑱', '⑲', '⑳'];
+                const problemNumber = problemIndex < circledNumbers.length ? circledNumbers[problemIndex] : `${problemIndex + 1}`;
+                
+                card.innerHTML = `
+                    <div class="problem-number">${problemNumber}</div>
+                    <div class="sentence" id="sentence${problemIndex + 1}">${processedSentence}</div>
+                `;
+                
+                container.insertBefore(card, controlsElement);
+            });
+            
+            // 問題数制限のメッセージを表示
+            if (currentProblems.length > 20) {
+                showMessage(`${currentProblems.length}問中からランダムに20問を選択しました`, 'info');
+            }
+            
+            // グローバル変数を更新
+            window.totalKanji = totalBlanks;
+            revealedCount = 0;
+            updateProgress();
+        }
+        
+        // ページ読み込み時に単元セレクターを初期化
+        window.addEventListener('load', function() {
+            updateUnitSelector();
+            loadProblemsFromEditor();
+        });
+        
+        // 編集画面の単元名を読み込んで初期化
+        function loadProblemsFromEditor() {
+            // 初期データに単元名を設定
+            const rows = document.querySelectorAll('#spreadsheetTable tr:not(:first-child)');
+            if (rows.length > 0) {
+                problems.forEach((problem, index) => {
+                    const row = rows[index];
+                    if (row) {
+                        const unitInput = row.querySelector('.unit-input');
+                        if (unitInput) {
+                            unitInput.value = problem.unit || '';
+                        }
+                    }
+                });
+            }
+        }
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9b8fe52cf1eb3bb3',t:'MTc2NzU4MzgwNy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
