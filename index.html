@@ -1,10 +1,10 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>漢字練習サイト</title>
-    <style>
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>漢字練習サイト</title>
+  <style>
         body {
             font-family: 'UD デジタル 教科書体 N-R', 'UD Digi Kyokasho N-R', 'UDデジタル教科書体 N-R', 'UDデジタル教科書体', '教科書体', 'Kyokasho', 'BIZ UDPGothic', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', 'Meiryo', sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -235,120 +235,123 @@
             }
         }
     </style>
-</head>
-<body>
-    <div class="container">
-        <div style="position: absolute; top: 15px; right: 15px; display: flex; flex-direction: row; align-items: flex-start; gap: 15px; writing-mode: vertical-rl; text-orientation: upright; z-index: 100;">
-            <h1 style="color: #4a5568; font-size: 0.6rem; font-weight: bold; margin: 0; writing-mode: vertical-rl; text-orientation: upright; line-height: 1.2;">漢<br>字</h1>
-            <select id="unitSelector" onchange="filterByUnit()" style="background: white; border: 2px solid #cbd5e0; border-radius: 12px; padding: 8px 12px; font-size: 0.7rem; font-weight: bold; cursor: pointer; transition: all 0.3s ease; writing-mode: vertical-rl; text-orientation: upright; min-width: 60px; max-width: 60px; margin-top: 40px;" onmouseover="this.style.borderColor='#667eea'" onmouseout="this.style.borderColor='#cbd5e0'">
-                <option value="all">すべての単元</option>
-            </select>
-            <select id="rangeSelector" onchange="filterByUnit()" style="background: white; border: 2px solid #cbd5e0; border-radius: 12px; padding: 8px 12px; font-size: 0.7rem; font-weight: bold; cursor: pointer; transition: all 0.3s ease; writing-mode: vertical-rl; text-orientation: upright; min-width: 40px; max-width: 40px; margin-top: 10px;" onmouseover="this.style.borderColor='#667eea'" onmouseout="this.style.borderColor='#cbd5e0'">
-                <option value="up-to">まで</option>
-                <option value="only">だけ</option>
-            </select>
-            <button class="shuffle-btn" onclick="shuffleProblems()" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white; border: none; padding: 10px 20px; border-radius: 20px; font-size: 0.9rem; font-weight: bold; cursor: pointer; transition: all 0.3s ease; writing-mode: vertical-rl; text-orientation: upright; margin-top: 40px;" onmouseover="this.style.boxShadow='0 8px 20px rgba(139, 92, 246, 0.3)'" onmouseout="this.style.boxShadow='none'">シャッフル</button>
-        </div>
-        
-        <div style="margin-right: 113px;"></div>
-        
-        <div class="sentence-card">
-            <div class="problem-number">①</div>
-            <div class="sentence" id="sentence1">今日は<span class="kanji-blank" data-kanji="天気" data-reading="てんき" id="blank1"><button class="reveal-btn individual-btn" onclick="revealKanji('blank1')">答え</button></span>がとても良いです。</div>
-        </div>
-        
-        <div class="sentence-card">
-            <div class="problem-number">②</div>
-            <div class="sentence" id="sentence2"><span class="kanji-blank" data-kanji="学校" data-reading="がっこう" id="blank2"><button class="reveal-btn individual-btn" onclick="revealKanji('blank2')">答え</button></span>で<span class="kanji-blank" data-kanji="友達" data-reading="ともだち" id="blank3"><button class="reveal-btn individual-btn" onclick="revealKanji('blank3')">答え</button></span>と遊びました。</div>
-        </div>
-        
-        <div class="sentence-card">
-            <div class="problem-number">③</div>
-            <div class="sentence" id="sentence3"><span class="kanji-blank" data-kanji="本" data-reading="ほん" id="blank4"><button class="reveal-btn individual-btn" onclick="revealKanji('blank4')">答え</button></span>を<span class="kanji-blank" data-kanji="読む" data-reading="よむ" id="blank5"><button class="reveal-btn individual-btn" onclick="revealKanji('blank5')">答え</button></span>のが<span class="kanji-blank" data-kanji="好き" data-reading="すき" id="blank6"><button class="reveal-btn individual-btn" onclick="revealKanji('blank6')">答え</button></span>です。</div>
-        </div>
-        
-        <div class="sentence-card">
-            <div class="problem-number">④</div>
-            <div class="sentence" id="sentence4"><span class="kanji-blank" data-kanji="水" data-reading="みず" id="blank7"><button class="reveal-btn individual-btn" onclick="revealKanji('blank7')">答え</button></span>を<span class="kanji-blank" data-kanji="飲む" data-reading="のむ" id="blank8"><button class="reveal-btn individual-btn" onclick="revealKanji('blank8')">答え</button></span>と<span class="kanji-blank" data-kanji="元気" data-reading="げんき" id="blank9"><button class="reveal-btn individual-btn" onclick="revealKanji('blank9')">答え</button></span>になります。</div>
-        </div>
-        
-        <div class="sentence-card">
-            <div class="problem-number">⑤</div>
-            <div class="sentence" id="sentence5"><span class="kanji-blank" data-kanji="山" data-reading="やま" id="blank10"><button class="reveal-btn individual-btn" onclick="revealKanji('blank10')">答え</button></span>の<span class="kanji-blank" data-kanji="上" data-reading="うえ" id="blank11"><button class="reveal-btn individual-btn" onclick="revealKanji('blank11')">答え</button></span>に<span class="kanji-blank" data-kanji="雪" data-reading="ゆき" id="blank12"><button class="reveal-btn individual-btn" onclick="revealKanji('blank12')">答え</button></span>が積もっています。</div>
-        </div>
-        
-        <div class="sentence-card">
-            <div class="problem-number">⑥</div>
-            <div class="sentence" id="sentence6"><span class="kanji-blank" data-kanji="電車" data-reading="でんしゃ" id="blank13"><button class="reveal-btn individual-btn" onclick="revealKanji('blank13')">答え</button></span>で<span class="kanji-blank" data-kanji="駅" data-reading="えき" id="blank14"><button class="reveal-btn individual-btn" onclick="revealKanji('blank14')">答え</button></span>まで行きました。</div>
-        </div>
-        
-        <div class="sentence-card">
-            <div class="problem-number">⑦</div>
-            <div class="sentence" id="sentence7"><span class="kanji-blank" data-kanji="図書館" data-reading="としょかん" id="blank15"><button class="reveal-btn individual-btn" onclick="revealKanji('blank15')">答え</button></span>で<span class="kanji-blank" data-kanji="勉強" data-reading="べんきょう" id="blank16"><button class="reveal-btn individual-btn" onclick="revealKanji('blank16')">答え</button></span>をしています。</div>
-        </div>
-        
-        <div class="sentence-card">
-            <div class="problem-number">⑧</div>
-            <div class="sentence" id="sentence8"><span class="kanji-blank" data-kanji="料理" data-reading="りょうり" id="blank17"><button class="reveal-btn individual-btn" onclick="revealKanji('blank17')">答え</button></span>を<span class="kanji-blank" data-kanji="作る" data-reading="つくる" id="blank18"><button class="reveal-btn individual-btn" onclick="revealKanji('blank18')">答え</button></span>のが<span class="kanji-blank" data-kanji="楽しい" data-reading="たのしい" id="blank19"><button class="reveal-btn individual-btn" onclick="revealKanji('blank19')">答え</button></span>です。</div>
-        </div>
-        
-        <div class="sentence-card">
-            <div class="problem-number">⑨</div>
-            <div class="sentence" id="sentence9"><span class="kanji-blank" data-kanji="音楽" data-reading="おんがく" id="blank20"><button class="reveal-btn individual-btn" onclick="revealKanji('blank20')">答え</button></span>を<span class="kanji-blank" data-kanji="聞く" data-reading="きく" id="blank21"><button class="reveal-btn individual-btn" onclick="revealKanji('blank21')">答え</button></span>と<span class="kanji-blank" data-kanji="心" data-reading="こころ" id="blank22"><button class="reveal-btn individual-btn" onclick="revealKanji('blank22')">答え</button></span>が<span class="kanji-blank" data-kanji="落ち着く" data-reading="おちつく" id="blank23"><button class="reveal-btn individual-btn" onclick="revealKanji('blank23')">答え</button></span>。</div>
-        </div>
-        
-        <div class="sentence-card">
-            <div class="problem-number">⑩</div>
-            <div class="sentence" id="sentence10"><span class="kanji-blank" data-kanji="科学" data-reading="かがく" id="blank24"><button class="reveal-btn individual-btn" onclick="revealKanji('blank24')">答え</button></span>の<span class="kanji-blank" data-kanji="実験" data-reading="じっけん" id="blank25"><button class="reveal-btn individual-btn" onclick="revealKanji('blank25')">答え</button></span>は<span class="kanji-blank" data-kanji="興味深い" data-reading="きょうみぶかい" id="blank26"><button class="reveal-btn individual-btn" onclick="revealKanji('blank26')">答え</button></span>です。</div>
-        </div>
-        
-        <div class="controls">
-            <button class="reveal-btn" onclick="revealAll()">すべて表示</button>
-            <button class="reveal-btn" onclick="showEditDialog()" style="background: linear-gradient(135deg, #f56565, #e53e3e);">問題編集</button>
-        </div>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+  <script src="/_sdk/element_sdk.js" type="text/javascript"></script>
+  <script src="https://cdn.tailwindcss.com" type="text/javascript"></script>
+ </head>
+ <body>
+  <div class="container">
+   <div style="position: absolute; top: 15px; right: 15px; display: flex; flex-direction: row; align-items: flex-start; gap: 15px; writing-mode: vertical-rl; text-orientation: upright; z-index: 100;">
+    <h1 style="color: #4a5568; font-size: 0.6rem; font-weight: bold; margin: 0; writing-mode: vertical-rl; text-orientation: upright; line-height: 1.2;">漢<br>
+     字</h1><select id="unitSelector" onchange="filterByUnit()" style="background: white; border: 2px solid #cbd5e0; border-radius: 12px; padding: 8px 12px; font-size: 0.7rem; font-weight: bold; cursor: pointer; transition: all 0.3s ease; writing-mode: vertical-rl; text-orientation: upright; min-width: 60px; max-width: 60px; margin-top: 40px;" onmouseover="this.style.borderColor='#667eea'" onmouseout="this.style.borderColor='#cbd5e0'"> <option value="all">すべての単元</option> </select> <select id="rangeSelector" onchange="filterByUnit()" style="background: white; border: 2px solid #cbd5e0; border-radius: 12px; padding: 8px 12px; font-size: 0.7rem; font-weight: bold; cursor: pointer; transition: all 0.3s ease; writing-mode: vertical-rl; text-orientation: upright; min-width: 40px; max-width: 40px; margin-top: 10px;" onmouseover="this.style.borderColor='#667eea'" onmouseout="this.style.borderColor='#cbd5e0'"> <option value="up-to">まで</option> <option value="only">だけ</option> </select> <button class="shuffle-btn" onclick="shuffleProblems()" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white; border: none; padding: 10px 20px; border-radius: 20px; font-size: 0.9rem; font-weight: bold; cursor: pointer; transition: all 0.3s ease; writing-mode: vertical-rl; text-orientation: upright; margin-top: 40px;" onmouseover="this.style.boxShadow='0 8px 20px rgba(139, 92, 246, 0.3)'" onmouseout="this.style.boxShadow='none'">シャッフル</button>
+   </div>
+   <div style="margin-right: 113px;"></div>
+   <div class="sentence-card">
+    <div class="problem-number">
+     ①
     </div>
-
-    <!-- 編集ダイアログ -->
-    <div id="editDialog" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
-        <div style="background: white; padding: 20px; border-radius: 15px; max-width: 95vw; width: 95%; max-height: 95vh; overflow: auto; display: flex; flex-direction: column; writing-mode: horizontal-tb; text-orientation: mixed; scroll-behavior: smooth;">
-            <h2 style="color: #4a5568; margin-bottom: 20px; text-align: center; writing-mode: horizontal-tb; text-orientation: mixed;">問題編集 - スプレッドシート</h2>
-            <div id="passwordSection" style="writing-mode: horizontal-tb; text-orientation: mixed;">
-                <label style="display: block; margin-bottom: 10px; font-weight: bold; writing-mode: horizontal-tb; text-orientation: mixed;">パスワード:</label>
-                <input type="password" id="passwordInput" style="width: 300px; padding: 10px; border: 2px solid #cbd5e0; border-radius: 8px; margin-bottom: 15px; writing-mode: horizontal-tb;" onkeypress="if(event.key==='Enter') checkPassword()">
-                <button onclick="checkPassword()" style="background: #48bb78; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; margin-right: 10px; writing-mode: horizontal-tb;">確認</button>
-                <button onclick="closeEditDialog()" style="background: #e2e8f0; color: #4a5568; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; writing-mode: horizontal-tb;">キャンセル</button>
-            </div>
-            <div id="editSection" style="display: none; flex: 1; overflow: hidden; flex-direction: column; writing-mode: horizontal-tb; text-orientation: mixed;">
-                <div style="margin-bottom: 15px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; justify-content: space-between; writing-mode: horizontal-tb; text-orientation: mixed;">
-                    <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-                        <button onclick="saveAndReturn()" style="background: #3b82f6; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; margin-right: 20px; font-weight: bold; writing-mode: horizontal-tb;">💾 保存して戻る</button>
-                        <button onclick="addRow()" style="background: #3b82f6; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; writing-mode: horizontal-tb;">行を追加</button>
-                        <button onclick="deleteSelectedRows()" style="background: #ef4444; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; writing-mode: horizontal-tb;">選択行を削除</button>
-                        <button onclick="clearAll()" style="background: #6b7280; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; writing-mode: horizontal-tb;">すべてクリア</button>
-                        <span style="margin-left: 20px; color: #6b7280; writing-mode: horizontal-tb;">Excel・Googleスプレッドシートから直接コピー可能</span>
-                    </div>
-                    <button onclick="closeEditDialog()" style="background: #e2e8f0; color: #4a5568; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; writing-mode: horizontal-tb; font-weight: bold;">✕ 閉じる</button>
-                </div>
-                <div id="spreadsheetContainer" style="flex: 1; overflow: auto; border: 2px solid #d1d5db; border-radius: 8px; background: white; max-height: 60vh; scroll-behavior: smooth; padding-bottom: 20px;">
-                    <table id="spreadsheetTable" style="width: 100%; border-collapse: collapse; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; writing-mode: horizontal-tb; text-orientation: mixed;">
-                        <!-- スプレッドシートの内容がここに生成される -->
-                    </table>
-                </div>
-                <div style="margin-top: 15px; text-align: center; writing-mode: horizontal-tb; text-orientation: mixed;">
-                    <button onclick="saveProblems()" style="background: #48bb78; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; margin-right: 10px; writing-mode: horizontal-tb;">保存して適用</button>
-                    <button onclick="previewProblems()" style="background: #f59e0b; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; margin-right: 10px; writing-mode: horizontal-tb;">プレビュー</button>
-                    <button onclick="closeEditDialog()" style="background: #e2e8f0; color: #4a5568; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; writing-mode: horizontal-tb;">閉じる</button>
-                </div>
-                <div style="margin-top: 10px; padding: 15px; background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 6px; font-size: 14px; writing-mode: horizontal-tb; text-orientation: mixed;">
-                    <strong>📝 入力形式:</strong> 漢字の空欄は <code>{漢字|読み方}</code> の形式で入力してください<br>
-                    <strong>例:</strong> 今日は<code>{天気|てんき}</code>がとても良いです。<br>
-                    <strong>💡 ヒント:</strong> ExcelやGoogleスプレッドシートで作成した問題をそのままコピー&ペーストできます
-                </div>
-            </div>
-        </div>
+    <div class="sentence" id="sentence1">
+     今日は<span class="kanji-blank" data-kanji="天気" data-reading="てんき" id="blank1"><button class="reveal-btn individual-btn" onclick="revealKanji('blank1')">答え</button></span>がとても良いです。
     </div>
-
-    <script>
+   </div>
+   <div class="sentence-card">
+    <div class="problem-number">
+     ②
+    </div>
+    <div class="sentence" id="sentence2">
+     <span class="kanji-blank" data-kanji="学校" data-reading="がっこう" id="blank2"><button class="reveal-btn individual-btn" onclick="revealKanji('blank2')">答え</button></span>で<span class="kanji-blank" data-kanji="友達" data-reading="ともだち" id="blank3"><button class="reveal-btn individual-btn" onclick="revealKanji('blank3')">答え</button></span>と遊びました。
+    </div>
+   </div>
+   <div class="sentence-card">
+    <div class="problem-number">
+     ③
+    </div>
+    <div class="sentence" id="sentence3">
+     <span class="kanji-blank" data-kanji="本" data-reading="ほん" id="blank4"><button class="reveal-btn individual-btn" onclick="revealKanji('blank4')">答え</button></span>を<span class="kanji-blank" data-kanji="読む" data-reading="よむ" id="blank5"><button class="reveal-btn individual-btn" onclick="revealKanji('blank5')">答え</button></span>のが<span class="kanji-blank" data-kanji="好き" data-reading="すき" id="blank6"><button class="reveal-btn individual-btn" onclick="revealKanji('blank6')">答え</button></span>です。
+    </div>
+   </div>
+   <div class="sentence-card">
+    <div class="problem-number">
+     ④
+    </div>
+    <div class="sentence" id="sentence4">
+     <span class="kanji-blank" data-kanji="水" data-reading="みず" id="blank7"><button class="reveal-btn individual-btn" onclick="revealKanji('blank7')">答え</button></span>を<span class="kanji-blank" data-kanji="飲む" data-reading="のむ" id="blank8"><button class="reveal-btn individual-btn" onclick="revealKanji('blank8')">答え</button></span>と<span class="kanji-blank" data-kanji="元気" data-reading="げんき" id="blank9"><button class="reveal-btn individual-btn" onclick="revealKanji('blank9')">答え</button></span>になります。
+    </div>
+   </div>
+   <div class="sentence-card">
+    <div class="problem-number">
+     ⑤
+    </div>
+    <div class="sentence" id="sentence5">
+     <span class="kanji-blank" data-kanji="山" data-reading="やま" id="blank10"><button class="reveal-btn individual-btn" onclick="revealKanji('blank10')">答え</button></span>の<span class="kanji-blank" data-kanji="上" data-reading="うえ" id="blank11"><button class="reveal-btn individual-btn" onclick="revealKanji('blank11')">答え</button></span>に<span class="kanji-blank" data-kanji="雪" data-reading="ゆき" id="blank12"><button class="reveal-btn individual-btn" onclick="revealKanji('blank12')">答え</button></span>が積もっています。
+    </div>
+   </div>
+   <div class="sentence-card">
+    <div class="problem-number">
+     ⑥
+    </div>
+    <div class="sentence" id="sentence6">
+     <span class="kanji-blank" data-kanji="電車" data-reading="でんしゃ" id="blank13"><button class="reveal-btn individual-btn" onclick="revealKanji('blank13')">答え</button></span>で<span class="kanji-blank" data-kanji="駅" data-reading="えき" id="blank14"><button class="reveal-btn individual-btn" onclick="revealKanji('blank14')">答え</button></span>まで行きました。
+    </div>
+   </div>
+   <div class="sentence-card">
+    <div class="problem-number">
+     ⑦
+    </div>
+    <div class="sentence" id="sentence7">
+     <span class="kanji-blank" data-kanji="図書館" data-reading="としょかん" id="blank15"><button class="reveal-btn individual-btn" onclick="revealKanji('blank15')">答え</button></span>で<span class="kanji-blank" data-kanji="勉強" data-reading="べんきょう" id="blank16"><button class="reveal-btn individual-btn" onclick="revealKanji('blank16')">答え</button></span>をしています。
+    </div>
+   </div>
+   <div class="sentence-card">
+    <div class="problem-number">
+     ⑧
+    </div>
+    <div class="sentence" id="sentence8">
+     <span class="kanji-blank" data-kanji="料理" data-reading="りょうり" id="blank17"><button class="reveal-btn individual-btn" onclick="revealKanji('blank17')">答え</button></span>を<span class="kanji-blank" data-kanji="作る" data-reading="つくる" id="blank18"><button class="reveal-btn individual-btn" onclick="revealKanji('blank18')">答え</button></span>のが<span class="kanji-blank" data-kanji="楽しい" data-reading="たのしい" id="blank19"><button class="reveal-btn individual-btn" onclick="revealKanji('blank19')">答え</button></span>です。
+    </div>
+   </div>
+   <div class="sentence-card">
+    <div class="problem-number">
+     ⑨
+    </div>
+    <div class="sentence" id="sentence9">
+     <span class="kanji-blank" data-kanji="音楽" data-reading="おんがく" id="blank20"><button class="reveal-btn individual-btn" onclick="revealKanji('blank20')">答え</button></span>を<span class="kanji-blank" data-kanji="聞く" data-reading="きく" id="blank21"><button class="reveal-btn individual-btn" onclick="revealKanji('blank21')">答え</button></span>と<span class="kanji-blank" data-kanji="心" data-reading="こころ" id="blank22"><button class="reveal-btn individual-btn" onclick="revealKanji('blank22')">答え</button></span>が<span class="kanji-blank" data-kanji="落ち着く" data-reading="おちつく" id="blank23"><button class="reveal-btn individual-btn" onclick="revealKanji('blank23')">答え</button></span>。
+    </div>
+   </div>
+   <div class="sentence-card">
+    <div class="problem-number">
+     ⑩
+    </div>
+    <div class="sentence" id="sentence10">
+     <span class="kanji-blank" data-kanji="科学" data-reading="かがく" id="blank24"><button class="reveal-btn individual-btn" onclick="revealKanji('blank24')">答え</button></span>の<span class="kanji-blank" data-kanji="実験" data-reading="じっけん" id="blank25"><button class="reveal-btn individual-btn" onclick="revealKanji('blank25')">答え</button></span>は<span class="kanji-blank" data-kanji="興味深い" data-reading="きょうみぶかい" id="blank26"><button class="reveal-btn individual-btn" onclick="revealKanji('blank26')">答え</button></span>です。
+    </div>
+   </div>
+   <div class="controls"><button class="reveal-btn" onclick="revealAll()">すべて表示</button> <button class="reveal-btn" onclick="showEditDialog()" style="background: linear-gradient(135deg, #f56565, #e53e3e);">問題編集</button>
+   </div>
+  </div><!-- 編集ダイアログ -->
+  <div id="editDialog" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+   <div style="background: white; padding: 20px; border-radius: 15px; max-width: 95vw; width: 95%; max-height: 95vh; overflow: auto; display: flex; flex-direction: column; writing-mode: horizontal-tb; text-orientation: mixed; scroll-behavior: smooth;">
+    <h2 style="color: #4a5568; margin-bottom: 20px; text-align: center; writing-mode: horizontal-tb; text-orientation: mixed;">問題編集 - スプレッドシート</h2>
+    <div id="passwordSection" style="writing-mode: horizontal-tb; text-orientation: mixed;"><label style="display: block; margin-bottom: 10px; font-weight: bold; writing-mode: horizontal-tb; text-orientation: mixed;">パスワード:</label> <input type="password" id="passwordInput" style="width: 300px; padding: 10px; border: 2px solid #cbd5e0; border-radius: 8px; margin-bottom: 15px; writing-mode: horizontal-tb;" onkeypress="if(event.key==='Enter') checkPassword()"> <button onclick="checkPassword()" style="background: #48bb78; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; margin-right: 10px; writing-mode: horizontal-tb;">確認</button> <button onclick="closeEditDialog()" style="background: #e2e8f0; color: #4a5568; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; writing-mode: horizontal-tb;">キャンセル</button>
+    </div>
+    <div id="editSection" style="display: none; flex: 1; overflow: hidden; flex-direction: column; writing-mode: horizontal-tb; text-orientation: mixed;">
+     <div style="margin-bottom: 15px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; justify-content: space-between; writing-mode: horizontal-tb; text-orientation: mixed;">
+      <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;"><button onclick="saveAndReturn()" style="background: #3b82f6; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; margin-right: 20px; font-weight: bold; writing-mode: horizontal-tb;">💾 保存して戻る</button> <button onclick="addRow()" style="background: #3b82f6; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; writing-mode: horizontal-tb;">行を追加</button> <button onclick="deleteSelectedRows()" style="background: #ef4444; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; writing-mode: horizontal-tb;">選択行を削除</button> <button onclick="clearAll()" style="background: #6b7280; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; writing-mode: horizontal-tb;">すべてクリア</button> <span style="margin-left: 20px; color: #6b7280; writing-mode: horizontal-tb;">Excel・Googleスプレッドシートから直接コピー可能</span>
+      </div><button onclick="closeEditDialog()" style="background: #e2e8f0; color: #4a5568; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; writing-mode: horizontal-tb; font-weight: bold;">✕ 閉じる</button>
+     </div>
+     <div id="spreadsheetContainer" style="flex: 1; overflow: auto; border: 2px solid #d1d5db; border-radius: 8px; background: white; max-height: 60vh; scroll-behavior: smooth; padding-bottom: 20px;">
+      <table id="spreadsheetTable" style="width: 100%; border-collapse: collapse; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; writing-mode: horizontal-tb; text-orientation: mixed;"><!-- スプレッドシートの内容がここに生成される -->
+      </table>
+     </div>
+     <div style="margin-top: 15px; text-align: center; writing-mode: horizontal-tb; text-orientation: mixed;"><button onclick="saveProblems()" style="background: #48bb78; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; margin-right: 10px; writing-mode: horizontal-tb;">保存して適用</button> <button onclick="previewProblems()" style="background: #f59e0b; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; margin-right: 10px; writing-mode: horizontal-tb;">プレビュー</button> <button onclick="closeEditDialog()" style="background: #e2e8f0; color: #4a5568; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; writing-mode: horizontal-tb;">閉じる</button>
+     </div>
+     <div style="margin-top: 10px; padding: 15px; background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 6px; font-size: 14px; writing-mode: horizontal-tb; text-orientation: mixed;"><strong>📝 入力形式:</strong> 漢字の空欄は <code>{漢字|読み方}</code> の形式で入力してください<br><strong>例:</strong> 今日は<code>{天気|てんき}</code>がとても良いです。<br><strong>💡 ヒント:</strong> ExcelやGoogleスプレッドシートで作成した問題をそのままコピー&amp;ペーストできます
+     </div>
+    </div>
+   </div>
+  </div>
+  <script>
         let revealedCount = 0;
         const totalKanji = 23;
         const correctPassword = "kanji"; // 編集用パスワード
@@ -1035,7 +1038,7 @@
                         return problem.unit === selectedUnit;
                     });
                 } else {
-                    // 「まで」：選択された単元以下の問題を表示（問題編集画面の入力順序に基づく）
+                    // 「まで」：選択された単元より上に入力された問題のみを表示（問題編集画面の入力順序に基づく）
                     const selectedIndex = unitOrder.indexOf(selectedUnit);
                     
                     // 問題編集画面での入力順序を考慮してフィルタリング
@@ -1044,12 +1047,19 @@
                         const problem = problems[i];
                         const problemIndex = unitOrder.indexOf(problem.unit);
                         
-                        // 単元順序にない場合は表示、順序がある場合は選択された単元以下のみ表示
-                        if (problemIndex === -1 || problemIndex <= selectedIndex) {
+                        // 選択された単元が見つかったら、その問題を含めてそれより上の問題のみ追加
+                        if (problem.unit === selectedUnit) {
                             currentProblems.push(problem);
-                        } else {
+                            break; // 選択された単元が見つかったら、それ以降は除外
+                        } else if (problemIndex === -1 || problemIndex < selectedIndex) {
+                            // 単元順序にない場合、または選択された単元より下位の単元の場合は追加
+                            currentProblems.push(problem);
+                        } else if (problemIndex > selectedIndex) {
                             // 選択された単元より上位の単元が見つかったら、それ以降は除外
                             break;
+                        } else {
+                            // problemIndex === selectedIndex の場合も追加
+                            currentProblems.push(problem);
                         }
                     }
                 }
@@ -1231,5 +1241,5 @@
             }
         }
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9b8fe52cf1eb3bb3',t:'MTc2NzU4MzgwNy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9b91e9852675e394',t:'MTc2NzYwNDk1Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
