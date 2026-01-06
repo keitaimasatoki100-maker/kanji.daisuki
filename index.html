@@ -167,13 +167,7 @@
             writing-mode: vertical-rl;
         }
         
-        .progress {
-            margin-right: 10px;
-            font-size: 1.1rem;
-            color: #4a5568;
-            font-weight: bold;
-        }
-
+        /* 編集ダイアログ */
         #editDialog {
             writing-mode: horizontal-tb;
         }
@@ -208,10 +202,6 @@
                 <option value="up-to">まで</option>
                 <option value="only">だけ</option>
             </select>
-
-            <button onclick="shuffleProblems()" class="bg-gradient-to-br from-purple-500 to-indigo-600 text-white border-none p-3 rounded-2xl text-sm font-bold cursor-pointer mt-10" style="writing-mode: vertical-rl;">
-                シャッフル
-            </button>
         </div>
 
         <div style="margin-right: 110px;"></div>
@@ -225,6 +215,8 @@
 
         <!-- コントロール -->
         <div class="controls">
+            <!-- 進捗表示は削除済み -->
+            <button class="reveal-btn" onclick="shuffleProblems()" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8);">シャッフル</button>
             <button class="reveal-btn" id="globalToggleBtn" onclick="toggleAllReveals()">すべて表示</button>
             <button class="reveal-btn" onclick="showEditDialog()" style="background: linear-gradient(135deg, #f56565, #e53e3e);">問題編集</button>
         </div>
@@ -277,8 +269,6 @@
         const correctPassword = "kanji";
         const DEFAULT_SHEET_URL = "https://docs.google.com/spreadsheets/d/1a2CyIJCM5Nqy6Hah6249_Era1jyw11QmhAIJQGzoesA/edit?gid=649883566#gid=649883566";
         
-        let revealedCount = 0;
-        let totalBlanks = 0;
         let autoUpdateInterval = null;
         let lastRawData = ""; 
         let isSettingsLoaded = false;
@@ -492,6 +482,7 @@
         }
 
         function shuffleProblems() {
+            // 現在表示されているリストをランダムに並び替え
             displayProblems.sort(() => Math.random() - 0.5);
             renderCards();
         }
@@ -511,7 +502,6 @@
                 if (range === 'only') {
                     filtered = filtered.filter(p => p.unit === unit);
                 } else {
-                    // 単元リストを作成（表示順）
                     const currentUnits = [];
                     filtered.forEach(p => {
                         if(!currentUnits.includes(p.unit)) currentUnits.push(p.unit);
@@ -574,7 +564,7 @@
                     });
                 }
             });
-            lastRawData = ""; 
+            lastRawData = ""; // 次回更新時に確実に反映させるため
             updateGradeSelector();
             updateUnitSelector();
             filterByUnit();
@@ -608,8 +598,7 @@
 
                     // Google Visualization APIのCSVはダブルクォートで囲まれることがあるため除去
                     const rows = data.split('\n').map(r => {
-                        // 簡易CSVパース: カンマ区切りだが、ダブルクォート内のカンマは無視する簡易ロジック
-                        // 引用符内のカンマを一時的に置換するか、正規表現で分割
+                        // 簡易CSVパース
                         const matches = r.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || [];
                         if (matches.length === 0) return r.split(',');
                         return matches.map(m => m.replace(/^"|"$/g, '').replace(/""/g, '"'));
