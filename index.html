@@ -167,6 +167,13 @@
             writing-mode: vertical-rl;
         }
         
+        .progress {
+            margin-right: 10px;
+            font-size: 1.1rem;
+            color: #4a5568;
+            font-weight: bold;
+        }
+
         #editDialog {
             writing-mode: horizontal-tb;
         }
@@ -187,10 +194,12 @@
     <div class="container">
         <!-- ヘッダー設定エリア -->
         <div style="position: absolute; top: 15px; right: 15px; display: flex; flex-direction: row; align-items: flex-start; gap: 15px; writing-mode: vertical-rl; text-orientation: upright; z-index: 100;">
+            <!-- 学年セレクター -->
             <select id="gradeSelector" onchange="onGradeChange()" style="background: white; border: 2px solid #cbd5e0; border-radius: 12px; padding: 8px 12px; font-size: 0.7rem; font-weight: bold; cursor: pointer; writing-mode: vertical-rl; min-width: 60px;">
                 <option value="all">すべての学年</option>
             </select>
 
+            <!-- 単元セレクター（学年に連動し、シート順に表示） -->
             <select id="unitSelector" onchange="onUnitChange()" style="background: white; border: 2px solid #cbd5e0; border-radius: 12px; padding: 8px 12px; font-size: 0.7rem; font-weight: bold; cursor: pointer; writing-mode: vertical-rl; min-width: 60px; margin-top: 10px;">
                 <option value="all">すべての単元</option>
             </select>
@@ -263,23 +272,15 @@
         </div>
     </div>
 
-    <script type="module">
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
-        import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
-        import { getFirestore, doc, setDoc, getDoc, collection } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
-
-        const firebaseConfig = JSON.parse(__firebase_config);
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'kanji-practice-site';
-
+    <script>
+        // 設定: パスワードとデフォルトURL
         const correctPassword = "kanji";
         const DEFAULT_SHEET_URL = "https://docs.google.com/spreadsheets/d/1a2CyIJCM5Nqy6Hah6249_Era1jyw11QmhAIJQGzoesA/edit?gid=649883566#gid=649883566";
         
+        let revealedCount = 0;
+        let totalBlanks = 0;
         let autoUpdateInterval = null;
         let lastRawData = ""; 
-        let user = null;
         let isSettingsLoaded = false;
 
         const unitOrder = ["小学1年生", "小学2年生", "小学3年生", "小学4年生", "小学5年生", "小学6年生", "中学1年生", "中学2年生", "中学3年生"];
@@ -287,82 +288,54 @@
         let problems = [];
         let displayProblems = [];
 
-        // グローバルにアクセスできるように関数をwindowに紐付け
-        window.onGradeChange = onGradeChange;
-        window.onUnitChange = onUnitChange;
-        window.onRangeChange = onRangeChange;
-        window.filterByUnit = filterByUnit;
-        window.shuffleProblems = shuffleProblems;
-        window.toggleAllReveals = toggleAllReveals;
-        window.showEditDialog = showEditDialog;
-        window.closeEditDialog = closeEditDialog;
-        window.checkPassword = checkPassword;
-        window.loadFromUrl = loadFromUrl;
-        window.saveAndReturn = saveAndReturn;
-        window.addRow = addRow;
-        window.clearAll = clearAll;
-        window.revealKanji = revealKanji;
-
         async function init() {
-            // Firebase Auth
-            const initAuth = async () => {
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    await signInAnonymously(auth);
-                }
-            };
-            await initAuth();
-
-            onAuthStateChanged(auth, (u) => {
-                user = u;
-                if (user && problems.length > 0) {
-                    restoreUserSetting();
-                }
-            });
-
-            document.getElementById('spreadsheetUrl').value = DEFAULT_SHEET_URL;
+            // ローカルストレージから前回保存したURLがあればそれを使う
+            const savedUrl = localStorage.getItem('kanji_app_sheet_url');
+            document.getElementById('spreadsheetUrl').value = savedUrl || DEFAULT_SHEET_URL;
+            
+            // 初回読み込み
             await loadFromUrl(true); 
         }
 
-        // ユーザー設定の保存
-        const saveUserSetting = async () => {
-            if (!user) return;
+        // ユーザー設定の保存 (localStorage)
+        const saveUserSetting = () => {
             const settings = {
                 grade: document.getElementById('gradeSelector').value,
                 unit: document.getElementById('unitSelector').value,
                 range: document.getElementById('rangeSelector').value
             };
-            const settingsDoc = doc(db, 'artifacts', appId, 'users', user.uid, 'settings', 'current');
             try {
-                await setDoc(settingsDoc, settings);
+                localStorage.setItem('kanji_app_settings', JSON.stringify(settings));
             } catch (e) {
                 console.error("設定の保存に失敗しました:", e);
             }
         };
 
-        // ユーザー設定の復元
-        const restoreUserSetting = async () => {
-            if (!user || isSettingsLoaded) return;
-            const settingsDoc = doc(db, 'artifacts', appId, 'users', user.uid, 'settings', 'current');
+        // ユーザー設定の復元 (localStorage)
+        const restoreUserSetting = () => {
+            if (isSettingsLoaded) return;
             try {
-                const snap = await getDoc(settingsDoc);
-                if (snap.exists()) {
-                    const data = snap.data();
+                const settingsJson = localStorage.getItem('kanji_app_settings');
+                if (settingsJson) {
+                    const data = JSON.parse(settingsJson);
                     const gradeSelector = document.getElementById('gradeSelector');
                     const unitSelector = document.getElementById('unitSelector');
                     const rangeSelector = document.getElementById('rangeSelector');
 
+                    // 学年セレクターの復元
                     if ([...gradeSelector.options].some(o => o.value === data.grade)) {
                         gradeSelector.value = data.grade;
                     }
                     
+                    // 学年に応じて単元セレクターを更新
                     updateUnitSelector();
                     
+                    // 単元セレクターの復元
                     if ([...unitSelector.options].some(o => o.value === data.unit)) {
                         unitSelector.value = data.unit;
                     }
                     
+                    // 範囲セレクターの復元
                     if ([...rangeSelector.options].some(o => o.value === data.range)) {
                         rangeSelector.value = data.range;
                     }
@@ -605,6 +578,9 @@
             let url = document.getElementById('spreadsheetUrl').value;
             if (!url) return;
             
+            // スプレッドシートURLを保存
+            localStorage.setItem('kanji_app_sheet_url', url);
+
             const sheetId = url.match(/\/d\/([a-zA-Z0-9-_]+)/)?.[1];
             const gid = url.match(/gid=([0-9]+)/)?.[1] || "0";
             
@@ -633,9 +609,11 @@
                         updateGradeSelector();
                         updateUnitSelector();
                         
-                        if (isInitial && user) {
-                            await restoreUserSetting();
+                        if (isInitial) {
+                            restoreUserSetting();
                         } else {
+                            // 設定変更時以外でデータ更新があった場合は再フィルタリング
+                            // ユーザーが選択している条件で再描画
                             filterByUnit();
                         }
                     }
