@@ -283,6 +283,7 @@
         let lastRawData = ""; 
         let isSettingsLoaded = false;
 
+        // 学年の並び順定義
         const unitOrder = ["小学1年生", "小学2年生", "小学3年生", "小学4年生", "小学5年生", "小学6年生", "中学1年生", "中学2年生", "中学3年生"];
 
         let problems = [];
@@ -352,6 +353,7 @@
             const gradeSelector = document.getElementById('gradeSelector');
             const currentGradeValue = gradeSelector.value;
             
+            // ユニークな学年を抽出し、unitOrderの定義順にソート
             const grades = [...new Set(problems.map(p => p.grade))].sort((a,b) => {
                 const idxA = unitOrder.indexOf(a);
                 const idxB = unitOrder.indexOf(b);
@@ -367,6 +369,7 @@
                 gradeSelector.appendChild(opt);
             });
             
+            // 以前の選択状態を復元（もし選択肢にあれば）
             if ([...gradeSelector.options].some(o => o.value === currentGradeValue)) {
                 gradeSelector.value = currentGradeValue;
             } else {
@@ -379,10 +382,12 @@
             const unitSelector = document.getElementById('unitSelector');
             const selectedGrade = gradeSelector.value;
 
+            // 選択された学年の問題から単元を抽出
             const filteredForUnits = selectedGrade === 'all' 
                 ? problems 
                 : problems.filter(p => p.grade === selectedGrade);
             
+            // 重複なしの単元リストを作成（スプレッドシートの並び順を維持）
             const units = [];
             filteredForUnits.forEach(p => {
                 if (!units.includes(p.unit)) {
@@ -401,7 +406,7 @@
 
         function onGradeChange() {
             const unitSelector = document.getElementById('unitSelector');
-            unitSelector.value = 'all'; 
+            unitSelector.value = 'all'; // 学年が変わったら単元はリセット
             updateUnitSelector();
             filterByUnit();
             saveUserSetting();
@@ -506,6 +511,7 @@
                 if (range === 'only') {
                     filtered = filtered.filter(p => p.unit === unit);
                 } else {
+                    // 単元リストを作成（表示順）
                     const currentUnits = [];
                     filtered.forEach(p => {
                         if(!currentUnits.includes(p.unit)) currentUnits.push(p.unit);
@@ -515,6 +521,7 @@
                 }
             }
 
+            // 50問制限: 51問以上の場合はランダムに50問選出
             if (filtered.length > 50) {
                 filtered = filtered.sort(() => Math.random() - 0.5).slice(0, 50);
             }
@@ -578,7 +585,7 @@
             let url = document.getElementById('spreadsheetUrl').value;
             if (!url) return;
             
-            // スプレッドシートURLを保存
+            // URLをローカルストレージに保存
             localStorage.setItem('kanji_app_sheet_url', url);
 
             const sheetId = url.match(/\/d\/([a-zA-Z0-9-_]+)/)?.[1];
@@ -586,10 +593,12 @@
             
             if (!sheetId) return alert('URLが無効です');
             
-            const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=${gid}`;
+            // GitHub Pages等の外部からのアクセス用にGoogle Visualization APIを使用
+            const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&gid=${gid}`;
             
             const fetchData = async () => {
                 try {
+                    // キャッシュ回避
                     const res = await fetch(`${csvUrl}&t=${new Date().getTime()}`);
                     if (!res.ok) return;
                     const data = await res.text();
@@ -597,12 +606,20 @@
                     if (data === lastRawData) return;
                     lastRawData = data;
 
-                    const rows = data.split('\n').map(r => r.split(','));
+                    // Google Visualization APIのCSVはダブルクォートで囲まれることがあるため除去
+                    const rows = data.split('\n').map(r => {
+                        // 簡易CSVパース: カンマ区切りだが、ダブルクォート内のカンマは無視する簡易ロジック
+                        // 引用符内のカンマを一時的に置換するか、正規表現で分割
+                        const matches = r.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || [];
+                        if (matches.length === 0) return r.split(',');
+                        return matches.map(m => m.replace(/^"|"$/g, '').replace(/""/g, '"'));
+                    });
                     
+                    // ヘッダーを除去してデータをマッピング
                     problems = rows.slice(1).map(r => ({
-                        grade: r[0]?.replace(/"/g,'').trim() || "未分類",
-                        unit: r[1]?.replace(/"/g,'').trim() || "未分類",
-                        sentence: r[2]?.replace(/"/g,'').trim() || ""
+                        grade: r[0]?.trim() || "未分類",
+                        unit: r[1]?.trim() || "未分類",
+                        sentence: r[2]?.trim() || ""
                     })).filter(p => p.sentence && p.sentence !== "");
                     
                     if (document.getElementById('editDialog').classList.contains('hidden') || isInitial) {
@@ -612,8 +629,7 @@
                         if (isInitial) {
                             restoreUserSetting();
                         } else {
-                            // 設定変更時以外でデータ更新があった場合は再フィルタリング
-                            // ユーザーが選択している条件で再描画
+                            // 自動更新時はユーザーの選択状態を維持したまま再描画
                             filterByUnit();
                         }
                     }
@@ -624,6 +640,7 @@
 
             await fetchData();
 
+            // 5秒間隔で更新チェック
             if (autoUpdateInterval) clearInterval(autoUpdateInterval);
             autoUpdateInterval = setInterval(fetchData, 5000);
         }
