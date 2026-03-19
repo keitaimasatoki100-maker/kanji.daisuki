@@ -69,9 +69,8 @@
             position: relative;
             flex-shrink: 0;
             box-shadow: 2px 0 5px rgba(0,0,0,0.05);
-            transition: margin 0.3s ease;
         }
-
+        
         .problem-number {
             position: absolute;
             top: -15px;
@@ -164,14 +163,16 @@
         }
         
         .controls {
-            margin-right: 15px;
+            margin-right: 20px;
             display: flex;
-            flex-direction: column;
+            /* 縦書き環境で row を指定すると上から下へ要素が並びます */
+            flex-direction: row;
             align-items: center;
-            gap: 10px;
+            gap: 20px;
             writing-mode: vertical-rl;
+            padding-top: 10px; /* 上部からの余白 */
         }
-        
+
         #editDialog {
             writing-mode: horizontal-tb;
         }
@@ -190,11 +191,14 @@
 </head>
 <body>
     <div class="container">
+        <!-- ヘッダー設定エリア -->
         <div style="position: absolute; top: 15px; right: 15px; display: flex; flex-direction: row; align-items: flex-start; gap: 15px; writing-mode: vertical-rl; text-orientation: upright; z-index: 100;">
+            <!-- 学年セレクター -->
             <select id="gradeSelector" onchange="onGradeChange()" style="background: white; border: 2px solid #cbd5e0; border-radius: 12px; padding: 8px 12px; font-size: 0.7rem; font-weight: bold; cursor: pointer; writing-mode: vertical-rl; min-width: 60px;">
                 <option value="all">すべての学年</option>
             </select>
 
+            <!-- 単元セレクター（学年に連動し、シート順に表示） -->
             <select id="unitSelector" onchange="onUnitChange()" style="background: white; border: 2px solid #cbd5e0; border-radius: 12px; padding: 8px 12px; font-size: 0.7rem; font-weight: bold; cursor: pointer; writing-mode: vertical-rl; min-width: 60px; margin-top: 10px;">
                 <option value="all">すべての単元</option>
             </select>
@@ -211,8 +215,10 @@
             最強！漢字道場
         </div>
 
+        <!-- カード表示エリア -->
         <div id="cardsArea"></div>
 
+        <!-- コントロール（縦並び） -->
         <div class="controls">
             <button class="reveal-btn" onclick="shuffleProblems()" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8);">シャッフル</button>
             <button class="reveal-btn" id="globalToggleBtn" onclick="toggleAllReveals()">すべて表示</button>
@@ -220,6 +226,7 @@
         </div>
     </div>
 
+    <!-- 編集ダイアログ -->
     <div id="editDialog" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-[1000] p-4">
         <div class="bg-white p-6 rounded-2xl max-w-5xl w-full max-h-[90vh] overflow-auto flex flex-col">
             <h2 class="text-xl font-bold text-gray-700 mb-4 text-center">問題編集 - スプレッドシート</h2>
@@ -262,6 +269,7 @@
     </div>
 
     <script>
+        // 設定: パスワードとデフォルトURL
         const correctPassword = "kanji";
         const DEFAULT_SHEET_URL = "https://docs.google.com/spreadsheets/d/1a2CyIJCM5Nqy6Hah6249_Era1jyw11QmhAIJQGzoesA/edit?gid=649883566#gid=649883566";
         
@@ -269,17 +277,22 @@
         let lastRawData = ""; 
         let isSettingsLoaded = false;
 
+        // 学年の並び順定義
         const unitOrder = ["小学1年生", "小学2年生", "小学3年生", "小学4年生", "小学5年生", "小学6年生", "中学1年生", "中学2年生", "中学3年生"];
 
         let problems = [];
         let displayProblems = [];
 
         async function init() {
+            // ローカルストレージから前回保存したURLがあればそれを使う
             const savedUrl = localStorage.getItem('kanji_app_sheet_url');
             document.getElementById('spreadsheetUrl').value = savedUrl || DEFAULT_SHEET_URL;
+            
+            // 初回読み込み
             await loadFromUrl(true); 
         }
 
+        // ユーザー設定の保存 (localStorage)
         const saveUserSetting = () => {
             const settings = {
                 grade: document.getElementById('gradeSelector').value,
@@ -293,6 +306,7 @@
             }
         };
 
+        // ユーザー設定の復元 (localStorage)
         const restoreUserSetting = () => {
             if (isSettingsLoaded) return;
             try {
@@ -303,16 +317,20 @@
                     const unitSelector = document.getElementById('unitSelector');
                     const rangeSelector = document.getElementById('rangeSelector');
 
+                    // 学年セレクターの復元
                     if ([...gradeSelector.options].some(o => o.value === data.grade)) {
                         gradeSelector.value = data.grade;
                     }
                     
+                    // 学年に応じて単元セレクターを更新
                     updateUnitSelector();
                     
+                    // 単元セレクターの復元
                     if ([...unitSelector.options].some(o => o.value === data.unit)) {
                         unitSelector.value = data.unit;
                     }
                     
+                    // 範囲セレクターの復元
                     if ([...rangeSelector.options].some(o => o.value === data.range)) {
                         rangeSelector.value = data.range;
                     }
@@ -329,6 +347,7 @@
             const gradeSelector = document.getElementById('gradeSelector');
             const currentGradeValue = gradeSelector.value;
             
+            // ユニークな学年を抽出し、unitOrderの定義順にソート
             const grades = [...new Set(problems.map(p => p.grade))].sort((a,b) => {
                 const idxA = unitOrder.indexOf(a);
                 const idxB = unitOrder.indexOf(b);
@@ -344,6 +363,7 @@
                 gradeSelector.appendChild(opt);
             });
             
+            // 以前の選択状態を復元（もし選択肢にあれば）
             if ([...gradeSelector.options].some(o => o.value === currentGradeValue)) {
                 gradeSelector.value = currentGradeValue;
             } else {
@@ -356,10 +376,12 @@
             const unitSelector = document.getElementById('unitSelector');
             const selectedGrade = gradeSelector.value;
 
+            // 選択された学年の問題から単元を抽出
             const filteredForUnits = selectedGrade === 'all' 
                 ? problems 
                 : problems.filter(p => p.grade === selectedGrade);
             
+            // 重複なしの単元リストを作成（スプレッドシートの並び順を維持）
             const units = [];
             filteredForUnits.forEach(p => {
                 if (!units.includes(p.unit)) {
@@ -378,7 +400,7 @@
 
         function onGradeChange() {
             const unitSelector = document.getElementById('unitSelector');
-            unitSelector.value = 'all'; 
+            unitSelector.value = 'all'; // 学年が変わったら単元はリセット
             updateUnitSelector();
             filterByUnit();
             saveUserSetting();
@@ -436,7 +458,7 @@
             });
         }
 
-        // Web Animations APIを利用して、順番にアニメーションを3回ループさせる
+        // KanjiVGからSVGを取得してアニメーション描画を3回ループ
         async function revealKanji(id) {
             const blank = document.getElementById(id);
             if (!blank) return;
@@ -453,7 +475,7 @@
 
                 const kanjiContainer = document.createElement('div');
                 kanjiContainer.style.display = 'flex';
-                kanjiContainer.style.flexDirection = 'row'; 
+                kanjiContainer.style.flexDirection = 'row'; // 縦書き環境で上から下へ並べる
                 kanjiContainer.style.alignItems = 'center';
                 kanjiContainer.style.justifyContent = 'center';
                 kanjiContainer.style.gap = '2px';
@@ -525,7 +547,7 @@
 
                 const hideBtn = document.createElement('button');
                 hideBtn.className = 'reveal-btn individual-btn';
-                hideBtn.textContent = '答え'; 
+                hideBtn.textContent = '答え'; // もう一度押せるようにテキストを「答え」に維持
                 hideBtn.onclick = (e) => {
                     e.stopPropagation();
                     revealKanji(id);
@@ -645,6 +667,7 @@
                 }
             }
 
+            // 50問制限: 51問以上の場合はランダムに50問選出
             if (filtered.length > 50) {
                 filtered = filtered.sort(() => Math.random() - 0.5).slice(0, 50);
             }
@@ -708,6 +731,7 @@
             let url = document.getElementById('spreadsheetUrl').value;
             if (!url) return;
             
+            // URLをローカルストレージに保存
             localStorage.setItem('kanji_app_sheet_url', url);
 
             const sheetId = url.match(/\/d\/([a-zA-Z0-9-_]+)/)?.[1];
@@ -715,10 +739,12 @@
             
             if (!sheetId) return alert('URLが無効です');
             
+            // GitHub Pages等の外部からのアクセス用にGoogle Visualization APIを使用
             const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&gid=${gid}`;
             
             const fetchData = async () => {
                 try {
+                    // キャッシュ回避
                     const res = await fetch(`${csvUrl}&t=${new Date().getTime()}`);
                     if (!res.ok) return;
                     const data = await res.text();
@@ -726,12 +752,15 @@
                     if (data === lastRawData) return;
                     lastRawData = data;
 
+                    // Google Visualization APIのCSVはダブルクォートで囲まれることがあるため除去
                     const rows = data.split('\n').map(r => {
+                        // 簡易CSVパース
                         const matches = r.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || [];
                         if (matches.length === 0) return r.split(',');
                         return matches.map(m => m.replace(/^"|"$/g, '').replace(/""/g, '"'));
                     });
                     
+                    // ヘッダーを除去してデータをマッピング
                     problems = rows.slice(1).map(r => ({
                         grade: r[0]?.trim() || "未分類",
                         unit: r[1]?.trim() || "未分類",
@@ -745,6 +774,7 @@
                         if (isInitial) {
                             restoreUserSetting();
                         } else {
+                            // 自動更新時はユーザーの選択状態を維持したまま再描画
                             filterByUnit();
                         }
                     }
@@ -755,6 +785,7 @@
 
             await fetchData();
 
+            // 5秒間隔で更新チェック
             if (autoUpdateInterval) clearInterval(autoUpdateInterval);
             autoUpdateInterval = setInterval(fetchData, 5000);
         }
