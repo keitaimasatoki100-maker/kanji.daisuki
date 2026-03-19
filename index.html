@@ -69,8 +69,9 @@
             position: relative;
             flex-shrink: 0;
             box-shadow: 2px 0 5px rgba(0,0,0,0.05);
+            transition: margin 0.3s ease;
         }
-        
+
         .problem-number {
             position: absolute;
             top: -15px;
@@ -95,7 +96,10 @@
         }
         
         .kanji-blank {
-            display: inline-block;
+            display: inline-flex;
+            flex-direction: row; 
+            align-items: center;
+            justify-content: center;
             width: 42px;
             min-height: 42px;
             border: 2px dashed #cbd5e0;
@@ -106,6 +110,7 @@
             position: relative;
             transition: all 0.3s ease;
             text-align: center;
+            padding: 4px 0;
         }
         
         .kanji-blank::before {
@@ -167,7 +172,6 @@
             writing-mode: vertical-rl;
         }
         
-        /* 編集ダイアログ */
         #editDialog {
             writing-mode: horizontal-tb;
         }
@@ -186,14 +190,11 @@
 </head>
 <body>
     <div class="container">
-        <!-- ヘッダー設定エリア -->
         <div style="position: absolute; top: 15px; right: 15px; display: flex; flex-direction: row; align-items: flex-start; gap: 15px; writing-mode: vertical-rl; text-orientation: upright; z-index: 100;">
-            <!-- 学年セレクター -->
             <select id="gradeSelector" onchange="onGradeChange()" style="background: white; border: 2px solid #cbd5e0; border-radius: 12px; padding: 8px 12px; font-size: 0.7rem; font-weight: bold; cursor: pointer; writing-mode: vertical-rl; min-width: 60px;">
                 <option value="all">すべての学年</option>
             </select>
 
-            <!-- 単元セレクター（学年に連動し、シート順に表示） -->
             <select id="unitSelector" onchange="onUnitChange()" style="background: white; border: 2px solid #cbd5e0; border-radius: 12px; padding: 8px 12px; font-size: 0.7rem; font-weight: bold; cursor: pointer; writing-mode: vertical-rl; min-width: 60px; margin-top: 10px;">
                 <option value="all">すべての単元</option>
             </select>
@@ -210,19 +211,15 @@
             最強！漢字道場
         </div>
 
-        <!-- カード表示エリア -->
         <div id="cardsArea"></div>
 
-        <!-- コントロール -->
         <div class="controls">
-            <!-- 進捗表示は削除済み -->
             <button class="reveal-btn" onclick="shuffleProblems()" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8);">シャッフル</button>
             <button class="reveal-btn" id="globalToggleBtn" onclick="toggleAllReveals()">すべて表示</button>
             <button class="reveal-btn" onclick="showEditDialog()" style="background: linear-gradient(135deg, #f56565, #e53e3e);">問題編集</button>
         </div>
     </div>
 
-    <!-- 編集ダイアログ -->
     <div id="editDialog" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-[1000] p-4">
         <div class="bg-white p-6 rounded-2xl max-w-5xl w-full max-h-[90vh] overflow-auto flex flex-col">
             <h2 class="text-xl font-bold text-gray-700 mb-4 text-center">問題編集 - スプレッドシート</h2>
@@ -265,7 +262,6 @@
     </div>
 
     <script>
-        // 設定: パスワードとデフォルトURL
         const correctPassword = "kanji";
         const DEFAULT_SHEET_URL = "https://docs.google.com/spreadsheets/d/1a2CyIJCM5Nqy6Hah6249_Era1jyw11QmhAIJQGzoesA/edit?gid=649883566#gid=649883566";
         
@@ -273,22 +269,17 @@
         let lastRawData = ""; 
         let isSettingsLoaded = false;
 
-        // 学年の並び順定義
         const unitOrder = ["小学1年生", "小学2年生", "小学3年生", "小学4年生", "小学5年生", "小学6年生", "中学1年生", "中学2年生", "中学3年生"];
 
         let problems = [];
         let displayProblems = [];
 
         async function init() {
-            // ローカルストレージから前回保存したURLがあればそれを使う
             const savedUrl = localStorage.getItem('kanji_app_sheet_url');
             document.getElementById('spreadsheetUrl').value = savedUrl || DEFAULT_SHEET_URL;
-            
-            // 初回読み込み
             await loadFromUrl(true); 
         }
 
-        // ユーザー設定の保存 (localStorage)
         const saveUserSetting = () => {
             const settings = {
                 grade: document.getElementById('gradeSelector').value,
@@ -302,7 +293,6 @@
             }
         };
 
-        // ユーザー設定の復元 (localStorage)
         const restoreUserSetting = () => {
             if (isSettingsLoaded) return;
             try {
@@ -313,20 +303,16 @@
                     const unitSelector = document.getElementById('unitSelector');
                     const rangeSelector = document.getElementById('rangeSelector');
 
-                    // 学年セレクターの復元
                     if ([...gradeSelector.options].some(o => o.value === data.grade)) {
                         gradeSelector.value = data.grade;
                     }
                     
-                    // 学年に応じて単元セレクターを更新
                     updateUnitSelector();
                     
-                    // 単元セレクターの復元
                     if ([...unitSelector.options].some(o => o.value === data.unit)) {
                         unitSelector.value = data.unit;
                     }
                     
-                    // 範囲セレクターの復元
                     if ([...rangeSelector.options].some(o => o.value === data.range)) {
                         rangeSelector.value = data.range;
                     }
@@ -343,7 +329,6 @@
             const gradeSelector = document.getElementById('gradeSelector');
             const currentGradeValue = gradeSelector.value;
             
-            // ユニークな学年を抽出し、unitOrderの定義順にソート
             const grades = [...new Set(problems.map(p => p.grade))].sort((a,b) => {
                 const idxA = unitOrder.indexOf(a);
                 const idxB = unitOrder.indexOf(b);
@@ -359,7 +344,6 @@
                 gradeSelector.appendChild(opt);
             });
             
-            // 以前の選択状態を復元（もし選択肢にあれば）
             if ([...gradeSelector.options].some(o => o.value === currentGradeValue)) {
                 gradeSelector.value = currentGradeValue;
             } else {
@@ -372,12 +356,10 @@
             const unitSelector = document.getElementById('unitSelector');
             const selectedGrade = gradeSelector.value;
 
-            // 選択された学年の問題から単元を抽出
             const filteredForUnits = selectedGrade === 'all' 
                 ? problems 
                 : problems.filter(p => p.grade === selectedGrade);
             
-            // 重複なしの単元リストを作成（スプレッドシートの並び順を維持）
             const units = [];
             filteredForUnits.forEach(p => {
                 if (!units.includes(p.unit)) {
@@ -396,7 +378,7 @@
 
         function onGradeChange() {
             const unitSelector = document.getElementById('unitSelector');
-            unitSelector.value = 'all'; // 学年が変わったら単元はリセット
+            unitSelector.value = 'all'; 
             updateUnitSelector();
             filterByUnit();
             saveUserSetting();
@@ -454,14 +436,163 @@
             });
         }
 
-        function revealKanji(id) {
+        // Web Animations APIを利用して、順番にアニメーションを3回ループさせる
+        async function revealKanji(id) {
             const blank = document.getElementById(id);
             if (!blank) return;
+
             if (!blank.classList.contains('revealed')) {
                 const kanji = blank.getAttribute('data-kanji');
-                blank.innerHTML = `${kanji}<button class="reveal-btn individual-btn" style="background:#a0aec0" onclick="revealKanji('${id}')">隠す</button>`;
                 blank.classList.add('revealed');
+                
+                // アニメーションキャンセルのためのID
+                const animId = Date.now().toString();
+                blank.dataset.animId = animId;
+
+                blank.innerHTML = `<span style="font-size: 0.6rem; color: #a0aec0; text-orientation: upright; margin: auto;">取得中</span>`;
+
+                const kanjiContainer = document.createElement('div');
+                kanjiContainer.style.display = 'flex';
+                kanjiContainer.style.flexDirection = 'row'; 
+                kanjiContainer.style.alignItems = 'center';
+                kanjiContainer.style.justifyContent = 'center';
+                kanjiContainer.style.gap = '2px';
+
+                const promises = Array.from(kanji).map(async (char) => {
+                    // 漢字だけでなく、ひらがな・カタカナもフェッチ対象にする
+                    const isTarget = /[\u4e00-\u9faf\u3400-\u4dbf\u3040-\u309f\u30a0-\u30ff]/.test(char);
+                    if (!isTarget) return char;
+
+                    const code = char.charCodeAt(0).toString(16).padStart(5, '0');
+                    const url = `https://cdn.jsdelivr.net/gh/KanjiVG/kanjivg@master/kanji/${code}.svg`;
+                    
+                    try {
+                        const res = await fetch(url);
+                        if (res.ok) {
+                            const svgText = await res.text();
+                            const wrapper = document.createElement('div');
+                            wrapper.innerHTML = svgText;
+                            const svg = wrapper.querySelector('svg');
+                            if (svg) {
+                                svg.querySelectorAll('text').forEach(t => t.remove());
+                                svg.style.width = '34px';
+                                svg.style.height = '34px';
+                                svg.style.display = 'block';
+                                return svg;
+                            }
+                        }
+                    } catch (e) {
+                        console.error('SVG Load error', e);
+                    }
+                    return char; 
+                });
+
+                const results = await Promise.all(promises);
+
+                // もし取得中に「答え」が再度押されて隠されていたら終了
+                if (blank.dataset.animId !== animId) return;
+
+                blank.innerHTML = '';
+                const elements = [];
+
+                // DOMに要素を追加しつつ、アニメーション用リストを作る
+                results.forEach((result) => {
+                    if (typeof result === 'string') {
+                        const span = document.createElement('span');
+                        span.textContent = result;
+                        span.style.fontSize = '1.5rem';
+                        span.style.fontWeight = 'bold';
+                        span.style.textOrientation = 'upright';
+                        span.style.opacity = '0'; // アニメーション開始までは見えないようにする
+                        elements.push({ type: 'text', el: span });
+                        kanjiContainer.appendChild(span);
+                    } else {
+                        const paths = Array.from(result.querySelectorAll('path'));
+                        paths.forEach(path => {
+                            path.style.fill = 'none';
+                            path.style.stroke = '#2d3748';
+                            path.style.strokeWidth = '3';
+                            path.style.strokeLinecap = 'round';
+                            path.style.strokeLinejoin = 'round';
+                            const length = path.getTotalLength();
+                            path.style.strokeDasharray = length;
+                            path.style.strokeDashoffset = length;
+                        });
+                        elements.push({ type: 'svg', el: result, paths: paths });
+                        kanjiContainer.appendChild(result);
+                    }
+                });
+
+                const hideBtn = document.createElement('button');
+                hideBtn.className = 'reveal-btn individual-btn';
+                hideBtn.textContent = '答え'; 
+                hideBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    revealKanji(id);
+                };
+
+                blank.appendChild(kanjiContainer);
+                blank.appendChild(hideBtn);
+
+                // アニメーションを3回ループする処理
+                const playAnimation = async () => {
+                    for (let loop = 0; loop < 3; loop++) {
+                        // キャンセルチェック
+                        if (blank.dataset.animId !== animId) return;
+
+                        // すべての字を完全に消す（初期状態にリセット）
+                        elements.forEach(item => {
+                            if (item.type === 'text') {
+                                item.el.style.opacity = '0';
+                            } else {
+                                item.paths.forEach(p => {
+                                    p.style.strokeDashoffset = p.getTotalLength();
+                                });
+                            }
+                        });
+
+                        // 字が消えた状態で少し待つ
+                        await new Promise(r => setTimeout(r, 500));
+
+                        // 順番に描画
+                        for (const item of elements) {
+                            if (blank.dataset.animId !== animId) return;
+
+                            if (item.type === 'text') {
+                                // テキストはフェードイン
+                                const anim = item.el.animate([
+                                    { opacity: 0 },
+                                    { opacity: 1 }
+                                ], { duration: 250, fill: 'forwards' });
+                                await anim.finished;
+                                item.el.style.opacity = '1';
+                            } else {
+                                // SVGの各画を順番に描画
+                                for (const path of item.paths) {
+                                    if (blank.dataset.animId !== animId) return;
+                                    const anim = path.animate([
+                                        { strokeDashoffset: path.getTotalLength() },
+                                        { strokeDashoffset: 0 }
+                                    ], { duration: 250, easing: 'ease-out', fill: 'forwards' });
+                                    await anim.finished;
+                                    path.style.strokeDashoffset = '0';
+                                }
+                            }
+                            // 1文字描き終わったら少し待つ
+                            await new Promise(r => setTimeout(r, 200));
+                        }
+
+                        // 1回全体が書き終わったら少し待機して、アニメーション終了（次のループへ）
+                        await new Promise(r => setTimeout(r, 1500));
+                    }
+                };
+
+                // アニメーションを開始
+                playAnimation();
+
             } else {
+                // 隠す処理 (もう一度「答え」が押されたとき)
+                blank.dataset.animId = ""; // 進行中のアニメーションをキャンセル
                 blank.innerHTML = `<button class="reveal-btn individual-btn" onclick="revealKanji('${id}')">答え</button>`;
                 blank.classList.remove('revealed');
             }
@@ -472,17 +603,20 @@
             const blanks = document.querySelectorAll('.kanji-blank');
             const isShowingAll = btn.textContent === 'すべて隠す';
 
-            blanks.forEach(b => {
+            blanks.forEach((b, i) => {
                 const revealed = b.classList.contains('revealed');
-                if (!isShowingAll && !revealed) revealKanji(b.id);
-                if (isShowingAll && revealed) revealKanji(b.id);
+                if (!isShowingAll && !revealed) {
+                    setTimeout(() => revealKanji(b.id), i * 100);
+                }
+                if (isShowingAll && revealed) {
+                    revealKanji(b.id);
+                }
             });
 
             btn.textContent = isShowingAll ? 'すべて表示' : 'すべて隠す';
         }
 
         function shuffleProblems() {
-            // 現在表示されているリストをランダムに並び替え
             displayProblems.sort(() => Math.random() - 0.5);
             renderCards();
         }
@@ -511,7 +645,6 @@
                 }
             }
 
-            // 50問制限: 51問以上の場合はランダムに50問選出
             if (filtered.length > 50) {
                 filtered = filtered.sort(() => Math.random() - 0.5).slice(0, 50);
             }
@@ -564,7 +697,7 @@
                     });
                 }
             });
-            lastRawData = ""; // 次回更新時に確実に反映させるため
+            lastRawData = ""; 
             updateGradeSelector();
             updateUnitSelector();
             filterByUnit();
@@ -575,7 +708,6 @@
             let url = document.getElementById('spreadsheetUrl').value;
             if (!url) return;
             
-            // URLをローカルストレージに保存
             localStorage.setItem('kanji_app_sheet_url', url);
 
             const sheetId = url.match(/\/d\/([a-zA-Z0-9-_]+)/)?.[1];
@@ -583,12 +715,10 @@
             
             if (!sheetId) return alert('URLが無効です');
             
-            // GitHub Pages等の外部からのアクセス用にGoogle Visualization APIを使用
             const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&gid=${gid}`;
             
             const fetchData = async () => {
                 try {
-                    // キャッシュ回避
                     const res = await fetch(`${csvUrl}&t=${new Date().getTime()}`);
                     if (!res.ok) return;
                     const data = await res.text();
@@ -596,15 +726,12 @@
                     if (data === lastRawData) return;
                     lastRawData = data;
 
-                    // Google Visualization APIのCSVはダブルクォートで囲まれることがあるため除去
                     const rows = data.split('\n').map(r => {
-                        // 簡易CSVパース
                         const matches = r.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || [];
                         if (matches.length === 0) return r.split(',');
                         return matches.map(m => m.replace(/^"|"$/g, '').replace(/""/g, '"'));
                     });
                     
-                    // ヘッダーを除去してデータをマッピング
                     problems = rows.slice(1).map(r => ({
                         grade: r[0]?.trim() || "未分類",
                         unit: r[1]?.trim() || "未分類",
@@ -618,7 +745,6 @@
                         if (isInitial) {
                             restoreUserSetting();
                         } else {
-                            // 自動更新時はユーザーの選択状態を維持したまま再描画
                             filterByUnit();
                         }
                     }
@@ -629,7 +755,6 @@
 
             await fetchData();
 
-            // 5秒間隔で更新チェック
             if (autoUpdateInterval) clearInterval(autoUpdateInterval);
             autoUpdateInterval = setInterval(fetchData, 5000);
         }
