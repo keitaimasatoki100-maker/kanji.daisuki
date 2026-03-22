@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>漢字練習サイト</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Klee+One:wght@400;600&display=swap" rel="stylesheet">
     <style>
         * {
             font-family: 'UD デジタル 教科書体 N-R', 'UD Digi Kyokasho N-R', 'UDデジタル教科書体 N-R', 'UDデジタル教科書体', '教科書体', 'Kyokasho', 'BIZ UDPGothic', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', 'Meiryo', sans-serif;
@@ -58,14 +61,14 @@
             background: #f7fafc;
             border-radius: 15px;
             padding: 15px;
-            margin: 25px 10px 10px 10px; /* 問題番号が隠れないように、上部の余白（margin）を広げました */
+            margin: 25px 10px 10px 10px; 
             border-top: 5px solid #667eea;
             writing-mode: vertical-rl;
             text-orientation: upright;
             display: inline-block;
             vertical-align: top;
             min-height: 400px;
-            width: 60px;
+            width: 80px; 
             position: relative;
             flex-shrink: 0;
             box-shadow: 2px 0 5px rgba(0,0,0,0.05);
@@ -103,7 +106,7 @@
             min-height: 42px;
             border: 2px dashed #cbd5e0;
             border-radius: 8px;
-            margin: 4px 2px;
+            margin: 5px 2px 20px 2px; 
             vertical-align: middle;
             background: white;
             position: relative;
@@ -161,16 +164,50 @@
             line-height: 1.1;
             white-space: nowrap;
         }
+
+        /* 鉛筆ボタンのスタイル */
+        .pencil-btn {
+            position: absolute;
+            top: auto;
+            bottom: -14px; 
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            border: 1px solid #cbd5e0;
+            border-radius: 50%;
+            width: 24px; 
+            height: 24px;
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            z-index: 20;
+            writing-mode: horizontal-tb;
+            text-orientation: mixed;
+            padding: 0;
+            transition: all 0.2s ease;
+        }
+
+        .pencil-btn:hover {
+            background: #e2e8f0;
+            transform: translateX(-50%) scale(1.1);
+        }
+
+        .pencil-btn.has-drawing {
+            background: #fefcbf;
+            border-color: #ecc94b;
+        }
         
         .controls {
             margin-right: 20px;
             display: flex;
-            /* 縦書き環境で row を指定すると上から下へ要素が並びます */
             flex-direction: row;
             align-items: center;
             gap: 20px;
             writing-mode: vertical-rl;
-            padding-top: 10px; /* 上部からの余白 */
+            padding-top: 10px; 
         }
 
         #editDialog {
@@ -187,10 +224,243 @@
             background-color: rgba(247, 250, 252, 0.5);
             border-radius: 0 0 10px 10px;
         }
+
+        /* Drawing Panel Styles */
+        .drawing-panel {
+            position: fixed;
+            width: 320px;
+            max-width: 90vw;
+            max-height: 85vh;
+            background: white;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            border-radius: 15px;
+            border: 1px solid #e2e8f0;
+            z-index: 2000;
+            display: none;
+            flex-direction: column;
+            padding: 20px;
+            box-sizing: border-box;
+            writing-mode: horizontal-tb;
+        }
+
+        .drawing-panel.open {
+            display: flex;
+            animation: fadeIn 0.2s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .drawing-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #4a5568;
+            flex-shrink: 0;
+        }
+
+        .drawing-canvases-scroll-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            align-items: center;
+            overflow-y: auto;
+            padding-bottom: 10px;
+            scrollbar-width: thin;
+        }
+
+        .drawing-controls {
+            margin-top: 10px;
+            display: flex;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .drawing-close-btn {
+            background: #e2e8f0;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #4a5568;
+            font-weight: bold;
+        }
+
+        .progress {
+            margin-right: 10px;
+            font-size: 1.1rem;
+            color: #4a5568;
+            font-weight: bold;
+            writing-mode: vertical-rl;
+            text-orientation: upright;
+        }
+
+        /* くす玉アニメーションのスタイル */
+        #celebration-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(255, 255, 255, 0.2);
+            pointer-events: none;
+            z-index: 9999;
+            display: none;
+            writing-mode: horizontal-tb;
+        }
+
+        .kusudama-container {
+            position: absolute;
+            top: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .kusudama {
+            font-size: 120px;
+            animation: shake 0.5s infinite alternate;
+        }
+
+        .kusudama.open {
+            animation: openBall 0.8s forwards;
+            display: flex;
+            gap: 10px;
+        }
+
+        @keyframes shake {
+            from { transform: rotate(-10deg); }
+            to { transform: rotate(10deg); }
+        }
+
+        @keyframes openBall {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); opacity: 0; }
+        }
+
+        .congratulations-text {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #ff4500;
+            text-shadow: 2px 2px 10px rgba(0,0,0,0.2);
+            margin-top: 20px;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.5s 0.5s forwards;
+        }
+
+        @keyframes fadeInUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #f00;
+            animation: fall 3s linear infinite;
+        }
+
+        @keyframes fall {
+            to { transform: translateY(100vh) rotate(360deg); }
+        }
+
+        /* --- フラッシュカード用のスタイル --- */
+        .mode-switch-btn {
+            position: fixed;
+            left: 20px;
+            top: 20px;
+            background: linear-gradient(135deg, #ed8936, #dd6b20);
+            color: white;
+            border: none;
+            padding: 15px 20px;
+            border-radius: 15px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+            writing-mode: horizontal-tb;
+            transition: transform 0.2s;
+        }
+
+        .mode-switch-btn:hover {
+            transform: scale(1.05);
+        }
+
+        /* フラッシュカードページ全体を縦書きに設定 */
+        #flashcardPage {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: #f7fafc;
+            z-index: 3000;
+            display: none; 
+            flex-direction: column; /* 縦書きの場合、columnは右から左へ並ぶ */
+            align-items: center;
+            justify-content: center;
+            writing-mode: vertical-rl;
+            text-orientation: upright;
+        }
+
+        .fc-card-container {
+            width: 350px;
+            max-width: 90%;
+            height: 85vh; /* 上下に伸ばしてなるべく1行に収める */
+            max-height: 1200px;
+            margin: 0 20px;
+        }
+
+        .fc-card-inner {
+            width: 100%;
+            height: 100%;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column; /* 縦書き環境では右から左へ並ぶ */
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        /* 書き順アニメーション（KanjiVG）に似た手書き風・教科書体フォントを適用 */
+        #fcFrontText, .fc-kanji-text {
+            font-family: 'Klee One', 'UD デジタル 教科書体 N-R', 'UD Digi Kyokasho N-R', '教科書体', 'Kyokasho', serif;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .fc-card-container {
+                width: 280px;
+                height: 85vh;
+            }
+            .fc-card-inner {
+                padding: 20px;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="container">
+    <!-- フラッシュカードモード切替ボタン -->
+    <button class="mode-switch-btn" onclick="goToFlashcardMode()">フラッシュカード<br>モード</button>
+
+    <div class="container" id="mainContainer">
         <!-- ヘッダー設定エリア -->
         <div style="position: absolute; top: 15px; right: 15px; display: flex; flex-direction: row; align-items: flex-start; gap: 15px; writing-mode: vertical-rl; text-orientation: upright; z-index: 100;">
             <!-- 学年セレクター -->
@@ -220,9 +490,18 @@
 
         <!-- コントロール（縦並び） -->
         <div class="controls">
+            <div id="progress" class="progress">0/0 漢字</div>
             <button class="reveal-btn" onclick="shuffleProblems()" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8);">シャッフル</button>
             <button class="reveal-btn" id="globalToggleBtn" onclick="toggleAllReveals()">すべて表示</button>
             <button class="reveal-btn" onclick="showEditDialog()" style="background: linear-gradient(135deg, #f56565, #e53e3e);">問題編集</button>
+        </div>
+    </div>
+
+    <!-- お祝いオーバーレイ -->
+    <div id="celebration-overlay">
+        <div class="kusudama-container">
+            <div id="kusudama-emoji" class="kusudama">🎊</div>
+            <div class="congratulations-text">全問クリア！</div>
         </div>
     </div>
 
@@ -268,6 +547,63 @@
         </div>
     </div>
 
+    <!-- Drawing Panel (Multiple Canvases) -->
+    <div id="drawingPanel" class="drawing-panel">
+        <div class="drawing-header">
+            <span id="drawingTargetKanji">手書き練習</span>
+            <button class="drawing-close-btn" onclick="closeDrawingPanel()">✕</button>
+        </div>
+        <div id="canvasesScrollArea" class="drawing-canvases-scroll-area">
+        </div>
+        <div class="drawing-controls">
+            <button id="addNextCanvasBtn" onclick="showNextCanvas()" style="background: none; border: none; font-size: 2.5rem; cursor: pointer; color: #4a5568; display: none; padding: 0; line-height: 1; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'" title="次の文字を書く">⬇️</button>
+        </div>
+    </div>
+
+    <!-- フラッシュカード画面（縦書き） -->
+    <div id="flashcardPage">
+        <!-- 戻るボタン（縦書きなので左上に配置） -->
+        <div style="position: absolute; top: 20px; left: 20px;">
+            <button onclick="returnToMainMode()" style="background: #e2e8f0; color: #4a5568; border: none; padding: 15px 10px; border-radius: 10px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); writing-mode: vertical-rl; text-orientation: upright;">漢字練習に戻る</button>
+        </div>
+        
+        <!-- セレクター（縦書きなので右上に配置） -->
+        <div style="position: absolute; top: 20px; right: 20px; display: flex; flex-direction: row; gap: 10px;">
+            <select id="fcGradeSelector" onchange="onFcGradeChange()" style="background: white; border: 2px solid #cbd5e0; border-radius: 10px; padding: 10px 8px; font-size: 1rem; font-weight: bold; cursor: pointer; outline: none; writing-mode: vertical-rl; text-orientation: upright; min-width: 40px;">
+                <option value="">学年を選択...</option>
+            </select>
+            <select id="fcUnitSelector" onchange="onFcUnitChange()" style="background: white; border: 2px solid #cbd5e0; border-radius: 10px; padding: 10px 8px; font-size: 1rem; font-weight: bold; cursor: pointer; outline: none; writing-mode: vertical-rl; text-orientation: upright; min-width: 40px;">
+                <option value="">単元を選択...</option>
+            </select>
+            <select id="fcRangeSelector" onchange="onFcRangeChange()" style="background: white; border: 2px solid #cbd5e0; border-radius: 10px; padding: 10px 8px; font-size: 1rem; font-weight: bold; cursor: pointer; outline: none; writing-mode: vertical-rl; text-orientation: upright; min-width: 40px;">
+                <option value="up-to">まで</option>
+                <option value="only" selected>だけ</option>
+            </select>
+        </div>
+
+        <h1 style="font-size: 2rem; font-weight: bold; color: #2d3748; margin-right: 40px; margin-left: 20px;">フラッシュカード</h1>
+        
+        <div id="fcProgress" style="font-size: 1.2rem; color: #4a5568; font-weight: bold; margin-right: 20px;">0 / 0</div>
+
+        <!-- カード本体（縦長、１面のみ） -->
+        <div class="fc-card-container">
+            <div id="fcCardInner" class="fc-card-inner">
+                <!-- 問題文と答えが同じサイズで表示されるエリア -->
+                <!-- line-heightを広めにとって、横に並べた文字が隣の行と被らないようにしています -->
+                <div id="fcFrontText" style="color: #2d3748; font-size: 2.2rem; font-weight: 600; line-height: 2.5;"></div>
+            </div>
+        </div>
+
+        <div style="color: #a0aec0; font-size: 1rem; margin-right: 20px; margin-left: 20px;">「次へ」を押して答えを確認</div>
+
+        <!-- コントロールボタン -->
+        <!-- vertical-rl環境でflex-direction: columnを指定すると右から左へ並ぶため、前へ(右)、次へ(左)となる -->
+        <div style="display: flex; flex-direction: column; gap: 40px; margin-right: 20px; margin-left: 20px;">
+            <button onclick="prevFlashcard()" style="padding: 20px 10px; font-size: 1.2rem; font-weight: bold; background: #e2e8f0; color: #4a5568; border-radius: 15px; border: none; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1); writing-mode: vertical-rl; text-orientation: upright;">前へ</button>
+            <button onclick="nextFlashcard()" style="padding: 20px 10px; font-size: 1.2rem; font-weight: bold; background: #48bb78; color: white; border-radius: 15px; border: none; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1); writing-mode: vertical-rl; text-orientation: upright;">次へ</button>
+        </div>
+    </div>
+
     <script>
         // 設定: パスワードとデフォルトURL
         const correctPassword = "kanji";
@@ -283,14 +619,55 @@
         let problems = [];
         let displayProblems = [];
 
+        // 問題文に基づく一意のハッシュを生成する関数 (シャッフル時のIDズレ防止)
+        function getHash(str) {
+            let hash = 0;
+            for (let i = 0; i < str.length; i++) {
+                hash = ((hash << 5) - hash) + str.charCodeAt(i);
+                hash |= 0; 
+            }
+            return Math.abs(hash).toString(36);
+        }
+
+        // --- 手書きキャンバス用の状態 ---
+        let totalKanjiInCurrentSet = 0;
+        let hasCelebrated = false;
+        const drawnBlanks = new Set(); 
+        const savedDrawings = {}; 
+        let completedUnits = new Set(); // クリア済み単元の記録 ("grade:::unit" の形式)
+        
+        let currentDrawingKanjiBtn = null;
+        let currentDrawingBlankId = null;
+        let currentDrawingKanjiString = "";
+        let displayedCanvasCount = 0;
+        const activeCanvases = []; 
+
+        // --- フラッシュカード用の状態 ---
+        let fcProblems = [];
+        let currentFcIndex = 0;
+        let fcState = 'question'; // 'question' または 'answer'
+
         async function init() {
-            // ローカルストレージから前回保存したURLがあればそれを使う
+            // ローカルストレージから前回保存したURLとクリア状態があればそれを使う
             const savedUrl = localStorage.getItem('kanji_app_sheet_url');
             document.getElementById('spreadsheetUrl').value = savedUrl || DEFAULT_SHEET_URL;
+            loadCompletedUnits();
             
             // 初回読み込み
             await loadFromUrl(true); 
         }
+
+        // クリア状態の保存・読み込み
+        const saveCompletedUnits = () => {
+            localStorage.setItem('kanji_app_completed_units', JSON.stringify([...completedUnits]));
+        };
+
+        const loadCompletedUnits = () => {
+            try {
+                const data = localStorage.getItem('kanji_app_completed_units');
+                if (data) completedUnits = new Set(JSON.parse(data));
+            } catch(e) {}
+        };
 
         // ユーザー設定の保存 (localStorage)
         const saveUserSetting = () => {
@@ -340,6 +717,7 @@
             } finally {
                 isSettingsLoaded = true;
                 filterByUnit(); // 設定の有無に関わらず初期描画を実行する
+                filterFlashcards();
             }
         };
 
@@ -371,6 +749,29 @@
             }
         }
 
+        // 単元セレクターの背景色（薄い青）を更新する処理
+        function refreshUnitSelectorColors() {
+            const grade = document.getElementById('gradeSelector').value;
+            const unitSelector = document.getElementById('unitSelector');
+            
+            // 各オプションの背景色を更新
+            Array.from(unitSelector.options).forEach(opt => {
+                if (opt.value && completedUnits.has(`${grade}:::${opt.value}`)) {
+                    opt.style.backgroundColor = '#ebf8ff'; // Tailwindのblue-50相当（薄い青）
+                } else {
+                    opt.style.backgroundColor = ''; 
+                }
+            });
+
+            // セレクトボックス自体の背景色も連動させる
+            const currentUnit = unitSelector.value;
+            if (grade && currentUnit && completedUnits.has(`${grade}:::${currentUnit}`)) {
+                unitSelector.style.backgroundColor = '#ebf8ff';
+            } else {
+                unitSelector.style.backgroundColor = 'white';
+            }
+        }
+
         function updateUnitSelector() {
             const gradeSelector = document.getElementById('gradeSelector');
             const unitSelector = document.getElementById('unitSelector');
@@ -381,6 +782,7 @@
                 unitSelector.innerHTML = '<option value="">単元を選択...</option>';
                 unitSelector.disabled = true;
                 unitSelector.style.opacity = '0.5';
+                unitSelector.style.backgroundColor = 'white';
                 return;
             } else {
                 unitSelector.disabled = false;
@@ -413,6 +815,8 @@
             } else {
                 unitSelector.value = '';
             }
+
+            refreshUnitSelectorColors(); // 背景色の反映
         }
 
         function onGradeChange() {
@@ -424,6 +828,7 @@
         }
 
         function onUnitChange() {
+            refreshUnitSelectorColors(); // セレクトボックス自体の背景色を更新
             filterByUnit();
             saveUserSetting();
         }
@@ -434,6 +839,9 @@
         }
 
         function renderCards() {
+            hasCelebrated = false; // 表示が切り替わったらお祝いフラグをリセット
+            totalKanjiInCurrentSet = 0;
+
             const area = document.getElementById('cardsArea');
             area.innerHTML = '';
 
@@ -451,6 +859,9 @@
             }
 
             displayProblems.forEach((p, idx) => {
+                // 問題文に基づく一意のハッシュを生成
+                const probHash = getHash(p.grade + p.unit + p.sentence);
+                
                 const card = document.createElement('div');
                 card.className = 'sentence-card';
                 
@@ -468,16 +879,26 @@
                         const content = part.slice(1, -1).split('|');
                         const kanji = content[0];
                         const reading = content[1];
-                        const blankId = `blank-${idx}-${pIdx}`;
+                        // インデックスではなくハッシュを使うことでシャッフル時のIDズレを防止
+                        const blankId = `blank_${probHash}_${pIdx}`;
                         
                         const blank = document.createElement('span');
                         blank.className = 'kanji-blank';
                         blank.id = blankId;
                         blank.setAttribute('data-kanji', kanji);
                         blank.setAttribute('data-reading', reading);
-                        blank.innerHTML = `<button class="reveal-btn individual-btn" onclick="revealKanji('${blankId}')">答え</button>`;
+
+                        const isDrawn = drawnBlanks.has(blankId) ? 'has-drawing' : '';
+                        
+                        blank.innerHTML = `
+                            <button class="reveal-btn individual-btn" onclick="revealKanji('${blankId}')">答え</button>
+                            <button class="pencil-btn ${isDrawn}" onclick="openDrawingPanel('${kanji}', '${blankId}', event)" title="手書き練習">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="#ffffff" stroke="#4a5568" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"></path><path d="m15 5 4 4"></path></svg>
+                            </button>
+                        `;
                         
                         sentence.appendChild(blank);
+                        totalKanjiInCurrentSet++;
                     } else {
                         sentence.appendChild(document.createTextNode(part));
                     }
@@ -486,6 +907,7 @@
                 card.appendChild(sentence);
                 area.appendChild(card);
             });
+            updateProgress(false); // 初期表示なのでお祝いは発動しない
         }
 
         // KanjiVGからSVGを取得してアニメーション描画を3回ループ
@@ -495,6 +917,7 @@
 
             if (!blank.classList.contains('revealed')) {
                 const kanji = blank.getAttribute('data-kanji');
+                const pencilBtn = blank.querySelector('.pencil-btn'); // 鉛筆ボタンを保持
                 blank.classList.add('revealed');
                 
                 // アニメーションキャンセルのためのID
@@ -585,17 +1008,18 @@
 
                 blank.appendChild(kanjiContainer);
                 blank.appendChild(hideBtn);
+                if (pencilBtn) blank.appendChild(pencilBtn); // 鉛筆ボタンを戻す
 
                 // アニメーションを3回ループする処理
                 const playAnimation = async () => {
                     // まず初期状態（見えない状態）にする
                     elements.forEach(item => {
                         if (item.type === 'text') {
-                            item.el.getAnimations().forEach(a => a.cancel()); // アニメーションをリセット
+                            item.el.getAnimations().forEach(a => a.cancel()); // 古いアニメーションがあればリセット
                             item.el.style.opacity = '0';
                         } else {
                             item.paths.forEach(p => {
-                                p.getAnimations().forEach(a => a.cancel()); // アニメーションをリセット
+                                p.getAnimations().forEach(a => a.cancel()); // 古いアニメーションがあればリセット
                                 p.style.strokeDashoffset = p.getTotalLength();
                             });
                         }
@@ -617,18 +1041,30 @@
                                     { opacity: 0 },
                                     { opacity: 1 }
                                 ], { duration: 250, fill: 'forwards' });
-                                await anim.finished;
+                                
+                                try {
+                                    await anim.finished;
+                                } catch(e) {}
+                                
                                 item.el.style.opacity = '1';
+                                anim.cancel(); // アニメーションオブジェクトを破棄してインラインスタイルを適用
                             } else {
                                 // SVGの各画を順番に描画
                                 for (const path of item.paths) {
                                     if (blank.dataset.animId !== animId) return;
+                                    const length = path.getTotalLength();
+                                    
                                     const anim = path.animate([
-                                        { strokeDashoffset: path.getTotalLength() },
+                                        { strokeDashoffset: length },
                                         { strokeDashoffset: 0 }
                                     ], { duration: 250, easing: 'ease-out', fill: 'forwards' });
-                                    await anim.finished;
+                                    
+                                    try {
+                                        await anim.finished;
+                                    } catch(e) {}
+                                    
                                     path.style.strokeDashoffset = '0';
+                                    anim.cancel(); // アニメーションオブジェクトを破棄してインラインスタイルを適用
                                 }
                             }
                             // 1文字描き終わったら少し待つ
@@ -644,11 +1080,9 @@
                         // すべての字を完全に消す（リセット）
                         elements.forEach(item => {
                             if (item.type === 'text') {
-                                item.el.getAnimations().forEach(a => a.cancel()); // アニメーションをリセット
                                 item.el.style.opacity = '0';
                             } else {
                                 item.paths.forEach(p => {
-                                    p.getAnimations().forEach(a => a.cancel()); // アニメーションをリセット
                                     p.style.strokeDashoffset = p.getTotalLength();
                                 });
                             }
@@ -664,8 +1098,10 @@
 
             } else {
                 // 隠す処理 (もう一度「答え」が押されたとき)
+                const pencilBtn = blank.querySelector('.pencil-btn'); // 鉛筆ボタンを保持
                 blank.dataset.animId = ""; // 進行中のアニメーションをキャンセル
                 blank.innerHTML = `<button class="reveal-btn individual-btn" onclick="revealKanji('${id}')">答え</button>`;
+                if (pencilBtn) blank.appendChild(pencilBtn); // 鉛筆ボタンを戻す
                 blank.classList.remove('revealed');
             }
         }
@@ -688,12 +1124,95 @@
             btn.textContent = isShowingAll ? 'すべて表示' : 'すべて隠す';
         }
 
+        function updateProgress(isUserInput = false) {
+            const el = document.getElementById('progress');
+            if (!el) return;
+            const drawnCount = document.querySelectorAll('.pencil-btn.has-drawing').length;
+            el.textContent = `${drawnCount}/${totalKanjiInCurrentSet} 漢字`;
+            
+            const grade = document.getElementById('gradeSelector').value;
+            const unit = document.getElementById('unitSelector').value;
+
+            if (totalKanjiInCurrentSet > 0 && drawnCount === totalKanjiInCurrentSet) {
+                el.style.color = '#48bb78';
+                el.textContent += ' 🎉 完了！';
+
+                // 単元クリアの記録と色の反映
+                if (grade && unit) {
+                    const key = `${grade}:::${unit}`;
+                    if (!completedUnits.has(key)) {
+                        completedUnits.add(key);
+                        saveCompletedUnits();
+                        refreshUnitSelectorColors();
+                    }
+                }
+                
+                const panel = document.getElementById('drawingPanel');
+                // ユーザーの入力アクション（パネル閉じなど）であり、かつパネルが閉じていて、まだお祝いしていない場合に発動
+                if (isUserInput && panel && !panel.classList.contains('open') && !hasCelebrated) {
+                    startCelebration(); // お祝い開始
+                    hasCelebrated = true; // 1回だけ実行するためのフラグ
+                }
+            } else {
+                el.style.color = '#4a5568';
+                
+                // 進捗が0になった場合のみ、お祝いフラグをリセットする
+                if (drawnCount === 0) {
+                    hasCelebrated = false; 
+                }
+
+                // 未クリア状態になったら記録を削除し色を戻す
+                if (grade && unit && totalKanjiInCurrentSet > 0) {
+                    const key = `${grade}:::${unit}`;
+                    if (completedUnits.has(key)) {
+                        completedUnits.delete(key);
+                        saveCompletedUnits();
+                        refreshUnitSelectorColors();
+                    }
+                }
+            }
+        }
+
+        // --- Celebration Animation ---
+        function startCelebration() {
+            const overlay = document.getElementById('celebration-overlay');
+            if (!overlay) return;
+            
+            overlay.style.display = 'block';
+            
+            // 紙吹雪を生成
+            for (let i = 0; i < 100; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
+                confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                confetti.style.animationDelay = (Math.random() * 2) + 's';
+                overlay.appendChild(confetti);
+            }
+
+            // 5秒後に消す
+            setTimeout(() => {
+                overlay.style.opacity = '0';
+                overlay.style.transition = 'opacity 1s';
+                setTimeout(() => {
+                    overlay.style.display = 'none';
+                    overlay.style.opacity = '1';
+                    // 紙吹雪を掃除
+                    const pieces = overlay.querySelectorAll('.confetti');
+                    pieces.forEach(p => p.remove());
+                }, 1000);
+            }, 5000);
+        }
+
         function shuffleProblems() {
+            closeDrawingPanel(false); // 手書きパネルを閉じる（アニメーション誤爆を防ぐため false を渡す）
             displayProblems.sort(() => Math.random() - 0.5);
             renderCards();
         }
 
         function filterByUnit() {
+            closeDrawingPanel(false); // 手書きパネルを閉じる
             const grade = document.getElementById('gradeSelector').value;
             const unit = document.getElementById('unitSelector').value;
             const range = document.getElementById('rangeSelector').value;
@@ -732,6 +1251,266 @@
             renderCards();
         }
 
+        // --- 手書きパネル用関数 ---
+        function saveCurrentDrawing() {
+            if (!currentDrawingBlankId) return;
+            const drawings = activeCanvases.map(c => {
+                return {
+                    dataUrl: c.canvas.toDataURL(),
+                    hasDrawn: c.hasDrawn
+                };
+            });
+            savedDrawings[currentDrawingBlankId] = drawings;
+        }
+
+        function openDrawingPanel(kanji, blankId, event) {
+            const panel = document.getElementById('drawingPanel');
+            const btn = event ? event.currentTarget : null;
+
+            if (panel.classList.contains('open') && currentDrawingBlankId === blankId) {
+                closeDrawingPanel(true);
+                return;
+            }
+
+            if (panel.classList.contains('open')) {
+                saveCurrentDrawing();
+            }
+
+            currentDrawingKanjiBtn = btn;
+            currentDrawingBlankId = blankId;
+            panel.classList.add('open');
+            document.getElementById('drawingTargetKanji').textContent = `「${kanji}」の練習`;
+            
+            // 状態のリセット
+            currentDrawingKanjiString = kanji;
+            displayedCanvasCount = 0;
+            document.getElementById('canvasesScrollArea').innerHTML = '';
+            activeCanvases.length = 0;
+
+            // 保存データがあれば復元
+            const saved = savedDrawings[blankId];
+            if (saved && saved.length > 0) {
+                saved.forEach(data => {
+                    showNextCanvas(data);
+                });
+            } else {
+                showNextCanvas();
+            }
+
+            // パネルの表示位置を計算
+            if (btn) {
+                setTimeout(() => {
+                    const btnRect = btn.getBoundingClientRect();
+                    const panelWidth = Math.min(320, window.innerWidth * 0.9); 
+                    const panelHeight = panel.offsetHeight; 
+                    
+                    let left = btnRect.right + 15; 
+                    let top = btnRect.top - 20; 
+                    
+                    if (left + panelWidth > window.innerWidth) {
+                        left = btnRect.left - panelWidth - 15; 
+                    }
+                    if (left < 0) {
+                        left = (window.innerWidth - panelWidth) / 2;
+                    }
+                    
+                    if (top + panelHeight > window.innerHeight) {
+                        top = window.innerHeight - panelHeight - 15;
+                    }
+                    if (top < 0) {
+                        top = 15;
+                    }
+                    
+                    panel.style.left = left + 'px';
+                    panel.style.top = top + 'px';
+                }, 10);
+            }
+        }
+
+        function closeDrawingPanel(isUserInput = true) {
+            if (typeof isUserInput !== 'boolean') {
+                isUserInput = true; 
+            }
+            saveCurrentDrawing();
+            const panel = document.getElementById('drawingPanel');
+            if (panel) panel.classList.remove('open');
+            currentDrawingKanjiBtn = null;
+            currentDrawingBlankId = null;
+            updateProgress(isUserInput); // パネルが閉じたタイミングで進捗を判定し、お祝いを出すかチェック
+        }
+
+        function showNextCanvas(savedData = null) {
+            const chars = Array.from(currentDrawingKanjiString);
+            if (displayedCanvasCount >= chars.length) return;
+            
+            const targetChar = chars[displayedCanvasCount];
+            const scrollArea = document.getElementById('canvasesScrollArea');
+            
+            const wrapper = document.createElement('div');
+            wrapper.style.display = 'flex';
+            wrapper.style.flexDirection = 'column';
+            wrapper.style.alignItems = 'center';
+            wrapper.style.gap = '10px';
+            wrapper.style.width = '100%';
+            
+            const label = document.createElement('div');
+            label.textContent = `「${targetChar}」`;
+            label.style.fontWeight = 'bold';
+            label.style.color = '#4a5568';
+            label.style.fontSize = '1.2rem';
+            
+            const availableHeight = window.innerHeight * 0.85 - 150; 
+            const availableWidth = window.innerWidth * 0.9 - 60; 
+            const size = Math.max(150, Math.min(280, availableHeight, availableWidth));
+
+            const canvas = document.createElement('canvas');
+            canvas.width = size;
+            canvas.height = size;
+            canvas.style.width = `${size}px`;
+            canvas.style.height = `${size}px`;
+            canvas.style.background = '#f7fafc';
+            canvas.style.border = '2px dashed #cbd5e0';
+            canvas.style.borderRadius = '10px';
+            canvas.style.cursor = 'crosshair';
+            canvas.style.touchAction = 'none'; 
+            
+            const clearBtn = document.createElement('button');
+            clearBtn.className = 'bg-gray-500 text-white px-4 py-1 rounded-full text-sm';
+            clearBtn.textContent = 'クリア';
+            clearBtn.onclick = () => clearSpecificCanvas(canvas, true);
+            
+            wrapper.appendChild(label);
+            wrapper.appendChild(canvas);
+            wrapper.appendChild(clearBtn);
+            
+            scrollArea.appendChild(wrapper);
+            
+            const ctx = canvas.getContext('2d');
+            const canvasData = { canvas, ctx, isDrawing: false, hasDrawn: savedData ? savedData.hasDrawn : false };
+            activeCanvases.push(canvasData);
+            
+            if (savedData && savedData.dataUrl) {
+                const img = new Image();
+                img.onload = () => {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                };
+                img.src = savedData.dataUrl;
+            } else {
+                clearSpecificCanvas(canvas, true);
+            }
+            
+            attachCanvasEvents(canvasData);
+            
+            displayedCanvasCount++;
+            
+            const nextBtn = document.getElementById('addNextCanvasBtn');
+            if (displayedCanvasCount < chars.length) {
+                nextBtn.style.display = 'block';
+            } else {
+                nextBtn.style.display = 'none';
+            }
+            
+            setTimeout(() => {
+                scrollArea.scrollTo({ top: scrollArea.scrollHeight, behavior: 'smooth' });
+            }, 50);
+        }
+
+        function clearSpecificCanvas(canvas, resetStatus = true) {
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.beginPath();
+            ctx.strokeStyle = '#cbd5e0';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([5, 5]);
+            ctx.moveTo(canvas.width / 2, 0);
+            ctx.lineTo(canvas.width / 2, canvas.height);
+            ctx.moveTo(0, canvas.height / 2);
+            ctx.lineTo(canvas.width, canvas.height / 2);
+            ctx.stroke();
+            ctx.setLineDash([]); 
+
+            if (resetStatus) {
+                const canvasData = activeCanvases.find(c => c.canvas === canvas);
+                if (canvasData) {
+                    canvasData.hasDrawn = false;
+                    updateDrawingStatus();
+                }
+            }
+        }
+
+        function attachCanvasEvents(canvasData) {
+            const { canvas, ctx } = canvasData;
+            
+            function getCoordinates(e) {
+                const rect = canvas.getBoundingClientRect();
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                return {
+                    x: clientX - rect.left,
+                    y: clientY - rect.top
+                };
+            }
+
+            function start(e) {
+                canvasData.isDrawing = true;
+                const pos = getCoordinates(e);
+                ctx.beginPath();
+                ctx.moveTo(pos.x, pos.y);
+                e.preventDefault();
+            }
+
+            function drawLine(e) {
+                if (!canvasData.isDrawing) return;
+
+                if (!canvasData.hasDrawn) {
+                    canvasData.hasDrawn = true;
+                    updateDrawingStatus();
+                }
+
+                const pos = getCoordinates(e);
+                ctx.lineTo(pos.x, pos.y);
+                ctx.strokeStyle = '#2d3748';
+                ctx.lineWidth = Math.max(6, canvas.width * 0.04); 
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+                ctx.stroke();
+                e.preventDefault();
+            }
+
+            function stop(e) {
+                if (canvasData.isDrawing) {
+                    ctx.closePath();
+                    canvasData.isDrawing = false;
+                }
+            }
+
+            canvas.addEventListener('mousedown', start);
+            canvas.addEventListener('mousemove', drawLine);
+            canvas.addEventListener('mouseup', stop);
+            canvas.addEventListener('mouseout', stop);
+
+            canvas.addEventListener('touchstart', start, { passive: false });
+            canvas.addEventListener('touchmove', drawLine, { passive: false });
+            canvas.addEventListener('touchend', stop);
+            canvas.addEventListener('touchcancel', stop);
+        }
+
+        function updateDrawingStatus() {
+            if (!currentDrawingBlankId || !currentDrawingKanjiBtn) return;
+            const anyDrawn = activeCanvases.some(c => c.hasDrawn);
+            if (anyDrawn) {
+                drawnBlanks.add(currentDrawingBlankId);
+                currentDrawingKanjiBtn.classList.add('has-drawing');
+            } else {
+                drawnBlanks.delete(currentDrawingBlankId);
+                currentDrawingKanjiBtn.classList.remove('has-drawing');
+            }
+            updateProgress(true); // 描画のたびに進捗を更新
+        }
+
+        // --- ダイアログ用関数 ---
         function showEditDialog() { document.getElementById('editDialog').classList.remove('hidden'); }
         function closeEditDialog() { document.getElementById('editDialog').classList.add('hidden'); }
 
@@ -827,11 +1606,15 @@
                         updateGradeSelector();
                         updateUnitSelector();
                         
+                        updateFcGradeSelector();
+                        updateFcUnitSelector();
+                        
                         if (isInitial) {
                             restoreUserSetting();
                         } else {
                             // 自動更新時はユーザーの選択状態を維持したまま再描画
                             filterByUnit();
+                            filterFlashcards();
                         }
                     }
                 } catch (e) { 
@@ -849,6 +1632,282 @@
         function clearAll() {
             problems = [];
             createSpreadsheet();
+        }
+
+        // --- パネル外クリックで閉じる処理 ---
+        function handleOutsideClick(event) {
+            const panel = document.getElementById('drawingPanel');
+            if (panel && panel.classList.contains('open')) {
+                // クリックされた場所がパネル内ではない場合
+                if (!panel.contains(event.target)) {
+                    // 開く原因となった鉛筆ボタン自身のクリックは除外（ボタンのonclickで閉じるため）
+                    if (currentDrawingKanjiBtn && currentDrawingKanjiBtn.contains(event.target)) {
+                        return;
+                    }
+                    // パネル外のクリックと判定して閉じる
+                    closeDrawingPanel(true);
+                }
+            }
+        }
+        document.addEventListener('mousedown', handleOutsideClick);
+        document.addEventListener('touchstart', handleOutsideClick, { passive: true });
+
+        // --- モード切替の処理 ---
+        function goToFlashcardMode() {
+            document.getElementById('mainContainer').style.display = 'none';
+            document.querySelector('.mode-switch-btn').style.display = 'none';
+            document.getElementById('flashcardPage').style.display = 'flex';
+            
+            // 漢字練習モードの選択状態をフラッシュカード側へコピー
+            document.getElementById('fcGradeSelector').value = document.getElementById('gradeSelector').value;
+            updateFcUnitSelector();
+            document.getElementById('fcUnitSelector').value = document.getElementById('unitSelector').value;
+            document.getElementById('fcRangeSelector').value = document.getElementById('rangeSelector').value;
+            
+            filterFlashcards();
+        }
+
+        function returnToMainMode() {
+            document.getElementById('flashcardPage').style.display = 'none';
+            document.getElementById('mainContainer').style.display = 'flex';
+            document.querySelector('.mode-switch-btn').style.display = 'block';
+        }
+
+        // --- フラッシュカード用ロジック ---
+        function updateFcGradeSelector() {
+            const selector = document.getElementById('fcGradeSelector');
+            const currentVal = selector.value;
+            
+            const grades = [...new Set(problems.map(p => p.grade))].sort((a,b) => {
+                const idxA = unitOrder.indexOf(a);
+                const idxB = unitOrder.indexOf(b);
+                if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+                return a.localeCompare(b, 'ja');
+            });
+
+            selector.innerHTML = '<option value="">学年を選択...</option>';
+            grades.forEach(g => {
+                const opt = document.createElement('option');
+                opt.value = g;
+                opt.textContent = g;
+                selector.appendChild(opt);
+            });
+            
+            if (currentVal && [...selector.options].some(o => o.value === currentVal)) {
+                selector.value = currentVal;
+            } else {
+                selector.value = '';
+            }
+        }
+
+        function updateFcUnitSelector() {
+            const grade = document.getElementById('fcGradeSelector').value;
+            const selector = document.getElementById('fcUnitSelector');
+            const currentVal = selector.value;
+
+            if (!grade) {
+                selector.innerHTML = '<option value="">単元を選択...</option>';
+                selector.disabled = true;
+                selector.style.opacity = '0.5';
+                return;
+            }
+            selector.disabled = false;
+            selector.style.opacity = '1';
+            
+            const filtered = problems.filter(p => p.grade === grade);
+            const units = [];
+            filtered.forEach(p => {
+                if (!units.includes(p.unit)) units.push(p.unit);
+            });
+            
+            selector.innerHTML = '<option value="">単元を選択...</option>';
+            units.forEach(u => {
+                const opt = document.createElement('option');
+                opt.value = u;
+                opt.textContent = u;
+                selector.appendChild(opt);
+            });
+
+            if (currentVal && [...selector.options].some(o => o.value === currentVal)) {
+                selector.value = currentVal;
+            } else {
+                selector.value = '';
+            }
+        }
+
+        function onFcGradeChange() {
+            document.getElementById('fcUnitSelector').value = '';
+            updateFcUnitSelector();
+            filterFlashcards();
+        }
+
+        function onFcUnitChange() {
+            filterFlashcards();
+        }
+
+        function onFcRangeChange() {
+            filterFlashcards();
+        }
+
+        function filterFlashcards() {
+            const grade = document.getElementById('fcGradeSelector').value;
+            const unit = document.getElementById('fcUnitSelector').value;
+            const range = document.getElementById('fcRangeSelector').value;
+
+            if (!grade || !unit) {
+                fcProblems = [];
+                renderFlashcard();
+                return;
+            }
+
+            let filtered = problems.filter(p => p.grade === grade);
+
+            if (range === 'only') {
+                filtered = filtered.filter(p => p.unit === unit);
+            } else {
+                const currentUnits = [];
+                filtered.forEach(p => {
+                    if(!currentUnits.includes(p.unit)) currentUnits.push(p.unit);
+                });
+                const targetIdx = currentUnits.indexOf(unit);
+                filtered = filtered.filter(p => currentUnits.indexOf(p.unit) <= targetIdx);
+            }
+
+            // 順番はシャッフルせずスプレッドシートの順番のままにするか、ランダムにするかは要件次第。
+            // ここでは順当にそのまま表示します。
+            fcProblems = filtered;
+            currentFcIndex = 0;
+            fcState = 'question'; // 最初は答えを隠した状態でスタート
+            renderFlashcard();
+        }
+
+        function renderFlashcard() {
+            const frontText = document.getElementById('fcFrontText');
+            const progress = document.getElementById('fcProgress');
+            
+            if (fcProblems.length === 0) {
+                frontText.innerHTML = '<span style="color:#a0aec0; font-size:1.5rem;">問題がありません</span>';
+                progress.textContent = '0 / 0';
+                return;
+            }
+
+            const prob = fcProblems[currentFcIndex];
+            progress.textContent = `${currentFcIndex + 1} / ${fcProblems.length}`;
+
+            let questionHtml = '';
+            
+            const parts = prob.sentence.split(/(\{.+?\|.+?\})/);
+            parts.forEach(part => {
+                if (part.startsWith('{')) {
+                    const content = part.slice(1, -1).split('|');
+                    const kanji = content[0];
+                    const reading = content[1];
+                    // position: absolute を使って、赤い点線のすぐ左隣（縦書きの次の行）に答えを配置します
+                    questionHtml += `
+                    <span style="position: relative; display: inline-block;">
+                        <span class="fc-kanji-text" style="color: #e53e3e; padding: 0 4px; border-right: 3px dashed #e53e3e; font-weight: 600;">${reading}</span>
+                        <span class="fc-answer-kanji fc-kanji-text" style="position: absolute; top: 0; left: -1.3em; color: #3182ce; visibility: hidden; white-space: nowrap; font-weight: 600;">${kanji}</span>
+                    </span>`;
+                } else {
+                    questionHtml += part;
+                }
+            });
+
+            frontText.innerHTML = questionHtml;
+
+            // 状態に応じて答えの表示/非表示を切り替え
+            const answerElements = frontText.querySelectorAll('.fc-answer-kanji');
+            if (fcState === 'question') {
+                answerElements.forEach(el => el.style.visibility = 'hidden');
+            } else {
+                answerElements.forEach(el => el.style.visibility = 'visible');
+            }
+        }
+
+        function toggleFlashcard() {
+            // カードクリックでも次へ進むのと同じ動作にする
+            nextFlashcard();
+        }
+
+        // --- フラッシュカード用 紙をめくる音 ---
+        function playFlipSound() {
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (!AudioContext) return;
+                const ctx = new AudioContext();
+                
+                // ホワイトノイズを生成
+                const bufferSize = ctx.sampleRate * 0.15; // 150ms
+                const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+                const data = buffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) {
+                    data[i] = Math.random() * 2 - 1;
+                }
+                
+                const noise = ctx.createBufferSource();
+                noise.buffer = buffer;
+                
+                // バンドパスフィルターで紙が擦れる音（1200Hz付近）を作る
+                const filter = ctx.createBiquadFilter();
+                filter.type = 'bandpass';
+                filter.frequency.value = 1200; 
+                filter.Q.value = 0.8;
+
+                // 音量エンベロープ（アタックを早く、すぐ減衰させる）
+                const gainNode = ctx.createGain();
+                gainNode.gain.setValueAtTime(0, ctx.currentTime);
+                gainNode.gain.linearRampToValueAtTime(0.5, ctx.currentTime + 0.02);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.15);
+                
+                noise.connect(filter);
+                filter.connect(gainNode);
+                gainNode.connect(ctx.destination);
+                
+                noise.start();
+                
+                // 終了後にContextを解放
+                setTimeout(() => {
+                    if (ctx.state !== 'closed') ctx.close();
+                }, 200);
+            } catch(e) {
+                console.error("Audio error:", e);
+            }
+        }
+
+        function nextFlashcard() {
+            if (fcProblems.length === 0) return;
+            
+            if (fcState === 'question') {
+                // 問題を表示している状態なら、答えを表示する
+                fcState = 'answer';
+            } else {
+                // 答えを表示している状態なら、次の問題へ進む
+                currentFcIndex++;
+                if (currentFcIndex >= fcProblems.length) {
+                    currentFcIndex = 0; // 最後まで行ったら最初に戻る
+                }
+                fcState = 'question';
+                playFlipSound(); // 音を鳴らす
+            }
+            renderFlashcard();
+        }
+
+        function prevFlashcard() {
+            if (fcProblems.length === 0) return;
+            
+            if (fcState === 'answer') {
+                // 答えを表示している状態なら、答えを隠す（問題に戻る）
+                fcState = 'question';
+            } else {
+                // 問題を表示している状態なら、前の問題へ戻る
+                currentFcIndex--;
+                if (currentFcIndex < 0) {
+                    currentFcIndex = fcProblems.length - 1; // 最初から戻るボタンを押したら一番最後へ
+                }
+                fcState = 'question'; 
+                playFlipSound(); // 音を鳴らす
+            }
+            renderFlashcard();
         }
 
         init();
