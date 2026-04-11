@@ -37,13 +37,13 @@
             text-align: center;
             writing-mode: vertical-rl;
             text-orientation: upright;
-            overflow-y: auto; /* 上下にはみ出た部分をスクロールできるように変更 */
+            overflow-y: auto;
             overflow-x: auto;
             margin-top: 0;
             position: relative;
             display: flex;
             flex-direction: column;
-            align-items: flex-start; /* 上部が見切れないように、上端揃えに変更 */
+            align-items: flex-start;
         }
         
         #headerArea, #readHeaderArea {
@@ -231,7 +231,7 @@
         }
 
         .pencil-btn.has-drawing {
-            background: #fefcbf; /* 薄い黄色 */
+            background: #fefcbf;
             border-color: #ecc94b;
         }
 
@@ -415,9 +415,9 @@
         /* Drawing Panel Styles */
         .drawing-panel {
             position: fixed;
-            width: 1200px; /* パネルとマスのサイズに合わせて横幅を十分に確保 */
+            width: 1200px;
             max-width: 95vw;
-            max-height: 90vh; /* 高さを90vhに拡大 */
+            max-height: 90vh;
             background: white;
             box-shadow: 0 10px 25px rgba(0,0,0,0.2);
             border-radius: 15px;
@@ -451,7 +451,6 @@
             flex-shrink: 0;
         }
 
-        /* 複数キャンバス表示用のスクロールエリア */
         .drawing-canvases-scroll-area {
             flex: 1;
             display: flex;
@@ -581,17 +580,16 @@
             transform: scale(1.05);
         }
 
-        /* フラッシュカードページ全体を縦書きに設定 */
         #flashcardPage {
             position: fixed;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
-            background: #dcfce7; /* 薄く濃い緑色 */
+            background: #dcfce7;
             z-index: 3000;
             display: none; 
-            flex-direction: column; /* 縦書きの場合、columnは右から左へ並ぶ */
+            flex-direction: column;
             align-items: center;
             justify-content: center;
             writing-mode: vertical-rl;
@@ -601,7 +599,7 @@
         .fc-card-container {
             width: 350px;
             max-width: 90%;
-            height: 85vh; /* 上下に伸ばしてなるべく1行に収める */
+            height: 85vh;
             max-height: 1200px;
             margin: 0 20px;
         }
@@ -613,13 +611,12 @@
             border-radius: 20px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
             display: flex;
-            flex-direction: column; /* 縦書き環境では右から左へ並ぶ */
+            flex-direction: column;
             align-items: center;
             justify-content: center;
             padding: 40px 20px;
         }
 
-        /* 書き順アニメーション（KanjiVG）に似た手書き風・教科書体フォントを適用 */
         #fcFrontText, .fc-kanji-text {
             font-family: 'Klee One', 'UD デジタル 教科書体 N-R', 'UD Digi Kyokasho N-R', '教科書体', 'Kyokasho', serif;
             font-weight: 600;
@@ -675,10 +672,10 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             z-index: 4000;
             display: flex;
-            flex-direction: row; /* 縦書きのため横並びに配置（右から左へ並びます） */
+            flex-direction: row; 
             align-items: center;
             justify-content: center;
-            writing-mode: vertical-rl; /* 縦書きに変更 */
+            writing-mode: vertical-rl; 
             text-orientation: upright;
         }
 
@@ -688,24 +685,24 @@
             top: 50%;
             transform: translateY(-50%);
             color: white;
-            font-size: 2.2rem; /* 文字を小さく変更 */
+            font-size: 2.2rem;
             margin: 0;
             text-shadow: 0 4px 10px rgba(0,0,0,0.2);
             font-weight: bold;
             letter-spacing: 0.1em;
-            white-space: nowrap; /* 1行で表示されるように強制 */
+            white-space: nowrap; 
         }
 
         .top-menu {
             display: flex;
             flex-direction: column;
             gap: 25px;
-            margin-right: 15%; /* 右端のタイトル用にスペースを空ける */
+            margin-right: 15%; 
         }
 
         .top-menu-btn {
             width: 90px;
-            height: 360px; /* 高さを短く変更 */
+            height: 360px;
             padding: 30px 10px;
             font-size: 1.4rem;
             font-weight: bold;
@@ -725,7 +722,7 @@
         }
 
         .top-menu-btn:hover {
-            transform: translateX(-5px); /* ホバー時の動きを左方向へ変更 */
+            transform: translateX(-5px);
             box-shadow: 0 15px 25px rgba(0,0,0,0.2);
         }
 
@@ -776,16 +773,16 @@
 
         .print-area-page {
             background: white;
-            width: 297mm; /* A4 landscape width */
-            min-height: 210mm; /* A4 landscape height */
+            width: 297mm; 
+            min-height: 210mm; 
             box-shadow: 0 0 10px rgba(0,0,0,0.2);
             display: flex;
-            flex-direction: row-reverse; /* 右がヘッダー、左が問題 */
+            flex-direction: row-reverse;
             box-sizing: border-box;
             padding: 10mm;
             font-family: 'Klee One', 'UD デジタル 教科書体 N-R', serif;
             color: black;
-            writing-mode: horizontal-tb; /* 大枠は横書き */
+            writing-mode: horizontal-tb;
         }
         
         .page-wrapper {
@@ -813,38 +810,38 @@
         }
 
         .print-meta-col {
-            width: auto; /* 幅を自動調整して余白をなくす */
+            width: auto;
             border-left: 2px dashed #999;
             display: flex;
             flex-direction: column;
-            align-items: flex-start; /* 学年と単元名を行の一番上に揃える */
-            padding-left: 10px; /* パディングを調整 */
-            margin-left: 5px; /* 問題文との間隔 */
+            align-items: flex-start;
+            padding-left: 10px;
+            margin-left: 5px;
             writing-mode: vertical-rl;
             flex-shrink: 0;
-            padding-top: 15px; /* 上端に少しだけ余白を持たせる */
+            padding-top: 15px;
         }
 
         .print-meta-box {
             border: 1px solid #333;
             padding: 15px 5px;
             font-size: 14px;
-            margin: 0; /* マージンをリセット */
+            margin: 0;
             text-align: center;
             border-radius: 4px;
-            white-space: nowrap; /* 1行で表示する */
+            white-space: nowrap;
         }
 
         .print-name-box {
             font-size: 1.2rem;
-            margin-top: auto; /* 行の一番下（下端）に移動 */
-            margin-right: 2rem; /* 名前欄の右側に約1行分の余白を追加 */
-            margin-left: 1.5rem; /* 名前欄の左側に約1行分の余白を追加 */
-            margin-bottom: 30px; /* 用紙下端からの余白 */
+            margin-top: auto;
+            margin-right: 2rem;
+            margin-left: 1.5rem;
+            margin-bottom: 30px;
             display: flex;
             flex-direction: row;
             align-items: center;
-            height: 120mm; /* 名前欄の長さを固定しスペースを確保 */
+            height: 120mm;
         }
 
         .name-space {
@@ -863,9 +860,9 @@
         }
 
         .print-answer-text {
-            color: #e53e3e; /* 印刷時の解答色（赤） */
-            font-weight: 600; /* 教科書体に合わせて調整 */
-            font-family: 'Klee One', 'UD デジタル 教科書体 N-R', 'UD Digi Kyokasho N-R', '教科書体', 'Kyokasho', serif; /* 教科書体を適用 */
+            color: #e53e3e;
+            font-weight: 600;
+            font-family: 'Klee One', 'UD デジタル 教科書体 N-R', 'UD Digi Kyokasho N-R', '教科書体', 'Kyokasho', serif;
             display: flex;
             flex: 1;
             align-items: center;
@@ -876,7 +873,7 @@
         .print-problems-grid {
             flex: 1;
             display: flex;
-            flex-direction: column; /* 上段と下段 */
+            flex-direction: column;
             min-width: 0;
             width: 100%;
         }
@@ -884,7 +881,7 @@
         .print-problem-row {
             flex: 1;
             display: flex;
-            flex-direction: row-reverse; /* 問題は右から左へ並ぶ */
+            flex-direction: row-reverse;
             border-bottom: 2px dashed #999;
             min-height: 0;
             height: 100%;
@@ -900,7 +897,7 @@
             writing-mode: vertical-rl;
             text-orientation: upright;
             display: flex;
-            flex-direction: column; /* インライン軸(右から左)に並べる */
+            flex-direction: column;
             justify-content: flex-start;
             align-items: flex-start;
             padding: 10px 5px;
@@ -912,12 +909,12 @@
 
         .print-prob-answer-line {
             display: flex;
-            flex-direction: row; /* 上から下に並べる */
+            flex-direction: row;
             align-items: center;
         }
 
         .print-underline {
-            border-right: 1.5px solid black; /* 縦書き時の右側に線を引く */
+            border-right: 1.5px solid black;
             padding-right: 2px;
             margin-right: 2px;
         }
@@ -957,9 +954,9 @@
             .top-title { 
                 position: static;
                 transform: none;
-                font-size: 1.6rem; /* スマホ用も文字を小さく変更 */
+                font-size: 1.6rem;
                 margin-right: 20px; 
-                white-space: nowrap; /* 1行で表示されるように強制 */
+                white-space: nowrap;
             }
             .top-menu { 
                 margin-right: 0;
@@ -968,7 +965,7 @@
             }
             .top-menu-btn { 
                 width: 60px;
-                height: 280px; /* スマホ用も高さを短く変更 */
+                height: 280px;
                 font-size: 1.1rem; 
                 padding: 15px 5px; 
             }
@@ -988,7 +985,6 @@
                 print-color-adjust: exact;
             }
             
-            /* 印刷時非表示にする要素 */
             #topPage, #mainContainer, #readingContainer, #flashcardPage, 
             #minigameMenuPage, #minigamePlayPage, #backToTopBtnMain, 
             #celebration-overlay, #editDialog, #drawingPanel,
@@ -1040,7 +1036,6 @@
             }
         }
   </style>
-  <style>@view-transition { navigation: auto; }</style>
  </head>
  <body>
   <!-- トップページ -->
@@ -1061,8 +1056,9 @@
           <button class="top-menu-btn btn-print" disabled style="opacity: 0.6; cursor: not-allowed; pointer-events: none;">
               <span>テスト・プリント印刷 🔒</span>
           </button>
-          <button class="top-menu-btn btn-minigame" onclick="goToMinigameMenu()">
-              <span>ミニゲーム</span>
+          <button id="topMinigameBtn" class="top-menu-btn btn-minigame" onclick="goToMinigameMenu()" disabled style="opacity: 0.6; cursor: not-allowed; pointer-events: none;">
+              <span>ミニゲーム 🔒</span>
+              <span id="minigameLockText" style="margin-top: 15px; font-size: 0.9rem; font-weight: normal; line-height: 1.2;">あと100ptで<br>解放！</span>
           </button>
       </div>
   </div>
@@ -1248,12 +1244,10 @@
 
   <!-- フラッシュカード画面（縦書き） -->
   <div id="flashcardPage">
-      <!-- 戻るボタン（縦書きなので左上に配置） -->
       <div style="position: absolute; top: 20px; left: 20px;">
           <button onclick="goToTopMode()" style="background: linear-gradient(135deg, #718096, #4a5568); color: white; border: none; padding: 22px 15px; border-radius: 15px; font-size: 1.5rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2); writing-mode: vertical-rl; text-orientation: upright; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">トップへ戻る</button>
       </div>
       
-      <!-- セレクター（縦書きなので右上に配置） -->
       <div style="position: absolute; top: 20px; right: 20px; display: flex; flex-direction: row; gap: 10px;">
           <select id="fcGradeSelector" onchange="onFcGradeChange()" style="background: white; border: 2px solid #cbd5e0; border-radius: 10px; padding: 10px 8px; font-size: 1rem; font-weight: bold; cursor: pointer; outline: none; writing-mode: vertical-rl; text-orientation: upright; min-width: 40px; min-height: 200px; max-height: 80vh;">
               <option value="">学年を選択...</option>
@@ -1274,17 +1268,14 @@
       
       <div id="fcProgress" style="font-size: 1.2rem; color: #4a5568; font-weight: bold; margin-right: 20px;">0 / 0</div>
 
-      <!-- カード本体（縦長、１面のみ） -->
       <div class="fc-card-container">
           <div id="fcCardInner" class="fc-card-inner">
-              <!-- 問題文と答えが同じサイズで表示されるエリア -->
               <div id="fcFrontText" style="color: #2d3748; font-size: 2.2rem; line-height: 2.5; white-space: nowrap;"></div>
           </div>
       </div>
 
       <div style="color: #6b7280; font-size: 1rem; margin-right: 20px; margin-left: 20px;">「次へ」を押して答えを確認</div>
 
-      <!-- コントロールボタン -->
       <div style="display: flex; flex-direction: column; gap: 40px; margin-right: 20px; margin-left: 20px;">
           <button onclick="prevFlashcard()" style="padding: 20px 10px; font-size: 1.2rem; font-weight: bold; background: #e2e8f0; color: #4a5568; border-radius: 15px; border: none; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1); writing-mode: vertical-rl; text-orientation: upright;">前へ</button>
           <button onclick="nextFlashcard()" style="padding: 20px 10px; font-size: 1.2rem; font-weight: bold; background: #48bb78; color: white; border-radius: 15px; border: none; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1); writing-mode: vertical-rl; text-orientation: upright;">次へ</button>
@@ -1298,7 +1289,8 @@
           <button onclick="goToTopMode()" style="background: linear-gradient(135deg, #718096, #4a5568); color: white; border: none; padding: 10px 15px; border-radius: 10px; font-size: 1rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">トップへ戻る</button>
       </div>
       <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; flex-grow: 1; width: 100%; padding-bottom: 20px;">
-          <h1 style="font-size: 2.5rem; color: #b83280; margin-top: 0; margin-bottom: 40px; font-weight: bold; text-shadow: 2px 2px 4px rgba(0,0,0,0.1); text-align: center; line-height: 1.3;">ミニゲームをえらぼう！</h1>
+          <h1 style="font-size: 2.5rem; color: #b83280; margin-top: 0; margin-bottom: 10px; font-weight: bold; text-shadow: 2px 2px 4px rgba(0,0,0,0.1); text-align: center; line-height: 1.3;">ミニゲームをえらぼう！</h1>
+          <div id="minigameRemainingPlays" style="font-size: 1.5rem; color: #e53e3e; font-weight: bold; margin-bottom: 30px; text-align: center;"></div>
           <div style="display: flex; flex-direction: column; gap: 30px; width: 100%; max-width: 600px;">
               <div style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
                   <button onclick="startMinigame('bushu')" style="width: 100%; padding: 20px 15px; font-size: 1.6rem; border-radius: 20px; background: white; color: #3182ce; border: 5px solid #3182ce; cursor: pointer; font-weight: bold; box-shadow: 0 8px 15px rgba(0,0,0,0.1); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">部首の名前当てゲーム</button>
@@ -1341,31 +1333,30 @@
       <div id="mgEndOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.95); flex-direction: column; align-items: center; justify-content: center; z-index: 20; padding: 20px; text-align: center;">
           <h2 style="font-size: 4rem; color: #d53f8c; margin-bottom: 20px; font-weight: bold; text-shadow: 2px 2px 5px rgba(0,0,0,0.1);">ゲームクリア！</h2>
           <div id="mgFinalScore" style="font-size: 3rem; font-weight: bold; color: #4a5568; margin-bottom: 50px;"></div>
-          <div style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center;">
-              <button onclick="goToMinigameMenu()" style="padding: 20px 40px; font-size: 1.8rem; font-weight: bold; background: #48bb78; color: white; border: none; border-radius: 20px; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.2); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">別のゲームをあそぶ</button>
-              <button onclick="startMinigame(currentMgType)" style="padding: 20px 40px; font-size: 1.8rem; font-weight: bold; background: #4299e1; color: white; border: none; border-radius: 20px; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.2); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">もう１回あそぶ</button>
+          <div id="mgEndButtons" style="display: flex; flex-direction: column; gap: 20px; justify-content: center; align-items: center;">
+              <!-- Buttons will be generated here -->
           </div>
       </div>
   </div>
 
   <script>
-        const apiKey = ""; // Gemini API Key injected by environment
+        const apiKey = ""; 
         let revealedCount = 0;
         let totalKanjiInCurrentSet = 0;
         const correctPassword = "kanji"; 
         
-        const drawnBlanks = new Set(); // 描画された問題のIDを保持
-        const savedDrawings = {}; // 描画されたキャンバスのデータURLを保持
-        let hasCelebrated = false; // お祝い済みフラグ
-        let completedUnits = new Set(); // クリア済み単元の記録 ("grade:::unit" の形式)
+        const drawnBlanks = new Set();
+        const savedDrawings = {}; 
+        let hasCelebrated = false;
+        let completedUnits = new Set();
         
-        // スプレッドシート連携用
+        const activeCanvases = []; // 追加: キャンバスの状態を管理する配列
+        
         let autoUpdateInterval = null;
         let lastRawData = ""; 
         let isSettingsLoaded = false;
         const DEFAULT_SHEET_URL = "https://docs.google.com/spreadsheets/d/1a2CyIJCM5Nqy6Hah6249_Era1jyw11QmhAIJQGzoesA/edit?gid=649883566#gid=649883566";
 
-        // Initial Data
         let allProblems = [
             { grade: "小学2年生", unit: "1学期", sentence: "今日は{天気|てんき}がとても良いです。" },
             { grade: "小学2年生", unit: "1学期", sentence: "{学校|がっこう}で{友達|ともだち}と遊びました。" },
@@ -1382,13 +1373,60 @@
         let currentRenderedProblems = [];
         let currentWriteIndex = 0;
 
-        // --- フラッシュカード用の状態 ---
         let fcProblems = [];
         let currentFcIndex = 0;
-        let fcState = 'question'; // 'question' または 'answer'
-        let fcMode = 'read'; // 初期状態を「読み」に変更
+        let fcState = 'question'; 
+        let fcMode = 'read'; 
 
-        // --- ミニゲーム用のデータ・状態 ---
+        // 読み問題やスコア用変数の定義
+        let readProblems = [];
+        let currentReadIndex = 0;
+        let readScore = 0;
+        let writeScore = 0;
+        let minigamePlayCount = 0; 
+
+        // スコア表示・ミニゲームロック解除用関数を追加
+        function updateScoreDisplay() {
+            const readEl = document.getElementById('readScoreDisplay');
+            if (readEl) readEl.textContent = `${readScore} pt`;
+            
+            const writeEl = document.getElementById('writeScoreDisplay');
+            if (writeEl) writeEl.textContent = `${writeScore} pt`;
+
+            const topReadEl = document.getElementById('topReadScore');
+            if (topReadEl) topReadEl.textContent = `${readScore} pt`;
+
+            const topWriteEl = document.getElementById('topWriteScore');
+            if (topWriteEl) topWriteEl.textContent = `${writeScore} pt`;
+
+            const topMinigameBtn = document.getElementById('topMinigameBtn');
+            const totalScore = readScore + writeScore;
+            
+            // 100ポイントごとに3回遊べる計算
+            const totalEarnedPlays = Math.floor(totalScore / 100) * 3;
+            const availablePlays = totalEarnedPlays - minigamePlayCount;
+
+            if (topMinigameBtn) {
+                if (availablePlays > 0) {
+                    topMinigameBtn.disabled = false;
+                    topMinigameBtn.style.opacity = '1';
+                    topMinigameBtn.style.cursor = 'pointer';
+                    topMinigameBtn.style.pointerEvents = 'auto';
+                    topMinigameBtn.innerHTML = '<span>ミニゲーム</span><span style="margin-top: 15px; font-size: 0.9rem; font-weight: bold; color: #d53f8c; background: #fff5f7; padding: 2px 8px; border-radius: 10px;">解放中!</span>';
+                } else {
+                    // 次の解放に必要な目標スコアを計算
+                    const nextTargetScore = (Math.floor(totalScore / 100) + 1) * 100;
+                    const remaining = nextTargetScore - totalScore;
+                    
+                    topMinigameBtn.disabled = true;
+                    topMinigameBtn.style.opacity = '0.6';
+                    topMinigameBtn.style.cursor = 'not-allowed';
+                    topMinigameBtn.style.pointerEvents = 'none';
+                    topMinigameBtn.innerHTML = `<span>ミニゲーム 🔒</span><span id="minigameLockText" style="margin-top: 15px; font-size: 0.9rem; font-weight: normal; line-height: 1.2;">あと${remaining}ptで<br>解放！</span>`;
+                }
+            }
+        }
+
         const mgBushuData = [
             { q: "<span style='font-size: 4rem; color: #e53e3e;'>氵</span><br>この部首のなまえは？", a: "さんずい", choices: ["さんずい", "きへん", "ごんべん", "にんべん"] },
             { q: "<span style='font-size: 4rem; color: #e53e3e;'>訁</span><br>この部首のなまえは？", a: "ごんべん", choices: ["ごんべん", "しんにょう", "くさかんむり", "きへん"] },
@@ -1531,7 +1569,6 @@
                 updated = true;
             }
             
-            // 全問正解の場合のみタイムを記録・更新する
             if (score === totalQuestions) {
                 if (record.time === null || timeInSec < record.time) {
                     record.time = timeInSec;
@@ -1545,13 +1582,11 @@
             }
         }
 
-        // Learning Order Definition
         const unitOrder = [
             "小学1年生", "小学2年生", "小学3年生", "小学4年生", "小学5年生", "小学6年生",
             "中学1年生", "中学2年生", "中学3年生"
         ];
 
-        // 丸付き数字を生成するヘルパー関数
         function getCircleNumber(num) {
             if (num >= 1 && num <= 20) {
                 return String.fromCharCode(0x245F + num);
@@ -1563,7 +1598,6 @@
             return `(${num})`;
         }
 
-        // 問題文に基づく一意のハッシュを生成する関数 (シャッフル時のIDズレ防止)
         function getHash(str) {
             let hash = 0;
             for (let i = 0; i < str.length; i++) {
@@ -1573,7 +1607,6 @@
             return Math.abs(hash).toString(36);
         }
         
-        // APIリクエスト再試行（バックオフ）用関数
         async function fetchWithRetry(url, options) {
             let delay = 1000;
             let lastError = null;
@@ -1597,13 +1630,12 @@
             throw lastError;
         }
 
-        // --- Initialization ---
         window.onload = async function() {
             const savedUrl = localStorage.getItem('kanji_app_sheet_url');
             document.getElementById('spreadsheetUrl').value = savedUrl || DEFAULT_SHEET_URL;
             
             loadCompletedUnits();
-            loadMgBestRecords(); // ミニゲームのベスト記録を読み込み
+            loadMgBestRecords(); 
             
             updateGradeSelector();
             updateUnitSelector();
@@ -1620,9 +1652,10 @@
                     await fetchFromSpreadsheet(false);
                 } catch(e) {}
             }, 5000);
+            
+            updateScoreDisplay(); 
         };
 
-        // クリア状態の保存・読み込み
         function saveCompletedUnits() {
             localStorage.setItem('kanji_app_completed_units', JSON.stringify([...completedUnits]));
         }
@@ -1634,7 +1667,6 @@
             } catch(e) {}
         }
 
-        // ユーザー設定の保存 (localStorage)
         function saveUserSetting() {
             const settings = {
                 grade: document.getElementById('gradeSelector').value,
@@ -1643,12 +1675,9 @@
             };
             try {
                 localStorage.setItem('kanji_app_settings', JSON.stringify(settings));
-            } catch (e) {
-                console.error("設定の保存に失敗しました:", e);
-            }
+            } catch (e) {}
         }
 
-        // ユーザー設定の復元 (localStorage)
         function restoreUserSetting() {
             if (isSettingsLoaded) return;
             try {
@@ -1662,21 +1691,16 @@
                     if ([...gradeSelector.options].some(o => o.value === data.grade)) {
                         gradeSelector.value = data.grade;
                     }
-                    
                     updateUnitSelector();
-                    
                     if ([...unitSelector.options].some(o => o.value === data.unit)) {
                         unitSelector.value = data.unit;
                     }
-                    
                     if ([...rangeSelector.options].some(o => o.value === data.range)) {
                         rangeSelector.value = data.range;
                     }
                 }
                 isSettingsLoaded = true;
-            } catch (e) {
-                console.error("設定の読み込みに失敗しました:", e);
-            }
+            } catch (e) {}
             filterByUnit();
             filterFlashcards();
             filterReading();
@@ -1686,13 +1710,11 @@
             const gradeSelector = document.getElementById('gradeSelector');
             const currentVal = gradeSelector.value;
 
-            // Get unique grades from problems
             const grades = [...new Set(allProblems.map(p => p.grade))].sort((a, b) => {
                 return unitOrder.indexOf(a) - unitOrder.indexOf(b);
             });
             
             gradeSelector.innerHTML = '<option value="">学年を選択...</option>';
-            
             grades.forEach(grade => {
                 const option = document.createElement('option');
                 option.value = grade;
@@ -1706,7 +1728,6 @@
                 gradeSelector.value = '';
             }
 
-            // 読みモード用のセレクターも更新
             const readSelector = document.getElementById('readGradeSelector');
             if (readSelector) {
                 const currentReadVal = readSelector.value;
@@ -1724,7 +1745,6 @@
                 }
             }
 
-            // プリントモード用のセレクターも更新
             const printSelector = document.getElementById('printGradeSelector');
             if (printSelector) {
                 const currentPrintVal = printSelector.value;
@@ -1742,7 +1762,6 @@
                 }
             }
 
-            // フラッシュカード用のセレクターも更新
             const fcSelector = document.getElementById('fcGradeSelector');
             if (fcSelector) {
                 const currentFcVal = fcSelector.value;
@@ -1761,7 +1780,6 @@
             }
         }
 
-        // 単元セレクターの背景色（薄い青）を更新する処理
         function refreshUnitSelectorColors() {
             const grade = document.getElementById('gradeSelector').value;
             const unitSelector = document.getElementById('unitSelector');
@@ -1800,12 +1818,9 @@
             }
 
             const filtered = allProblems.filter(p => p.grade === selectedGrade);
-            
             const units = [];
             filtered.forEach(p => {
-                if (!units.includes(p.unit)) {
-                    units.push(p.unit);
-                }
+                if (!units.includes(p.unit)) units.push(p.unit);
             });
 
             unitSelector.innerHTML = '<option value="">単元を選択...</option><option value="all">すべての単元</option>';
@@ -1821,7 +1836,6 @@
             } else {
                 unitSelector.value = '';
             }
-            
             refreshUnitSelectorColors();
         }
 
@@ -1842,8 +1856,6 @@
             filterByUnit();
             saveUserSetting();
         }
-
-        // --- Main View Logic ---
 
         function renderCards(problems) {
             hasCelebrated = false; 
@@ -1883,16 +1895,15 @@
             card.style.width = 'auto'; 
             card.style.maxWidth = '90vw';
             
-            // 回答欄のコンテナ
             const answersWrapper = document.createElement('div');
             answersWrapper.style.writingMode = 'horizontal-tb';
             answersWrapper.style.display = 'flex';
-            answersWrapper.style.flexDirection = 'column'; // 縦1列に並べる
-            answersWrapper.style.gap = '50px'; // 問題間の隙間を少し広く
+            answersWrapper.style.flexDirection = 'column'; 
+            answersWrapper.style.gap = '50px'; 
             answersWrapper.style.padding = '15px';
             answersWrapper.style.background = '#edf2f7';
             answersWrapper.style.borderRadius = '15px';
-            answersWrapper.style.alignItems = 'center'; // 中央揃え
+            answersWrapper.style.alignItems = 'center'; 
             answersWrapper.style.marginTop = '10px';
             
             card.appendChild(answersWrapper); 
@@ -1914,7 +1925,6 @@
                     }
                 });
 
-                // 問題ごとにブロックを作成
                 const probBlock = document.createElement('div');
                 probBlock.className = 'prob-block';
                 probBlock.dataset.probIndex = index;
@@ -1922,9 +1932,7 @@
                 probBlock.style.flexDirection = 'column';
                 probBlock.style.gap = '15px';
                 probBlock.style.alignItems = 'center';
-                // 幅はコンテンツに合わせるため width: 100% を削除
 
-                // 問題番号のラベルを追加
                 const probLabel = document.createElement('div');
                 probLabel.textContent = `問 ${index + 1}`;
                 probLabel.style.fontWeight = 'bold';
@@ -1941,7 +1949,7 @@
                     blankBlock.style.display = 'flex';
                     blankBlock.style.flexDirection = 'column';
                     blankBlock.style.gap = '10px';
-                    blankBlock.style.alignItems = 'center'; // 中央揃えで綺麗に配置
+                    blankBlock.style.alignItems = 'center'; 
                     
                     const readingLabel = document.createElement('div');
                     readingLabel.textContent = `【 ${data.reading} 】`;
@@ -1952,8 +1960,8 @@
                     
                     const charsWrapper = document.createElement('div');
                     charsWrapper.style.display = 'flex';
-                    charsWrapper.style.flexDirection = 'column'; // 縦1列に並べる
-                    charsWrapper.style.flexWrap = 'nowrap'; // 複数文字でも折り返さず、必ず1列に並べる
+                    charsWrapper.style.flexDirection = 'column'; 
+                    charsWrapper.style.flexWrap = 'nowrap'; 
                     charsWrapper.style.gap = '15px';
                     
                     const chars = Array.from(data.kanji);
@@ -1962,7 +1970,7 @@
                         const charBox = createInlineCharCanvas(char, data.blankId, charIndex, prob, (btnEl) => {
                             checkWriteAdvance(btnEl);
                         });
-                        charBox.style.display = 'flex'; // すべて表示
+                        charBox.style.display = 'flex'; 
                         charsWrapper.appendChild(charBox);
                         totalKanjiInCurrentSet++;
                     });
@@ -1974,7 +1982,6 @@
                 answersWrapper.appendChild(probBlock);
             });
 
-            // Intersection Observer でスクロールに応じた問題文の切り替え
             const observer = new IntersectionObserver((entries) => {
                 let bestEntry = null;
                 entries.forEach(entry => {
@@ -1996,7 +2003,6 @@
 
             updateProgress(false); 
 
-            // 少し待ってから最初の未正解マスへスクロール
             setTimeout(() => {
                 scrollToNextUnanswered(false, false);
             }, 300);
@@ -2023,7 +2029,7 @@
         }
 
         function createInlineCharCanvas(targetChar, blankId, charIndex, prob, onCorrect) {
-            const size = 120; // 描画キャンバスのサイズ
+            const size = 120; 
             const ansBoxWidth = 50;
 
             const wrapper = document.createElement('div');
@@ -2039,9 +2045,8 @@
             canvasContainer.style.justifyContent = 'center';
             canvasContainer.style.boxShadow = '0 4px 6px rgba(0,0,0,0.05)';
             canvasContainer.style.borderRadius = '10px';
-            canvasContainer.style.position = 'relative'; // 追加: 大きな〇を絶対配置するため
+            canvasContainer.style.position = 'relative'; 
 
-            // 左側：答えマス
             const answerBox = document.createElement('div');
             answerBox.style.width = `${ansBoxWidth}px`;
             answerBox.style.border = '2px dashed #cbd5e0';
@@ -2203,7 +2208,6 @@
                 isAnimating = false;
             };
 
-            // 中央：キャンバス
             const canvas = document.createElement('canvas');
             canvas.width = size;
             canvas.height = size;
@@ -2215,7 +2219,6 @@
             canvas.style.cursor = 'crosshair';
             canvas.style.touchAction = 'none';
 
-            // 右側：判定ボタン
             const evalBox = document.createElement('div');
             evalBox.style.width = `40px`;
             evalBox.style.border = '2px dashed #cbd5e0';
@@ -2228,7 +2231,7 @@
             evalBox.style.justifyContent = 'center';
             
             const evalBtn = document.createElement('button');
-            evalBtn.className = 'eval-btn-inline'; // スクロール対象として識別するためのクラスを追加
+            evalBtn.className = 'eval-btn-inline'; 
             evalBtn.textContent = 'まるつけ';
             evalBtn.style.background = 'white';
             evalBtn.style.border = '2px solid #ed8936';
@@ -2250,11 +2253,10 @@
                 evalBtn.style.color = 'white';
                 evalBtn.style.borderColor = '#48bb78';
                 evalBtn.disabled = true;
-                evalBtn.dataset.awarded = "true"; // 一度正解したフラグをセット
+                evalBtn.dataset.awarded = "true"; 
             } else {
                 evalBtn.dataset.awarded = "false";
             }
-            // 正解済みでも再判定できるようにonclickを常に設定する
             evalBtn.onclick = () => evaluateKanji(canvas, targetChar, evalBtn, prob, awardKey, onCorrect);
             
             evalBox.appendChild(evalBtn);
@@ -2295,7 +2297,6 @@
             }
 
             let filtered = [...allProblems];
-
             filtered = filtered.filter(p => p.grade === grade);
 
             if (unit !== 'all') {
@@ -2311,7 +2312,6 @@
                 }
             }
 
-            // 50問制限
             if (filtered.length > 50) {
                 filtered = filtered.sort(() => Math.random() - 0.5).slice(0, 50);
             }
@@ -2355,26 +2355,22 @@
             }
         }
 
-        // --- 書けるかな？ の自動遷移ロジック ---
         function checkWriteAdvance(currentBtn = null) {
             scrollToNextUnanswered(true, true, currentBtn);
         }
 
         function scrollToNextUnanswered(autoAdvanceUnit = false, smooth = true, currentBtn = null) {
-            // まるつけボタンのリストを取得する
             const allBtns = Array.from(document.querySelectorAll('.eval-btn-inline'));
             let nextBtn = null;
             
             if (currentBtn) {
                 const currentIndex = allBtns.indexOf(currentBtn);
-                // 現在のボタンより後で未正解（一度も正解していない）を探す
                 for (let i = currentIndex + 1; i < allBtns.length; i++) {
                     if (allBtns[i].dataset.awarded !== "true") {
                         nextBtn = allBtns[i];
                         break;
                     }
                 }
-                // もし後ろになければ、最初から探す
                 if (!nextBtn) {
                     for (let i = 0; i < currentIndex; i++) {
                         if (allBtns[i].dataset.awarded !== "true") {
@@ -2430,7 +2426,6 @@
             if (currentUnitIndex !== -1 && currentUnitIndex < units.length - 1) {
                 nextUnit = units[currentUnitIndex + 1];
             } else {
-                // 同じ学年の最初の単元に戻す場合
                 if (units.length > 0) {
                     nextUnit = units[0];
                 }
@@ -2440,13 +2435,10 @@
                 gradeSelector.value = nextGrade;
                 updateUnitSelector(); 
                 unitSelector.value = nextUnit;
-                
                 document.getElementById('rangeSelector').value = 'only';
                 filterByUnit();
             }
         }
-
-        // --- Interaction Logic (Reveal Kanji & SVG Animation) ---
 
         async function evaluateKanji(canvas, expectedKanji, btnElement, prob, awardKey, onCorrect) {
             if (btnElement.classList.contains('evaluating')) return;
@@ -2458,14 +2450,12 @@
             }
             
             btnElement.classList.add('evaluating');
-            btnElement.disabled = true; // 判定中はボタンを無効化
+            btnElement.disabled = true;
             const originalText = btnElement.textContent;
             
-            // 縦書きボタンの中でクルクルが崩れないようにラップする
             btnElement.innerHTML = '<div style="writing-mode: horizontal-tb; display: flex; justify-content: center; align-items: center; width: 100%; height: 100%;"><div class="loading-spinner" style="border-color: #ed8936; border-top-color: transparent; width: 16px; height: 16px; border-width: 2px;"></div></div>';
             
             try {
-                // 圧縮ノイズを完全に無くすためPNG形式に変更
                 const base64ImageData = canvas.toDataURL("image/png").split(',')[1];
                 
                 const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
@@ -2473,7 +2463,6 @@
                     contents: [{
                         role: "user",
                         parts: [
-                            // 判定を「限界まで甘く」する。何らかの線が書かれていればほぼ正解とみなす。
                             { text: `The target Japanese Kanji is '${expectedKanji}'. 
 Evaluate the handwriting in this image.
 Rule 1: Be INCREDIBLY generous and lenient. 
@@ -2484,7 +2473,7 @@ Output exactly '${expectedKanji}' if it is an attempt.` },
                         ]
                     }],
                     generationConfig: {
-                        temperature: 0.0, // AIの出力を安定させる
+                        temperature: 0.0, 
                         maxOutputTokens: 5
                     }
                 };
@@ -2497,7 +2486,6 @@ Output exactly '${expectedKanji}' if it is an attempt.` },
 
                 const textResp = response.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || "";
                 
-                // 厳密な一致ではなく、AIの返答に正解の漢字が含まれていればOKとする
                 if (textResp.includes(expectedKanji)) {
                     btnElement.textContent = '正解！';
                     btnElement.style.background = '#48bb78';
@@ -2505,12 +2493,10 @@ Output exactly '${expectedKanji}' if it is an attempt.` },
                     btnElement.style.borderColor = '#48bb78';
                     btnElement.disabled = true;
                     btnElement.classList.remove('evaluating');
-                    btnElement.dataset.awarded = "true"; // 一度正解したフラグをセット
+                    btnElement.dataset.awarded = "true"; 
                     
-                    // 音を鳴らす
                     playPingPongSound();
 
-                    // 大きな〇を表示
                     const canvasContainer = canvas.parentElement;
                     if (canvasContainer) {
                         const circle = document.createElement('div');
@@ -2526,7 +2512,6 @@ Output exactly '${expectedKanji}' if it is an attempt.` },
                         circle.textContent = '◯';
                         canvasContainer.appendChild(circle);
 
-                        // 大きくフワッと表示されて消えるアニメーション
                         circle.animate([
                             { transform: 'translate(-50%, -50%) scale(0.5)', opacity: 0 },
                             { transform: 'translate(-50%, -50%) scale(1.1)', opacity: 0.8, offset: 0.2 },
@@ -2543,7 +2528,6 @@ Output exactly '${expectedKanji}' if it is an attempt.` },
                         }, 1000);
                     }
                     
-                    // ポイント計算: 初回は5ポイント、2回目以降は3ポイント
                     if (!prob.writeAwarded[awardKey]) {
                         prob.writeAwarded[awardKey] = true;
                         writeScore += 5; 
@@ -2562,14 +2546,14 @@ Output exactly '${expectedKanji}' if it is an attempt.` },
                         }, 300);
                     }
                     
-                    if (onCorrect) onCorrect(btnElement); // 次のマスを表示させる
+                    if (onCorrect) onCorrect(btnElement); 
                     
                 } else {
                     btnElement.textContent = 'ざんねん';
                     btnElement.style.background = '#f56565';
                     btnElement.style.color = 'white';
                     btnElement.style.borderColor = '#f56565';
-                    btnElement.classList.remove('evaluating'); // 判定終了時にクラスを外す
+                    btnElement.classList.remove('evaluating'); 
                     
                     setTimeout(() => {
                         if (btnElement.textContent === 'ざんねん') {
@@ -2577,7 +2561,7 @@ Output exactly '${expectedKanji}' if it is an attempt.` },
                             btnElement.style.background = 'white';
                             btnElement.style.color = '#ed8936';
                             btnElement.style.borderColor = '#ed8936';
-                            btnElement.disabled = false; // 2秒後に再度押せるようにする
+                            btnElement.disabled = false; 
                         }
                     }, 2000);
                 }
@@ -2625,49 +2609,41 @@ Output exactly '${expectedKanji}' if it is an attempt.` },
                 el.style.color = '#48bb78';
                 el.textContent += ' 🎉 完了！';
                 
-                // 単元クリアの記録と色の反映
                 if (grade && unit) {
                     const key = `${grade}:::${unit}`;
                     if (!completedUnits.has(key)) {
                         completedUnits.add(key);
                         saveCompletedUnits();
                         refreshUnitSelectorColors();
-                        refreshFcUnitSelectorColors(); // フラッシュカード側も更新
+                        refreshFcUnitSelectorColors();
                     }
                 }
                 
                 if (isUserInput && !hasCelebrated) {
-                    // 「正しく書けるかな」モードではくす玉アニメーションを流さない
-                    hasCelebrated = true; // 1回だけ実行するためのフラグ
+                    hasCelebrated = true;
                 }
             } else {
                 el.style.color = '#4a5568';
-                // 進捗が0になった場合のみ、お祝いフラグをリセットする
                 if (drawnCount === 0) {
                     hasCelebrated = false; 
                 }
                 
-                // 未クリア状態になったら記録を削除し色を戻す
                 if (grade && unit && totalKanjiInCurrentSet > 0) {
                     const key = `${grade}:::${unit}`;
                     if (completedUnits.has(key)) {
                         completedUnits.delete(key);
                         saveCompletedUnits();
                         refreshUnitSelectorColors();
-                        refreshFcUnitSelectorColors(); // フラッシュカード側も更新
+                        refreshFcUnitSelectorColors(); 
                     }
                 }
             }
         }
 
-        // --- Celebration Animation ---
         function startCelebration() {
             const overlay = document.getElementById('celebration-overlay');
-            const kusudama = document.getElementById('kusudama-emoji');
-            
             overlay.style.display = 'block';
             
-            // 紙吹雪を生成
             for (let i = 0; i < 100; i++) {
                 const confetti = document.createElement('div');
                 confetti.className = 'confetti';
@@ -2678,21 +2654,17 @@ Output exactly '${expectedKanji}' if it is an attempt.` },
                 overlay.appendChild(confetti);
             }
 
-            // 5秒後に消す
             setTimeout(() => {
                 overlay.style.opacity = '0';
                 overlay.style.transition = 'opacity 1s';
                 setTimeout(() => {
                     overlay.style.display = 'none';
                     overlay.style.opacity = '1';
-                    // 紙吹雪を掃除
                     const pieces = overlay.querySelectorAll('.confetti');
                     pieces.forEach(p => p.remove());
                 }, 1000);
             }, 5000);
         }
-
-        // --- Gemini AI & TTS Logic ---
 
         async function playSentence(btn, text) {
             if (btn.classList.contains('playing')) return;
@@ -2820,8 +2792,6 @@ Output exactly '${expectedKanji}' if it is an attempt.` },
             }
         }
 
-        // --- Audio Helpers ---
-
         function base64ToUint8Array(base64) {
             const binaryString = window.atob(base64);
             const len = binaryString.length;
@@ -2861,7 +2831,6 @@ Output exactly '${expectedKanji}' if it is an attempt.` },
             }
         }
 
-        // --- クイズの正解音を生成・再生するヘルパー関数 ---
         function playPingPongSound() {
             const AudioContext = window.AudioContext || window.webkitAudioContext;
             if (!AudioContext) return;
@@ -2881,23 +2850,16 @@ Output exactly '${expectedKanji}' if it is an attempt.` },
                 osc.stop(startTime + duration);
             };
 
-            // 高い「ピン」と少し低い「ポン」を連続して鳴らす
-            playTone(1046.50, ctx.currentTime, 0.2); // C6
-            playTone(880.00, ctx.currentTime + 0.2, 0.4); // A5
+            playTone(1046.50, ctx.currentTime, 0.2); 
+            playTone(880.00, ctx.currentTime + 0.2, 0.4); 
         }
-
-        // --- Multi-Canvas Drawing Logic ---
-        
-        const activeCanvases = []; // 保存されたキャンバスの情報
 
         function clearSpecificCanvas(canvas, resetStatus = true) {
             const ctx = canvas.getContext('2d');
-            // 透明ではなく白背景で塗りつぶす（AIのOCR精度向上のため）
             ctx.fillStyle = '#ffffff';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             
             ctx.beginPath();
-            // AIが補助線を完全に無視できるよう、極限まで薄い色にする
             ctx.strokeStyle = '#f1f5f9'; 
             ctx.lineWidth = 1;
             ctx.setLineDash([4, 4]);
@@ -2914,7 +2876,6 @@ Output exactly '${expectedKanji}' if it is an attempt.` },
                     canvasData.hasDrawn = false;
                     updateDrawingStatus();
 
-                    // 評価中でなければ常に「まるつけ」ボタンに戻す
                     if (canvasData.evalBtn && !canvasData.evalBtn.classList.contains('evaluating')) {
                         canvasData.evalBtn.textContent = 'まるつけ';
                         canvasData.evalBtn.style.background = 'white';
@@ -2946,7 +2907,6 @@ Output exactly '${expectedKanji}' if it is an attempt.` },
                 ctx.moveTo(pos.x, pos.y);
                 e.preventDefault();
 
-                // キャンバスをタッチしたらその問題文を表示
                 const probBlock = canvas.closest('.prob-block');
                 if (probBlock) {
                     const idx = parseInt(probBlock.dataset.probIndex);
@@ -2955,7 +2915,6 @@ Output exactly '${expectedKanji}' if it is an attempt.` },
                     }
                 }
 
-                // 書き始めたら、評価中でない限り常に「まるつけ」ボタンに戻す
                 if (evalBtn && !evalBtn.classList.contains('evaluating')) {
                     evalBtn.textContent = 'まるつけ';
                     evalBtn.style.background = 'white';
@@ -2975,7 +2934,6 @@ Output exactly '${expectedKanji}' if it is an attempt.` },
 
                 const pos = getCoordinates(e);
                 ctx.lineTo(pos.x, pos.y);
-                // ペンの太さを細く修正（AIの認識率を落とさない程度の自然な太さ）
                 ctx.strokeStyle = '#000000';
                 ctx.lineWidth = Math.max(6, canvas.width * 0.05); 
                 ctx.lineCap = 'round';
@@ -3003,10 +2961,8 @@ Output exactly '${expectedKanji}' if it is an attempt.` },
         }
 
         function updateDrawingStatus() {
-            updateProgress(true); // 描画のたびに進捗を更新
+            updateProgress(true); 
         }
-
-        // --- Editor / Spreadsheet Logic ---
 
         function showEditDialog() {
             document.getElementById('editDialog').style.display = 'flex';
@@ -3188,7 +3144,7 @@ Output exactly '${expectedKanji}' if it is an attempt.` },
 
             if (newProblems.length > 0) {
                 allProblems = newProblems;
-                lastRawData = ""; // 次回更新時に確実に反映させるため
+                lastRawData = ""; 
                 updateGradeSelector();
                 updateUnitSelector();
                 filterByUnit();
@@ -3197,8 +3153,6 @@ Output exactly '${expectedKanji}' if it is an attempt.` },
                 alert('有効な問題がありません。');
             }
         }
-
-        // --- Google Sheets Import ---
 
         async function fetchFromSpreadsheet(isInitial = false) {
             let url = document.getElementById('spreadsheetUrl').value;
@@ -3281,11 +3235,10 @@ Output exactly '${expectedKanji}' if it is an attempt.` },
                     } catch(e) {}
                 }, 5000);
             } catch(e) {
-                alert('読み込みに失敗しました。URLやスプレッドシートの権限（リンクを知っている全員が閲覧可）を確認してください。');
+                alert('読み込みに失敗しました。URLやスプレッドシートの権限を確認してください。');
             }
         }
 
-        // --- 画面遷移ロジック ---
         function goToTopMode() {
             if (mgTimerInterval) clearInterval(mgTimerInterval);
             document.getElementById('topPage').style.display = 'flex';
@@ -3312,7 +3265,7 @@ Output exactly '${expectedKanji}' if it is an attempt.` },
             updateUnitSelector();
             document.getElementById('unitSelector').value = document.getElementById('readUnitSelector').value || document.getElementById('fcUnitSelector').value || document.getElementById('printUnitSelector').value;
             
-            updateScoreDisplay(); // スコアを更新
+            updateScoreDisplay(); 
             filterByUnit();
         }
 
@@ -3376,6 +3329,18 @@ Output exactly '${expectedKanji}' if it is an attempt.` },
         }
 
         function goToMinigameMenu() {
+            const totalScore = readScore + writeScore;
+            const totalEarnedPlays = Math.floor(totalScore / 100) * 3;
+            const availablePlays = totalEarnedPlays - minigamePlayCount;
+            
+            if (availablePlays <= 0) {
+                alert("あそべる回数がありません。ポイントをためてください！");
+                goToTopMode();
+                return;
+            }
+            
+            document.getElementById('minigameRemainingPlays').textContent = `あと ${availablePlays} 回あそべるよ！`;
+
             if (mgTimerInterval) clearInterval(mgTimerInterval);
             document.getElementById('topPage').style.display = 'none';
             document.getElementById('mainContainer').style.display = 'none';
@@ -3389,6 +3354,19 @@ Output exactly '${expectedKanji}' if it is an attempt.` },
         }
 
         function startMinigame(type) {
+            const totalScore = readScore + writeScore;
+            const totalEarnedPlays = Math.floor(totalScore / 100) * 3;
+            const availablePlays = totalEarnedPlays - minigamePlayCount;
+            
+            if (availablePlays <= 0) {
+                alert("あそべる回数がありません。ポイントをためてください！");
+                goToTopMode();
+                return;
+            }
+            
+            minigamePlayCount++;
+            updateScoreDisplay(); 
+
             currentMgType = type;
             document.getElementById('minigameMenuPage').style.display = 'none';
             document.getElementById('minigamePlayPage').style.display = 'flex';
@@ -3404,7 +3382,6 @@ Output exactly '${expectedKanji}' if it is an attempt.` },
                 currentMgData = [...mgKeisanData].sort(() => Math.random() - 0.5);
             }
             
-            // 最大10問までに絞る
             if (currentMgData.length > 10) {
                 currentMgData = currentMgData.slice(0, 10);
             }
@@ -3412,7 +3389,6 @@ Output exactly '${expectedKanji}' if it is an attempt.` },
             currentMgIndex = 0;
             currentMgScore = 0;
             
-            // タイマー開始
             mgStartTime = Date.now();
             if (mgTimerInterval) clearInterval(mgTimerInterval);
             document.getElementById('mgTimer').textContent = "00:00";
@@ -3437,12 +3413,11 @@ Output exactly '${expectedKanji}' if it is an attempt.` },
             
             const prob = currentMgData[currentMgIndex];
             document.getElementById('mgScore').textContent = `${currentMgIndex + 1} / ${currentMgData.length} 問`;
-            document.getElementById('mgQuestionText').innerHTML = prob.q; // textContentからinnerHTMLに変更
+            document.getElementById('mgQuestionText').innerHTML = prob.q; 
             
             const choicesContainer = document.getElementById('mgChoices');
             choicesContainer.innerHTML = '';
             
-            // 選択肢をシャッフル
             const shuffledChoices = [...prob.choices].sort(() => Math.random() - 0.5);
             
             shuffledChoices.forEach(choice => {
@@ -3479,7 +3454,6 @@ Output exactly '${expectedKanji}' if it is an attempt.` },
             const mark = document.getElementById('mgResultMark');
             const text = document.getElementById('mgResultText');
             
-            // 選択したボタンの色を変える
             if (isCorrect) {
                 selectedBtn.style.background = '#c6f6d5';
                 selectedBtn.style.borderColor = '#48bb78';
@@ -3527,11 +3501,28 @@ Output exactly '${expectedKanji}' if it is an attempt.` },
             
             document.getElementById('mgFinalScore').innerHTML = `${currentMgData.length}問中 ${currentMgScore}問 正解！<br><span style="font-size: 2rem; color: #718096; margin-top: 15px; display: inline-block;">クリアタイム：${timeStr}</span>`;
             
-            // ベスト記録の確認と保存
             checkAndSaveMgRecord(currentMgType, currentMgScore, currentMgData.length, diffInSec);
+
+            const totalScore = readScore + writeScore;
+            const totalEarnedPlays = Math.floor(totalScore / 100) * 3;
+            const availablePlays = totalEarnedPlays - minigamePlayCount;
+            
+            const btnContainer = document.getElementById('mgEndButtons');
+            if (availablePlays > 0) {
+                btnContainer.innerHTML = `
+                    <div style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center;">
+                        <button onclick="goToMinigameMenu()" style="padding: 20px 40px; font-size: 1.8rem; font-weight: bold; background: #48bb78; color: white; border: none; border-radius: 20px; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.2); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">別のゲームをあそぶ</button>
+                        <button onclick="startMinigame(currentMgType)" style="padding: 20px 40px; font-size: 1.8rem; font-weight: bold; background: #4299e1; color: white; border: none; border-radius: 20px; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.2); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">もう１回あそぶ</button>
+                    </div>
+                `;
+            } else {
+                btnContainer.innerHTML = `
+                    <div style="font-size: 1.5rem; color: #e53e3e; font-weight: bold; margin-bottom: 20px;">あそべる回数がなくなりました。<br>またポイントをためてね！</div>
+                    <button onclick="goToTopMode()" style="padding: 20px 40px; font-size: 1.8rem; font-weight: bold; background: #718096; color: white; border: none; border-radius: 20px; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.2); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">トップへ戻る</button>
+                `;
+            }
         }
 
-        // --- プリント印刷用ロジック ---
         function onPrintGradeChange() {
             updatePrintUnitSelector();
             renderPrintPreview();
@@ -3606,17 +3597,14 @@ Output exactly '${expectedKanji}' if it is an attempt.` },
                 }
             }
 
-            // 「まで」の場合はシャッフル
             if (range === 'up-to') {
                 filtered = filtered.sort(() => Math.random() - 0.5);
             }
 
-            // 問題を全体で最大50問までに制限する
             if (filtered.length > 50) {
                 filtered = filtered.slice(0, 50);
             }
 
-            // 紙の外にはみ出さないように、1ページあたり最大20問（2段）ごとにページを分割する
             const chunkedProblems = [];
             for (let i = 0; i < filtered.length; i += 20) {
                 chunkedProblems.push(filtered.slice(i, i + 20));
@@ -3631,27 +3619,22 @@ Output exactly '${expectedKanji}' if it is an attempt.` },
                 let unitText = unit === 'all' ? 'すべて' : unit;
                 let rangeText = unit !== 'all' ? (range === 'only' ? 'だけ' : (range === 'up-to' ? 'まで' : '')) : '';
                 
-                // 複数ページある場合はページ番号を追加
                 let pageText = chunkedProblems.length > 1 ? ` (${pageIndex + 1}/${chunkedProblems.length})` : '';
 
-                // 問題用プリントを追加
                 const qWrapper = document.createElement('div');
                 qWrapper.className = 'page-wrapper';
                 qWrapper.appendChild(createPrintPage(grade, unitText, rangeText, pageText, problems, pageIndex * 20, false));
                 container.appendChild(qWrapper);
                 
-                // 解答の前に改ページ要素を挿入
                 const pb = document.createElement('div');
                 pb.className = 'page-break';
                 container.appendChild(pb);
 
-                // 解答用プリントを追加
                 const aWrapper = document.createElement('div');
                 aWrapper.className = 'page-wrapper';
                 aWrapper.appendChild(createPrintPage(grade, unitText, rangeText, pageText + " 【解答】", problems, pageIndex * 20, true));
                 container.appendChild(aWrapper);
                 
-                // 最後のページ以外は次の問題の前に改ページ要素を挿入
                 if (pageIndex < chunkedProblems.length - 1) {
                     const pb2 = document.createElement('div');
                     pb2.className = 'page-break';
@@ -3693,7 +3676,6 @@ Output exactly '${expectedKanji}' if it is an attempt.` },
 
         function createPrintRow(problems, startIndex, showAnswer) {
             let html = `<div class="print-problem-row">`;
-            // 右から左へ並べるため、配列順でOK（CSSでrow-reverseを指定）
             problems.forEach((prob, idx) => {
                 const num = startIndex + idx;
                 const circleNum = getCircleNumber(num);
@@ -3727,7 +3709,6 @@ Output exactly '${expectedKanji}' if it is an attempt.` },
                     }
                 } else {
                     if (bracketCount === 1) {
-                        // ( ) が1つしかない場合は幅を広くする
                         bracketsHtml += `<div class="print-bracket large"><span>（</span><span class="bracket-space"></span><span>）</span></div>`;
                     } else {
                         for(let i=0; i<bracketCount; i++){
@@ -3749,7 +3730,6 @@ Output exactly '${expectedKanji}' if it is an attempt.` },
                 `;
             });
 
-            // 空枠で10列を埋める
             for(let i = problems.length; i < 10; i++) {
                 html += `<div class="print-problem-col empty"></div>`;
             }
@@ -3759,21 +3739,16 @@ Output exactly '${expectedKanji}' if it is an attempt.` },
         }
 
         function triggerPrint() {
-            // プレビュー環境（iframe）で window.print() がブロックされる制限を回避するため、
-            // 現在の見た目を完全にコピーした印刷専用のタブを生成します。
             const clonedDoc = document.documentElement.cloneNode(true);
             
-            // 新しいタブで元の処理が再実行されないようにスクリプトを削除
             const scripts = clonedDoc.querySelectorAll('script');
             scripts.forEach(s => s.remove());
             
-            // 印刷画面を固定で表示
             const topPage = clonedDoc.querySelector('#topPage');
             if (topPage) topPage.style.display = 'none';
             const printPage = clonedDoc.querySelector('#printPage');
             if (printPage) printPage.style.display = 'flex';
             
-            // フォントなどの読み込みを待ってから印刷ダイアログを開く
             const printScript = document.createElement('script');
             printScript.textContent = "setTimeout(function() { window.print(); }, 800);";
             clonedDoc.querySelector('body').appendChild(printScript);
@@ -3790,43 +3765,6 @@ Output exactly '${expectedKanji}' if it is an attempt.` },
             document.body.removeChild(a);
             
             setTimeout(() => URL.revokeObjectURL(url), 10000);
-        }
-
-        // --- 正しく読めるかな？（読み問題モード）ロジック ---
-        let readProblems = [];
-        let currentReadIndex = 0;
-        let readScore = 0; // グローバルスコアから分離
-        let writeScore = 0; // グローバルスコアから分離
-
-        function updateScoreDisplay() {
-            const readEl = document.getElementById('readScoreDisplay');
-            if (readEl) readEl.textContent = `${readScore} pt`;
-            
-            const writeEl = document.getElementById('writeScoreDisplay');
-            if (writeEl) writeEl.textContent = `${writeScore} pt`;
-
-            const topReadEl = document.getElementById('topReadScore');
-            if (topReadEl) topReadEl.textContent = `${readScore} pt`;
-
-            const topWriteEl = document.getElementById('topWriteScore');
-            if (topWriteEl) topWriteEl.textContent = `${writeScore} pt`;
-        }
-
-        function goToReadingMode() {
-            document.getElementById('topPage').style.display = 'none';
-            document.getElementById('mainContainer').style.display = 'none';
-            document.getElementById('flashcardPage').style.display = 'none';
-            document.getElementById('printPage').style.display = 'none';
-            document.getElementById('readingContainer').style.display = 'flex';
-            document.getElementById('backToTopBtnMain').style.display = 'block';
-
-            document.getElementById('readGradeSelector').value = document.getElementById('gradeSelector').value || document.getElementById('fcGradeSelector').value || document.getElementById('printGradeSelector').value;
-            updateReadUnitSelector();
-            document.getElementById('readUnitSelector').value = document.getElementById('unitSelector').value || document.getElementById('fcUnitSelector').value || document.getElementById('printUnitSelector').value;
-            document.getElementById('readRangeSelector').value = document.getElementById('rangeSelector').value || document.getElementById('fcRangeSelector').value || document.getElementById('printRangeSelector').value;
-
-            updateScoreDisplay();
-            filterReading();
         }
 
         function updateReadUnitSelector() {
@@ -3880,7 +3818,7 @@ Output exactly '${expectedKanji}' if it is an attempt.` },
         }
 
         function filterReading() {
-            hasCelebrated = false; // 単元切り替え時にお祝いフラグをリセット
+            hasCelebrated = false; 
             const grade = document.getElementById('readGradeSelector').value;
             const unit = document.getElementById('readUnitSelector').value;
             const range = document.getElementById('readRangeSelector').value;
@@ -3907,7 +3845,6 @@ Output exactly '${expectedKanji}' if it is an attempt.` },
                 }
             }
             
-            // 50問制限
             if (filtered.length > 50) {
                 filtered = filtered.sort(() => Math.random() - 0.5).slice(0, 50);
             }
@@ -3939,7 +3876,7 @@ Output exactly '${expectedKanji}' if it is an attempt.` },
 
             if (!prob.userAnswers) prob.userAnswers = [];
             if (!prob.marks) prob.marks = [];
-            if (!prob.awarded) prob.awarded = []; // ポイント付与フラグの初期化
+            if (!prob.awarded) prob.awarded = []; 
 
             const parts = prob.sentence.split(/(\{.+?\|.+?\})/);
             let htmlSentence = "";
@@ -3985,7 +3922,7 @@ Output exactly '${expectedKanji}' if it is an attempt.` },
             card.className = 'sentence-card';
             card.style.minHeight = '60vh';
             card.style.maxHeight = '85vh';
-            card.style.width = 'auto'; /* 文字量に合わせて幅を自動拡張して改行を有効にする */
+            card.style.width = 'auto'; 
             card.style.minWidth = '80px';
             card.innerHTML = `
                 <div class="problem-number">${currentReadIndex + 1}</div>
@@ -3993,7 +3930,6 @@ Output exactly '${expectedKanji}' if it is an attempt.` },
             `;
             container.appendChild(card);
 
-            // 問題表示時、自動的に最初の入力欄にフォーカスを合わせる
             setTimeout(() => {
                 const firstInput = container.querySelector('.reading-input:not(.correct)');
                 if (firstInput) {
@@ -4005,7 +3941,6 @@ Output exactly '${expectedKanji}' if it is an attempt.` },
             }, 50);
         }
 
-        // 入力時のリアルタイム判定
         function handleReadInput(inputEl) {
             const answer = inputEl.dataset.answer;
             const userVal = inputEl.value.trim();
@@ -4017,7 +3952,6 @@ Output exactly '${expectedKanji}' if it is an attempt.` },
             }
         }
 
-        // 次の未入力枠へ進む処理
         function advanceToNext(currentInput) {
             if (!document.body.contains(currentInput)) return;
 
@@ -4025,7 +3959,6 @@ Output exactly '${expectedKanji}' if it is an attempt.` },
             const currentIndex = allInputs.indexOf(currentInput);
             let nextInput = null;
 
-            // 次の未正解の入力欄を探す
             for(let i = currentIndex + 1; i < allInputs.length; i++) {
                 if(!allInputs[i].classList.contains('correct')) { 
                     nextInput = allInputs[i]; 
@@ -4036,7 +3969,6 @@ Output exactly '${expectedKanji}' if it is an attempt.` },
             if (nextInput) {
                 nextInput.focus();
             } else {
-                // 空白の入力欄がなければ次の問題または次の単元へ移動
                 if (currentReadIndex === readProblems.length - 1) {
                     const allCorrectInCurrent = allInputs.every(input => input.classList.contains('correct'));
                     if (allCorrectInCurrent) {
@@ -4050,7 +3982,6 @@ Output exactly '${expectedKanji}' if it is an attempt.` },
             }
         }
 
-        // Enterキーで次へ進む処理
         function handleReadKeydown(e, inputEl) {
             if (e.key === 'Enter') {
                 e.preventDefault();
@@ -4108,13 +4039,11 @@ Output exactly '${expectedKanji}' if it is an attempt.` },
                 markSpan.style.color = '#48bb78';
                 prob.marks[idx] = 'correct';
                 
-                // ポイントの付与（初めて正解した場合のみ3ポイント追加）
                 if (!prob.awarded[idx]) {
                     prob.awarded[idx] = true;
-                    readScore += 3; // それぞれのスコアに分離
+                    readScore += 3; 
                     updateScoreDisplay();
                     
-                    // スコア表示のアニメーション
                     const scoreEl = document.getElementById('readScoreDisplay');
                     if (scoreEl) {
                         scoreEl.style.transform = 'scale(1.3)';
@@ -4147,7 +4076,6 @@ Output exactly '${expectedKanji}' if it is an attempt.` },
                 correctSpan.style.pointerEvents = 'none';
                 wrapper.appendChild(correctSpan);
                 
-                // 不正解の場合は入力をクリアして再入力できるようにする
                 inputEl.value = '';
                 prob.userAnswers[idx] = '';
                 if (autoAdvance) {
@@ -4156,7 +4084,6 @@ Output exactly '${expectedKanji}' if it is an attempt.` },
             }
             wrapper.appendChild(markSpan);
 
-            // 単元全体の全問正解チェック
             let allProblemsCompleted = true;
             for (let i = 0; i < readProblems.length; i++) {
                 const p = readProblems[i];
@@ -4182,7 +4109,6 @@ Output exactly '${expectedKanji}' if it is an attempt.` },
                 startCelebration();
                 hasCelebrated = true;
                 
-                // 単元クリアの記録と色の反映
                 const grade = document.getElementById('readGradeSelector').value;
                 const unit = document.getElementById('readUnitSelector').value;
                 if (grade && unit) {
@@ -4215,7 +4141,6 @@ Output exactly '${expectedKanji}' if it is an attempt.` },
             renderReadingCards();
         }
 
-        // --- 次の単元へ進む処理（読み問題） ---
         function goToNextUnitRead() {
             const gradeSelector = document.getElementById('readGradeSelector');
             const unitSelector = document.getElementById('readUnitSelector');
@@ -4234,10 +4159,8 @@ Output exactly '${expectedKanji}' if it is an attempt.` },
             const currentUnitIndex = units.indexOf(unitSelector.value);
             
             if (currentUnitIndex !== -1 && currentUnitIndex < units.length - 1) {
-                // 同じ学年内に次の単元がある場合
                 nextUnit = units[currentUnitIndex + 1];
             } else {
-                // 同じ学年の最初の単元に戻る
                 if (units.length > 0) {
                     nextUnit = units[0];
                 }
@@ -4248,7 +4171,6 @@ Output exactly '${expectedKanji}' if it is an attempt.` },
                 updateReadUnitSelector(); 
                 unitSelector.value = nextUnit;
                 
-                // 次の単元に進むときは「だけ」を強制してその単元だけ表示する
                 document.getElementById('readRangeSelector').value = 'only';
                 
                 filterReading();
@@ -4257,7 +4179,6 @@ Output exactly '${expectedKanji}' if it is an attempt.` },
             }
         }
 
-        // ひらがな・カタカナをひらがなに統一する補助関数
         function toHiragana(str) {
             return str.replace(/[\u30a1-\u30f6]/g, function(match) {
                 var chr = match.charCodeAt(0) - 0x60;
@@ -4283,7 +4204,6 @@ Output exactly '${expectedKanji}' if it is an attempt.` },
             });
         }
 
-        // --- フラッシュカード関連ロジック ---
         function refreshFcUnitSelectorColors() {
             const grade = document.getElementById('fcGradeSelector').value;
             const unitSelector = document.getElementById('fcUnitSelector');
@@ -4428,7 +4348,6 @@ Output exactly '${expectedKanji}' if it is an attempt.` },
                             htmlSentence += `<span style="color:#e53e3e; text-decoration: underline;">${reading}</span>`;
                         }
                     } else {
-                        // 答えを表示
                         if (fcMode === 'read') {
                             htmlSentence += `<span style="color:#e53e3e; text-decoration: underline;">${kanji}</span><span style="font-size:1.2rem; color:#4a5568;">(${reading})</span>`;
                         } else {
