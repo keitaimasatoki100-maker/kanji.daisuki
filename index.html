@@ -2456,24 +2456,19 @@
             btnElement.innerHTML = '<div style="writing-mode: horizontal-tb; display: flex; justify-content: center; align-items: center; width: 100%; height: 100%;"><div class="loading-spinner" style="border-color: #ed8936; border-top-color: transparent; width: 16px; height: 16px; border-width: 2px;"></div></div>';
             
             try {
-                const base64ImageData = canvas.toDataURL("image/png").split(',')[1];
+                const base64ImageData = canvas.toDataURL("image/jpeg", 0.9).split(',')[1];
                 
                 const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
                 const payload = {
                     contents: [{
                         role: "user",
                         parts: [
-                            { text: `The target Japanese Kanji is '${expectedKanji}'. 
-Evaluate the handwriting in this image.
-Rule 1: Be INCREDIBLY generous and lenient. 
-Rule 2: Even if strokes are missing, deformed, connected wrongly, or look like scribbles, if there is ANY possibility the user tried to write '${expectedKanji}', you MUST output exactly '${expectedKanji}'.
-Rule 3: Only if the image is completely blank, output 'BLANK'.
-Output exactly '${expectedKanji}' if it is an attempt.` },
-                            { inlineData: { mimeType: "image/png", data: base64ImageData } }
+                            { text: `Target Kanji: '${expectedKanji}'.\nIf there are ANY drawn lines, scribbles, or marks in the image, you MUST assume the child tried to write the target Kanji and output ONLY '${expectedKanji}'. Do NOT judge the correctness of the strokes. Only output 'BLANK' if the image is 100% plain white. Output exactly one character.` },
+                            { inlineData: { mimeType: "image/jpeg", data: base64ImageData } }
                         ]
                     }],
                     generationConfig: {
-                        temperature: 0.0, 
+                        temperature: 0.1, 
                         maxOutputTokens: 5
                     }
                 };
@@ -2935,7 +2930,7 @@ Output exactly '${expectedKanji}' if it is an attempt.` },
                 const pos = getCoordinates(e);
                 ctx.lineTo(pos.x, pos.y);
                 ctx.strokeStyle = '#000000';
-                ctx.lineWidth = Math.max(6, canvas.width * 0.05); 
+                ctx.lineWidth = Math.max(10, canvas.width * 0.08); 
                 ctx.lineCap = 'round';
                 ctx.lineJoin = 'round';
                 ctx.stroke();
