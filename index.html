@@ -1340,6 +1340,58 @@
   </div>
 
   <script>
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+
+        let db, auth;
+        let currentUser = null;
+        let isFirebaseReady = false;
+        let storageMode = 'none';
+        let fsDoc, fsSetDoc, fsGetDoc;
+
+        (async () => {
+            if (typeof __firebase_config !== 'undefined' && __firebase_config) {
+                try {
+                    const firebaseConfig = typeof __firebase_config === 'string' ? JSON.parse(__firebase_config) : __firebase_config;
+                    storageMode = 'firebase';
+                    
+                    const { initializeApp } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js");
+                    const { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js");
+                    const { getFirestore, doc, setDoc, getDoc } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js");
+                    
+                    const app = initializeApp(firebaseConfig);
+                    auth = getAuth(app);
+                    db = getFirestore(app);
+                    
+                    fsDoc = doc;
+                    fsSetDoc = setDoc;
+                    fsGetDoc = getDoc;
+                    
+                    const initAuth = async () => {
+                        try {
+                            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                                await signInWithCustomToken(auth, __initial_auth_token);
+                            } else {
+                                await signInAnonymously(auth);
+                            }
+                        } catch(e) {
+                            console.error("Auth error", e);
+                        }
+                    };
+                    await initAuth();
+
+                    onAuthStateChanged(auth, async (u) => {
+                        currentUser = u;
+                        if (u) {
+                            isFirebaseReady = true;
+                            await loadProgressFromStorage();
+                        }
+                    });
+                } catch(e) {
+                    console.error("Firebase init error:", e);
+                }
+            }
+        })();
+
         const apiKey = ""; 
         let revealedCount = 0;
         let totalKanjiInCurrentSet = 0;
@@ -1350,7 +1402,7 @@
         let hasCelebrated = false;
         let completedUnits = new Set();
         
-        const activeCanvases = []; // 追加: キャンバスの状態を管理する配列
+        const activeCanvases = []; 
         
         let autoUpdateInterval = null;
         let lastRawData = ""; 
@@ -1378,15 +1430,97 @@
         let fcState = 'question'; 
         let fcMode = 'read'; 
 
-        // 読み問題やスコア用変数の定義
         let readProblems = [];
         let currentReadIndex = 0;
         let readScore = 0;
         let writeScore = 0;
         let minigamePlayCount = 0; 
 
-        // スコア表示・ミニゲームロック解除用関数を追加
+        let saveTimeout = null;
+        function triggerSave() {
+            if (saveTimeout) clearTimeout(saveTimeout);
+            saveTimeout = setTimeout(() => {
+                saveProgressToStorage();
+            }, 1000);
+        }
+
+        async function saveProgressToStorage() {
+            if (storageMode === 'firebase' && isFirebaseReady && currentUser && fsDoc && fsSetDoc) {
+                const settings = {
+                    grade: document.getElementById('gradeSelector').value,
+                    unit: document.getElementById('unitSelector').value,
+                    range: document.getElementById('rangeSelector').value
+                };
+                const sheetUrl = document.getElementById('spreadsheetUrl').value;
+                try {
+                    const docRef = fsDoc(db, 'artifacts', appId, 'users', currentUser.uid, 'userdata', 'progress');
+                    await fsSetDoc(docRef, {
+                        readScore,
+                        writeScore,
+                        minigamePlayCount,
+                        completedUnits: Array.from(completedUnits),
+                        mgBestRecords,
+                        settings,
+                        sheetUrl
+                    }, { merge: true });
+                } catch(e) {
+                    console.error("Failed to save to Firestore", e);
+                }
+            }
+        }
+
+        async function loadProgressFromStorage() {
+            if (storageMode === 'firebase' && isFirebaseReady && currentUser && fsDoc && fsGetDoc) {
+                try {
+                    const docRef = fsDoc(db, 'artifacts', appId, 'users', currentUser.uid, 'userdata', 'progress');
+                    const docSnap = await fsGetDoc(docRef);
+                    if (docSnap.exists()) {
+                        const data = docSnap.data();
+                        
+                        if (data.readScore !== undefined) readScore = data.readScore;
+                        if (data.writeScore !== undefined) writeScore = data.writeScore;
+                        if (data.minigamePlayCount !== undefined) minigamePlayCount = data.minigamePlayCount;
+                        if (data.completedUnits) completedUnits = new Set(data.completedUnits);
+                        if (data.mgBestRecords) mgBestRecords = data.mgBestRecords;
+                        if (data.sheetUrl) {
+                            document.getElementById('spreadsheetUrl').value = data.sheetUrl;
+                        }
+                        
+                        updateScoreDisplay();
+                        updateMgBestRecordsDisplay();
+                        refreshUnitSelectorColors();
+                        refreshFcUnitSelectorColors();
+                        
+                        if (data.settings && !isSettingsLoaded) {
+                            const gradeSelector = document.getElementById('gradeSelector');
+                            const unitSelector = document.getElementById('unitSelector');
+                            const rangeSelector = document.getElementById('rangeSelector');
+
+                            if ([...gradeSelector.options].some(o => o.value === data.settings.grade)) {
+                                gradeSelector.value = data.settings.grade;
+                            }
+                            updateUnitSelector();
+                            if ([...unitSelector.options].some(o => o.value === data.settings.unit)) {
+                                unitSelector.value = data.settings.unit;
+                            }
+                            if ([...rangeSelector.options].some(o => o.value === data.settings.range)) {
+                                rangeSelector.value = data.settings.range;
+                            }
+                            isSettingsLoaded = true;
+                            filterByUnit();
+                            filterFlashcards();
+                            filterReading();
+                        }
+                    }
+                } catch(e) {
+                    console.error("Failed to load from Firestore", e);
+                }
+            }
+        }
+
         function updateScoreDisplay() {
+            triggerSave();
+
             const readEl = document.getElementById('readScoreDisplay');
             if (readEl) readEl.textContent = `${readScore} pt`;
             
@@ -1402,7 +1536,6 @@
             const topMinigameBtn = document.getElementById('topMinigameBtn');
             const totalScore = readScore + writeScore;
             
-            // 100ポイントごとに3回遊べる計算
             const totalEarnedPlays = Math.floor(totalScore / 100) * 3;
             const availablePlays = totalEarnedPlays - minigamePlayCount;
 
@@ -1414,7 +1547,6 @@
                     topMinigameBtn.style.pointerEvents = 'auto';
                     topMinigameBtn.innerHTML = '<span>ミニゲーム</span><span style="margin-top: 15px; font-size: 0.9rem; font-weight: bold; color: #d53f8c; background: #fff5f7; padding: 2px 8px; border-radius: 10px;">解放中!</span>';
                 } else {
-                    // 次の解放に必要な目標スコアを計算
                     const nextTargetScore = (Math.floor(totalScore / 100) + 1) * 100;
                     const remaining = nextTargetScore - totalScore;
                     
@@ -1516,22 +1648,6 @@
             keisan: { score: 0, time: null }
         };
 
-        function loadMgBestRecords() {
-            try {
-                const saved = localStorage.getItem('kanji_app_mg_best_records');
-                if (saved) {
-                    mgBestRecords = { ...mgBestRecords, ...JSON.parse(saved) };
-                }
-            } catch(e) {}
-            updateMgBestRecordsDisplay();
-        }
-
-        function saveMgBestRecords() {
-            try {
-                localStorage.setItem('kanji_app_mg_best_records', JSON.stringify(mgBestRecords));
-            } catch(e) {}
-        }
-
         function updateMgBestRecordsDisplay() {
             const formatTime = (timeInSec) => {
                 if (timeInSec === null) return "-";
@@ -1577,7 +1693,7 @@
             }
             
             if (updated) {
-                saveMgBestRecords();
+                triggerSave();
                 updateMgBestRecordsDisplay();
             }
         }
@@ -1631,11 +1747,7 @@
         }
 
         window.onload = async function() {
-            const savedUrl = localStorage.getItem('kanji_app_sheet_url');
-            document.getElementById('spreadsheetUrl').value = savedUrl || DEFAULT_SHEET_URL;
-            
-            loadCompletedUnits();
-            loadMgBestRecords(); 
+            document.getElementById('spreadsheetUrl').value = DEFAULT_SHEET_URL;
             
             updateGradeSelector();
             updateUnitSelector();
@@ -1643,7 +1755,7 @@
             try {
                 await fetchFromSpreadsheet(true); 
             } catch(e) {
-                console.warn("初期データの取得に失敗しました。内蔵データを使用します。");
+                console.warn("初期データの取得に失敗しました。");
             }
 
             if (autoUpdateInterval) clearInterval(autoUpdateInterval);
@@ -1654,56 +1766,15 @@
             }, 5000);
             
             updateScoreDisplay(); 
+            updateMgBestRecordsDisplay();
         };
 
         function saveCompletedUnits() {
-            localStorage.setItem('kanji_app_completed_units', JSON.stringify([...completedUnits]));
-        }
-
-        function loadCompletedUnits() {
-            try {
-                const data = localStorage.getItem('kanji_app_completed_units');
-                if (data) completedUnits = new Set(JSON.parse(data));
-            } catch(e) {}
+            triggerSave();
         }
 
         function saveUserSetting() {
-            const settings = {
-                grade: document.getElementById('gradeSelector').value,
-                unit: document.getElementById('unitSelector').value,
-                range: document.getElementById('rangeSelector').value
-            };
-            try {
-                localStorage.setItem('kanji_app_settings', JSON.stringify(settings));
-            } catch (e) {}
-        }
-
-        function restoreUserSetting() {
-            if (isSettingsLoaded) return;
-            try {
-                const settingsJson = localStorage.getItem('kanji_app_settings');
-                if (settingsJson) {
-                    const data = JSON.parse(settingsJson);
-                    const gradeSelector = document.getElementById('gradeSelector');
-                    const unitSelector = document.getElementById('unitSelector');
-                    const rangeSelector = document.getElementById('rangeSelector');
-
-                    if ([...gradeSelector.options].some(o => o.value === data.grade)) {
-                        gradeSelector.value = data.grade;
-                    }
-                    updateUnitSelector();
-                    if ([...unitSelector.options].some(o => o.value === data.unit)) {
-                        unitSelector.value = data.unit;
-                    }
-                    if ([...rangeSelector.options].some(o => o.value === data.range)) {
-                        rangeSelector.value = data.range;
-                    }
-                }
-                isSettingsLoaded = true;
-            } catch (e) {}
-            filterByUnit();
-            filterFlashcards();
-            filterReading();
+            triggerSave();
         }
 
         function updateGradeSelector() {
@@ -1783,6 +1854,7 @@
         function refreshUnitSelectorColors() {
             const grade = document.getElementById('gradeSelector').value;
             const unitSelector = document.getElementById('unitSelector');
+            if (!unitSelector) return;
             
             Array.from(unitSelector.options).forEach(opt => {
                 if (opt.value && completedUnits.has(`${grade}:::${opt.value}`)) {
@@ -2312,6 +2384,10 @@
                 }
             }
 
+            if (range === 'up-to') {
+                filtered = filtered.sort(() => Math.random() - 0.5);
+            }
+
             if (filtered.length > 50) {
                 filtered = filtered.sort(() => Math.random() - 0.5).slice(0, 50);
             }
@@ -2320,20 +2396,11 @@
             renderCards(filtered);
         }
 
-        function shuffleProblems() {
-            for (let i = currentRenderedProblems.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [currentRenderedProblems[i], currentRenderedProblems[j]] = [currentRenderedProblems[j], currentRenderedProblems[i]];
-            }
-            currentWriteIndex = 0;
-            renderCards(currentRenderedProblems);
-        }
-
-        function nextWriteProblem() {
+        function prevWriteProblem() {
             if (currentRenderedProblems.length === 0) return;
-            currentWriteIndex++;
-            if (currentWriteIndex >= currentRenderedProblems.length) {
-                currentWriteIndex = 0;
+            currentWriteIndex--;
+            if (currentWriteIndex < 0) {
+                currentWriteIndex = currentRenderedProblems.length - 1;
             }
             const targetBlock = document.querySelector(`.prob-block[data-prob-index="${currentWriteIndex}"]`);
             if (targetBlock) {
@@ -2342,11 +2409,11 @@
             }
         }
 
-        function prevWriteProblem() {
+        function nextWriteProblem() {
             if (currentRenderedProblems.length === 0) return;
-            currentWriteIndex--;
-            if (currentWriteIndex < 0) {
-                currentWriteIndex = currentRenderedProblems.length - 1;
+            currentWriteIndex++;
+            if (currentWriteIndex >= currentRenderedProblems.length) {
+                currentWriteIndex = 0;
             }
             const targetBlock = document.querySelector(`.prob-block[data-prob-index="${currentWriteIndex}"]`);
             if (targetBlock) {
