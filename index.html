@@ -106,7 +106,6 @@
             .print-rows-4 .print-bracket.large, .print-rows-5 .print-bracket.large { height: 30mm; }
             .print-rows-4 .print-prob-answer-line, .print-rows-5 .print-prob-answer-line { margin-left: 5px; }
         }
-        .ai-section { margin-bottom: 20px; padding: 15px; background: linear-gradient(to right, #f3e8ff, #e0e7ff); border: 2px solid #8b5cf6; border-radius: 8px; }
         .edit-controls { margin-bottom: 15px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; justify-content: space-between; }
         .btn-red { background: #ef4444; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; }
         .btn-gray { background: #6b7280; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; }
@@ -305,8 +304,7 @@
                   <div id="kdPracticeGuide" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 180px; line-height: 1; color: #edf2f7; font-family: 'Klee One', 'UD デジタル 教科書体 N-R', serif; pointer-events: none; z-index: 1;"></div>
                   <canvas id="kdPracticeCanvas1" width="250" height="250" style="position: absolute; top: 0; left: 0; z-index: 2; touch-action: none; cursor: crosshair; background: transparent;"></canvas>
               </div>
-              <div style="display: flex; gap: 10px; margin-bottom: 20px;">
-                  <button id="kdEvalBtn1" onclick="window.evalKdPracticeCanvas(1)" style="padding: 8px 25px; font-weight: bold; font-size: 1rem; border-radius: 10px; background: #ed8936; color: white; border: none; cursor: pointer;">まるつけ</button>
+              <div style="display: flex; gap: 10px; margin-bottom: 20px; justify-content: center;">
                   <button onclick="window.clearKdPracticeCanvas(1)" style="padding: 8px 25px; font-weight: bold; font-size: 1rem; border-radius: 10px; background: #a0aec0; color: white; border: none; cursor: pointer;">クリア</button>
               </div>
 
@@ -314,8 +312,7 @@
               <div style="position: relative; width: 250px; height: 250px; background: white; border: 2px dashed #cbd5e0; border-radius: 10px; overflow: hidden; margin-bottom: 10px;">
                   <canvas id="kdPracticeCanvas2" width="250" height="250" style="position: absolute; top: 0; left: 0; z-index: 2; touch-action: none; cursor: crosshair; background: transparent;"></canvas>
               </div>
-              <div style="display: flex; gap: 10px;">
-                  <button id="kdEvalBtn2" onclick="window.evalKdPracticeCanvas(2)" style="padding: 8px 25px; font-weight: bold; font-size: 1rem; border-radius: 10px; background: #ed8936; color: white; border: none; cursor: pointer;">まるつけ</button>
+              <div style="display: flex; gap: 10px; justify-content: center;">
                   <button onclick="window.clearKdPracticeCanvas(2)" style="padding: 8px 25px; font-weight: bold; font-size: 1rem; border-radius: 10px; background: #a0aec0; color: white; border: none; cursor: pointer;">クリア</button>
               </div>
           </div>
@@ -334,14 +331,6 @@
         <button onclick="closeEditDialog()" style="background: #e2e8f0; color: #4a5568; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer;">キャンセル</button>
     </div>
     <div id="editSection" style="display: none; flex: 1; overflow: hidden; flex-direction: column; width:100%;">
-     <div class="ai-section">
-        <div class="ai-header">✨ AIで問題作成 (Powered by Gemini)</div>
-        <div class="ai-form">
-            <select id="aiGrade" style="padding: 10px; border: 1px solid #c4b5fd; border-radius: 6px;"><option value="小学1年生">小学1年生</option><option value="小学2年生">小学2年生</option><option value="小学3年生">小学3年生</option><option value="小学4年生">小学4年生</option><option value="小学5年生">小学5年生</option><option value="小学6年生">小学6年生</option></select>
-            <input type="text" id="aiTheme" class="ai-input" placeholder="テーマ (例: 夏休み, 動物, スポーツ)">
-            <button onclick="generateAiProblems()" id="aiGenerateBtn" class="btn-blue" style="background: #8b5cf6;"><span>自動生成</span></button>
-        </div>
-     </div>
      <div style="margin-bottom: 20px; padding: 15px; background: #f0f9ff; border: 2px solid #3b82f6; border-radius: 8px;">
         <label style="display: block; margin-bottom: 8px; font-weight: bold; color: #1e40af;">📊 スプレッドシートURL:</label>
         <div style="display: flex; gap: 10px; align-items: center;">
@@ -366,20 +355,11 @@
   </div>
 
   <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
         // === Variables Definition ===
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
         const apiKey = ""; 
         const correctPassword = "kanji"; 
         const unitOrder = ["小学1年生", "小学2年生", "小学3年生", "小学4年生", "小学5年生", "小学6年生", "中学1年生", "中学2年生", "中学3年生"];
         const DEFAULT_SHEET_URL = "https://docs.google.com/spreadsheets/d/1a2CyIJCM5Nqy6Hah6249_Era1jyw11QmhAIJQGzoesA/edit?gid=649883566#gid=649883566";
-
-        let db, auth, currentUser = null, isFirebaseReady = false, storageMode = 'none';
-        let fsDoc = doc, fsSetDoc = setDoc, fsGetDoc = getDoc;
 
         let readScore = 0, writeScore = 0, kanjiPracticeScore = 0, minigamePlayCount = 0, completedUnits = new Set(), mgBestRecords = {};
         let allProblems = [];
@@ -419,34 +399,6 @@
         const mgBushuData = [{q:"<span style='font-size:4rem;color:#e53e3e;'>氵</span><br>この部首のなまえは？",a:"さんずい",choices:["さんずい","きへん","ごんべん","にんべん"]},{q:"<span style='font-size:4rem;color:#e53e3e;'>訁</span><br>この部首のなまえは？",a:"ごんべん",choices:["ごんべん","しんにょう","くさかんむり","きへん"]},{q:"<span style='font-size:4rem;color:#e53e3e;'>木</span><br>この部首のなまえは？",a:"きへん",choices:["きへん","くさかんむり","つちへん","さんずい"]},{q:"<span style='font-size:4rem;color:#e53e3e;'>亻</span><br>この部首のなまえは？",a:"にんべん",choices:["にんべん","きへん","ぎょうにんべん","てへん"]},{q:"<span style='font-size:4rem;color:#e53e3e;'>艹</span><br>この部首のなまえは？",a:"くさかんむり",choices:["くさかんむり","たけかんむり","うかんむり","あめかんむり"]},{q:"<span style='font-size:4rem;color:#e53e3e;'>⻌</span><br>この部首のなまえは？",a:"しんにょう",choices:["しんにょう","えんにょう","ぎょうにんべん","さんずい"]},{q:"<span style='font-size:4rem;color:#e53e3e;'>口</span><br>この部首のなまえは？",a:"くちへん",choices:["くちへん","くにがまえ","めへん","ひへん"]},{q:"<span style='font-size:4rem;color:#e53e3e;'>釒</span><br>この部首のなまえは？",a:"かねへん",choices:["かねへん","いしへん","きへん","さんずい"]},{q:"<span style='font-size:4rem;color:#e53e3e;'>穴</span><br>この部首のなまえは？",a:"あなかんむり",choices:["あなかんむり","うかんむり","わかんむり","あめかんむり"]},{q:"<span style='font-size:4rem;color:#e53e3e;'>日</span><br>この部首のなまえは？",a:"ひへん",choices:["ひへん","つきへん","めへん","田"]}];
         const mgNaritachiData = [{q:"<span style='font-size:4rem;'>☀️</span><br>たいようの形からできたものは？",a:"日",choices:["日","月","木","水"]},{q:"<span style='font-size:4rem;'>🌙</span><br>みかづきの形からできたものは？",a:"月",choices:["月","日","夕","夜"]},{q:"<span style='font-size:4rem;'>🌊</span><br>みずが流れる様子からできたものは？",a:"川",choices:["川","水","雨","海"]},{q:"<span style='font-size:4rem;'>🌳</span><br>木の根元に印をつけて「もと」を表したものは？",a:"本",choices:["本","木","末","未"]},{q:"<span style='font-size:4rem;'>🚶🌳</span><br>ひとが木に寄りかかってやすむ様子からできたものは？",a:"休",choices:["休","体","林","保"]},{q:"<span style='font-size:4rem;'>🌲🌲</span><br>木がふたつ並んで、たくさん木があることを表すものは？",a:"林",choices:["林","森","木","枝"]},{q:"<span style='font-size:4rem;'>👁️</span><br>めの形からできたものは？",a:"目",choices:["目","見","貝","自"]},{q:"<span style='font-size:4rem;'>🪶</span><br>とりのはねの形からできたものは？",a:"羽",choices:["羽","鳥","飛","翼"]},{q:"<span style='font-size:4rem;'>⛰️</span><br>やまの形からできたものは？",a:"山",choices:["山","川","石","岩"]},{q:"<span style='font-size:4rem;'>🧍</span><br>ひとが立っている様子を横から見てできたものは？",a:"人",choices:["人","入","大","立"]}];
         const mgKeisanData = [{q:"<span style='font-size:4rem;'>山 ＋ 石</span><br>＝ ？",a:"岩",choices:["岩","砂","炭","岸"]},{q:"<span style='font-size:4rem;'>木 ＋ 木</span><br>＝ ？",a:"林",choices:["林","森","本","枝"]},{q:"<span style='font-size:4rem;'>日 ＋ 月</span><br>＝ ？",a:"明",choices:["明","星","晴","朝"]},{q:"<span style='font-size:4rem;'>人 ＋ 木</span><br>＝ ？",a:"休",choices:["休","体","保","信"]},{q:"<span style='font-size:4rem;'>口 ＋ 鳥</span><br>＝ ？",a:"鳴",choices:["鳴","唄","唱","叫"]},{q:"<span style='font-size:4rem;'>門 ＋ 日</span><br>＝ ？",a:"間",choices:["間","問","開","閉"]},{q:"<span style='font-size:4rem;'>女 ＋ 子</span><br>＝ ？",a:"好",choices:["好","妹","姉","娘"]},{q:"<span style='font-size:4rem;'>木 ＋ 目</span><br>＝ ？",a:"相",choices:["相","箱","想","植"]},{q:"<span style='font-size:4rem;'>言 ＋ 舌</span><br>＝ ？",a:"話",choices:["話","語","読","記"]},{q:"<span style='font-size:4rem;'>禾 ＋ 火</span><br>＝ ？",a:"秋",choices:["秋","冬","春","夏"]}];
-
-        // === Firebase Init ===
-        (async () => {
-            if (firebaseConfig) {
-                try {
-                    storageMode = 'firebase';
-                    const app = initializeApp(firebaseConfig);
-                    auth = getAuth(app);
-                    db = getFirestore(app);
-                    
-                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                        await signInWithCustomToken(auth, __initial_auth_token);
-                    } else {
-                        await signInAnonymously(auth);
-                    }
-
-                    onAuthStateChanged(auth, async (u) => {
-                        currentUser = u;
-                        if (u) {
-                            isFirebaseReady = true;
-                            await window.loadProgressFromStorage();
-                        }
-                    });
-                } catch(e) {
-                    console.error("Firebase init error:", e);
-                }
-            }
-        })();
 
         // === Utils ===
         window.getCircleNumber = function(num) {
@@ -496,35 +448,31 @@
             return rows;
         };
 
-        window.saveProgressToStorage = async function() {
-            if (isFirebaseReady && currentUser) {
-                try {
-                    const docRef = fsDoc(db, 'artifacts', appId, 'users', currentUser.uid, 'userdata', 'progress');
-                    await fsSetDoc(docRef, { readScore, writeScore, kanjiPracticeScore, minigamePlayCount, completedUnits: Array.from(completedUnits), mgBestRecords }, { merge: true });
-                } catch(e) {
-                    console.error("保存エラー:", e);
-                }
+        window.saveProgressToStorage = function() {
+            try {
+                const data = { readScore, writeScore, kanjiPracticeScore, minigamePlayCount, completedUnits: Array.from(completedUnits), mgBestRecords };
+                localStorage.setItem("kanjiNaviSaveData", JSON.stringify(data));
+            } catch(e) {
+                console.error("保存エラー:", e);
             }
         }
 
-        window.loadProgressFromStorage = async function() {
-            if (isFirebaseReady && currentUser) {
-                try {
-                    const docSnap = await fsGetDoc(fsDoc(db, 'artifacts', appId, 'users', currentUser.uid, 'userdata', 'progress'));
-                    if (docSnap.exists()) {
-                        const data = docSnap.data();
-                        readScore = data.readScore || 0;
-                        writeScore = data.writeScore || 0;
-                        kanjiPracticeScore = data.kanjiPracticeScore || 0;
-                        minigamePlayCount = data.minigamePlayCount || 0;
-                        completedUnits = new Set(data.completedUnits || []);
-                        if(data.mgBestRecords) mgBestRecords = data.mgBestRecords;
-                        window.updateScoreDisplay();
-                        window.updateMgBestRecordsDisplay();
-                    }
-                } catch(e) {
-                    console.error("読み込みエラー:", e);
+        window.loadProgressFromStorage = function() {
+            try {
+                const saved = localStorage.getItem("kanjiNaviSaveData");
+                if (saved) {
+                    const data = JSON.parse(saved);
+                    readScore = data.readScore || 0;
+                    writeScore = data.writeScore || 0;
+                    kanjiPracticeScore = data.kanjiPracticeScore || 0;
+                    minigamePlayCount = data.minigamePlayCount || 0;
+                    completedUnits = new Set(data.completedUnits || []);
+                    if(data.mgBestRecords) mgBestRecords = data.mgBestRecords;
                 }
+                window.updateScoreDisplay();
+                window.updateMgBestRecordsDisplay();
+            } catch(e) {
+                console.error("読み込みエラー:", e);
             }
         }
 
@@ -1030,71 +978,6 @@
             ctx.setLineDash([]);
             
             kdHasDrawn[id] = false;
-            const btn = document.getElementById('kdEvalBtn' + id);
-            if (btn) {
-                btn.textContent = 'まるつけ';
-                btn.style.background = '#ed8936';
-                btn.disabled = false;
-            }
-        };
-
-        window.evalKdPracticeCanvas = async function(id) {
-            const canvas = document.getElementById('kdPracticeCanvas' + id);
-            const btn = document.getElementById('kdEvalBtn' + id);
-            if (!canvas || !btn) return;
-            
-            if (!kdHasDrawn[id]) { alert("文字を書いてからまるつけを押してください"); return; }
-            if (btn.textContent === '正解！') return;
-            
-            btn.innerHTML = '<span class="loading-spinner" style="border-color:#fff; border-top-color:transparent; width:12px; height:12px; border-width:2px;"></span>';
-            btn.disabled = true;
-
-            const targetChar = window.kdCurrentKanji;
-
-            try {
-                // 背景が透明なので、白背景を敷いてから画像データ化
-                const tempCanvas = document.createElement('canvas');
-                tempCanvas.width = canvas.width; tempCanvas.height = canvas.height;
-                const tempCtx = tempCanvas.getContext('2d');
-                tempCtx.fillStyle = '#ffffff'; tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
-                tempCtx.drawImage(canvas, 0, 0);
-                
-                const base64ImageData = tempCanvas.toDataURL("image/jpeg", 0.9).split(',')[1];
-                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
-                const payload = {
-                    contents: [{
-                        role: "user",
-                        parts: [
-                            { text: `Target Kanji: '${targetChar}'.\nIf there are ANY drawn lines, scribbles, or marks in the image, you MUST assume the child tried to write the target Kanji and output ONLY '${targetChar}'. Do NOT judge the correctness of the strokes. Only output 'BLANK' if the image is 100% plain white. Output exactly one character.` },
-                            { inlineData: { mimeType: "image/jpeg", data: base64ImageData } }
-                        ]
-                    }],
-                    generationConfig: { temperature: 0.1, maxOutputTokens: 5 }
-                };
-
-                const response = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-                const data = await response.json();
-                const textResp = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || "";
-                
-                if (textResp.includes(targetChar)) {
-                    btn.textContent = '正解！';
-                    btn.style.background = '#48bb78';
-                    kanjiPracticeScore += 5;
-                    window.updateScoreDisplay();
-                    window.playCorrectSound(); 
-                } else {
-                    btn.textContent = 'ざんねん';
-                    btn.style.background = '#f56565';
-                    setTimeout(() => {
-                        btn.textContent = 'まるつけ';
-                        btn.style.background = '#ed8936';
-                        btn.disabled = false;
-                    }, 1500);
-                }
-            } catch(e) {
-                btn.textContent = 'まるつけ';
-                btn.disabled = false;
-            }
         };
 
         // 例文を問題入力欄に変換する関数
@@ -1390,20 +1273,15 @@
             canvas.style.cssText = `width:${size}px; height:${size}px; background:white; border:2px dashed #cbd5e0; border-radius: 8px; cursor:crosshair; touch-action:none; display: block;`;
             canvasContainer.appendChild(canvas);
 
-            // 2. まるつけ・クリアボタン (キャンバスの下に横並び)
+            // 2. クリアボタン (キャンバスの下に配置)
             const actionBtnWrap = document.createElement('div');
             actionBtnWrap.style.cssText = 'display: flex; flex-direction: row; gap: 10px; justify-content: center; width: 100%;';
-            
-            const evalBtn = document.createElement('button');
-            evalBtn.textContent = 'まるつけ';
-            evalBtn.style.cssText = 'flex: 1; background:white; border:2px solid #ed8936; border-radius:6px; padding:10px 0; color:#ed8936; font-weight:bold; cursor:pointer; font-size: 1.1rem; box-sizing: border-box; text-align: center;';
             
             const clearBtn = document.createElement('button');
             clearBtn.textContent = 'クリア';
             clearBtn.className = 'btn-gray';
             clearBtn.style.cssText = 'flex: 1; padding:10px 0; font-size:1rem; border-radius:6px; border: none; background: #a0aec0; color: white; cursor: pointer; box-sizing: border-box; text-align: center;';
             
-            actionBtnWrap.appendChild(evalBtn);
             actionBtnWrap.appendChild(clearBtn);
 
             canvasGroup.appendChild(canvasContainer);
@@ -1438,9 +1316,6 @@
                 const svg = canvasContainer.querySelector('.svg-wrap');
                 if(svg) svg.remove();
                 canvas.style.display = 'block';
-                evalBtn.textContent = 'まるつけ';
-                evalBtn.style.cssText = 'flex: 1; background:white; border:2px solid #ed8936; border-radius:6px; padding:10px 0; color:#ed8936; font-weight:bold; cursor:pointer; font-size: 1.1rem; box-sizing: border-box; text-align: center;';
-                evalBtn.disabled = false;
 
                 ansDisplay.innerHTML = '';
                 ansDisplay.style.background = '#f7fafc';
@@ -1492,54 +1367,6 @@
                     }
                 }
             };
-            
-            evalBtn.onclick = async () => {
-                if (!canvasData.hasDrawn) { alert("文字を書いてからまるつけを押してください"); return; }
-                if (evalBtn.textContent === '正解！') return;
-                
-                evalBtn.innerHTML = '<span class="loading-spinner" style="border-color:#ed8936; border-top-color:transparent; width:12px; height:12px; border-width:2px;"></span>';
-                evalBtn.disabled = true;
-
-                try {
-                    const base64ImageData = canvas.toDataURL("image/jpeg", 0.9).split(',')[1];
-                    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
-                    const payload = {
-                        contents: [{
-                            role: "user",
-                            parts: [
-                                { text: `Target Kanji: '${targetChar}'.\nIf there are ANY drawn lines, scribbles, or marks in the image, you MUST assume the child tried to write the target Kanji and output ONLY '${targetChar}'. Do NOT judge the correctness of the strokes. Only output 'BLANK' if the image is 100% plain white. Output exactly one character.` },
-                                { inlineData: { mimeType: "image/jpeg", data: base64ImageData } }
-                            ]
-                        }],
-                        generationConfig: { temperature: 0.1, maxOutputTokens: 5 }
-                    };
-
-                    const response = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-                    const data = await response.json();
-                    const textResp = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || "";
-                    
-                    if (textResp.includes(targetChar)) {
-                        evalBtn.textContent = '正解！';
-                        evalBtn.style.cssText = 'flex: 1; background:#48bb78; color:white; border:none; font-weight:bold; padding:10px 0; border-radius:6px; font-size: 1.1rem; box-sizing: border-box; text-align: center;';
-                        writeScore += 5;
-                        window.updateScoreDisplay();
-                        document.getElementById('progress').textContent = `${activeCanvases.filter(c=>c.evalBtn?.textContent === '正解！').length}/${totalKanjiInCurrentSet} 漢字`;
-                    } else {
-                        evalBtn.textContent = 'ざんねん';
-                        evalBtn.style.cssText = 'flex: 1; background:#f56565; color:white; border:none; font-weight:bold; padding:10px 0; border-radius:6px; font-size: 1.1rem; box-sizing: border-box; text-align: center;';
-                        setTimeout(() => {
-                            evalBtn.textContent = 'まるつけ';
-                            evalBtn.style.cssText = 'flex: 1; background:white; border:2px solid #ed8936; border-radius:6px; padding:10px 0; color:#ed8936; font-weight:bold; cursor:pointer; font-size: 1.1rem; box-sizing: border-box; text-align: center;';
-                            evalBtn.disabled = false;
-                        }, 1500);
-                    }
-                } catch(e) {
-                    evalBtn.textContent = 'まるつけ';
-                    evalBtn.disabled = false;
-                }
-            };
-            
-            canvasData.evalBtn = evalBtn;
 
             const start = (e) => { canvasData.isDrawing = true; ctx.beginPath(); const rect = canvas.getBoundingClientRect(); ctx.moveTo((e.touches?e.touches[0].clientX:e.clientX)-rect.left, (e.touches?e.touches[0].clientY:e.clientY)-rect.top); e.preventDefault(); };
             const draw = (e) => { if(!canvasData.isDrawing) return; canvasData.hasDrawn = true; const rect = canvas.getBoundingClientRect(); ctx.lineTo((e.touches?e.touches[0].clientX:e.clientX)-rect.left, (e.touches?e.touches[0].clientY:e.clientY)-rect.top); ctx.strokeStyle='black'; ctx.lineWidth=8; ctx.lineCap='round'; ctx.stroke(); e.preventDefault(); };
@@ -2105,30 +1932,6 @@
         };
         window.saveAndReturn = () => { window.saveProblems(); window.closeEditDialog(); };
 
-        window.generateAiProblems = async () => {
-            const btn = document.getElementById('aiGenerateBtn');
-            const grade = document.getElementById('aiGrade').value;
-            const theme = document.getElementById('aiTheme').value || "日常";
-            btn.disabled = true; btn.innerHTML = '<span class="loading-spinner"></span>';
-            const prompt = `You are a Japanese language teacher. Generate 5 sentences for learning Kanji for grade "${grade}". Theme: "${theme}". Format requirements: 1. MUST be a valid JSON array of objects. 2. Each object must have "grade" (value: "${grade}"), "unit" (value: "AI自動生成"), and "sentence". 3. In the sentence, enclose target Kanji in {Kanji|Reading} format. Example: "今日は{天気|てんき}が良い。"`;
-            try {
-                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig: { responseMimeType: "application/json", maxOutputTokens: 8192 } })
-                });
-                const data = await res.json();
-                
-                let rawText = data.candidates?.[0]?.content?.parts?.[0]?.text || "[]";
-                rawText = rawText.replace(/^```(json)?\n?/i, '').replace(/\n?```$/i, '').trim();
-                const newProbs = JSON.parse(rawText);
-                
-                const table = document.getElementById('spreadsheetTable');
-                let startRow = table.querySelectorAll('tr').length - 1; 
-                if (Array.isArray(newProbs)) {
-                    newProbs.forEach((p, idx) => { window.addRow(); window.setVal(startRow+idx, 'grade', p.grade); window.setVal(startRow+idx, 'unit', p.unit); window.setVal(startRow+idx, 'sentence', p.sentence); });
-                }
-            } catch(e) { console.warn("生成エラー:", e); alert("生成エラーまたは形式エラーです。"); } finally { btn.disabled = false; btn.innerHTML = '<span>自動生成</span>'; }
-        };
-
         window.loadFromUrl = async () => {
             const url = document.getElementById('spreadsheetUrl').value;
             if(!url) return;
@@ -2143,6 +1946,7 @@
             } catch(e) { alert('読み込みに失敗しました。'); }
         };
 
+        window.loadProgressFromStorage();
         window.fetchProblems();
   </script>
  </body>
