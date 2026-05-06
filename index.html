@@ -352,6 +352,7 @@
         const DEFAULT_SHEET_URL = "https://docs.google.com/spreadsheets/d/1a2CyIJCM5Nqy6Hah6249_Era1jyw11QmhAIJQGzoesA/edit?gid=649883566#gid=649883566";
 
         let readScore = 0, writeScore = 0, kanjiPracticeScore = 0, minigamePlayCount = 0, completedUnits = new Set(), mgBestRecords = {};
+        let completedKanjiReadings = new Set(); // 追加：漢字練習問題のクリア記録用
         let allProblems = [];
         let activeCanvases = [];
         let totalKanjiInCurrentSet = 0;
@@ -436,7 +437,7 @@
 
         window.saveProgressToStorage = function() {
             try {
-                const data = { readScore, writeScore, kanjiPracticeScore, minigamePlayCount, completedUnits: Array.from(completedUnits), mgBestRecords };
+                const data = { readScore, writeScore, kanjiPracticeScore, minigamePlayCount, completedUnits: Array.from(completedUnits), mgBestRecords, completedKanjiReadings: Array.from(completedKanjiReadings) };
                 localStorage.setItem("kanjiNaviSaveData", JSON.stringify(data));
             } catch(e) {
                 console.error("保存エラー:", e);
@@ -454,6 +455,7 @@
                     minigamePlayCount = data.minigamePlayCount || 0;
                     completedUnits = new Set(data.completedUnits || []);
                     if(data.mgBestRecords) mgBestRecords = data.mgBestRecords;
+                    if(data.completedKanjiReadings) completedKanjiReadings = new Set(data.completedKanjiReadings);
                 }
                 window.updateScoreDisplay();
                 window.updateMgBestRecordsDisplay();
@@ -972,9 +974,11 @@
         window.createKanjiQuestionHtml = function(htmlStr, targetKanji) {
             const tempDiv = document.createElement('div');
             tempDiv.innerHTML = htmlStr;
+            const originalText = tempDiv.textContent; // テキストのみ抽出してユニークキーに利用
+            const sentenceHash = window.getHash(originalText);
 
             const rubies = tempDiv.querySelectorAll('ruby');
-            rubies.forEach(ruby => {
+            rubies.forEach((ruby, index) => {
                 let kanjiText = '';
                 ruby.childNodes.forEach(node => {
                     if (node.nodeType === Node.TEXT_NODE) {
@@ -988,13 +992,17 @@
                     const yomi = rt ? rt.textContent : '';
                     
                     if (yomi) {
+                        const uniqueKey = `${targetKanji}_${sentenceHash}_${index}`;
+                        const isCompleted = completedKanjiReadings.has(uniqueKey);
+                        const bgColor = isCompleted ? '#bee3f8' : 'white'; // クリア済みなら少し濃い水色、未クリアなら白
+                        
                         const wrapper = document.createElement('span');
                         wrapper.className = 'reading-input-wrapper';
                         wrapper.style.cssText = `position: relative; display: inline-flex; align-items: center; justify-content: center; vertical-align: middle; margin: 0 5px;`;
                         
                         wrapper.innerHTML = `
                             <span style="color:#2b6cb0;font-weight:bold;text-decoration:underline;text-decoration-color:#cbd5e0;text-decoration-thickness:2px; margin-right: 2px;">${kanjiText}</span>
-                            <span style="font-size: 1.1rem;">（</span><input type="text" class="reading-input kanji-detail-input" data-answer="${yomi}" style="writing-mode: horizontal-tb; width: ${Math.max(2, yomi.length + 0.5)}em; height: 1.8em; font-size: 1.1rem; padding: 2px; text-align: center; line-height: 1; color: inherit;" oninput="window.checkKanjiDetailReading(this, '${yomi}')" onkeydown="window.handleKanjiDetailKeydown(event, this, '${yomi}')"><span style="font-size: 1.1rem;">）</span>
+                            <span style="font-size: 1.1rem;">（</span><input type="text" class="reading-input kanji-detail-input" data-answer="${yomi}" data-key="${uniqueKey}" style="writing-mode: horizontal-tb; width: ${Math.max(2, yomi.length + 0.5)}em; height: 1.8em; font-size: 1.1rem; padding: 2px; text-align: center; line-height: 1; color: inherit; background: ${bgColor};" oninput="window.checkKanjiDetailReading(this, '${yomi}')" onkeydown="window.handleKanjiDetailKeydown(event, this, '${yomi}')"><span style="font-size: 1.1rem;">）</span>
                         `;
                         
                         ruby.replaceWith(wrapper);
@@ -1085,7 +1093,16 @@
                     input.parentElement.appendChild(circle);
                 }
 
-                kanjiPracticeScore += 2; // 正解で2ポイント
+                const key = input.getAttribute('data-key');
+                if (key && !completedKanjiReadings.has(key)) {
+                    // 初回正解で2ポイント
+                    kanjiPracticeScore += 2;
+                    completedKanjiReadings.add(key);
+                } else {
+                    // 2回目以降で1ポイント
+                    kanjiPracticeScore += 1;
+                }
+                
                 window.updateScoreDisplay();
                 
                 setTimeout(() => window.nextKanjiDetailInput(input), 300);
