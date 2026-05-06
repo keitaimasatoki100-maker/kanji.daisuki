@@ -8,9 +8,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Klee+One:wght@400;600&display=swap" rel="stylesheet">
   
-  <script src="https://cdn.jsdelivr.net/npm/kuroshiro@1.2.0/dist/kuroshiro.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/kuroshiro-analyzer-kuromoji@1.1.0/dist/kuroshiro-analyzer-kuromoji.min.js"></script>
-  
   <style>
         * { font-family: 'UD デジタル 教科書体 N-R', 'UD Digi Kyokasho N-R', '教科書体', 'BIZ UDPGothic', sans-serif; }
         body { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; margin: 0; padding: 10px; display: flex; justify-content: center; align-items: flex-start; writing-mode: vertical-rl; text-orientation: upright; padding-top: 10px; box-sizing: border-box; overflow-x: auto; }
@@ -155,14 +152,9 @@
               <option value="only" selected>だけ</option>
           </select>
       </div>
+      <div style="color: #e53e3e; font-weight: bold; font-size: 1.5rem; margin-right: 15px; writing-mode: vertical-rl; flex-shrink: 0; white-space: nowrap;">ノートに正しい字を書けるかな？</div>
       <div id="cardsArea"></div>
-      <div id="writeSentenceDisplay" class="sentence" style="margin-right: 30px;"></div>
-      <div class="controls" style="gap: 15px;">
-          <button onclick="prevWriteProblem()" style="padding: 15px 8px; font-size: 1rem; font-weight: bold; background: #e2e8f0; color: #4a5568; border-radius: 12px; border: none; cursor: pointer; writing-mode: vertical-rl;">前へ</button>
-          <button onclick="nextWriteProblem()" style="padding: 15px 8px; font-size: 1rem; font-weight: bold; background: #48bb78; color: white; border-radius: 12px; border: none; cursor: pointer; writing-mode: vertical-rl;">次へ</button>
-          <div id="progress" class="progress">0/0 漢字</div>
-          <div id="writeScoreDisplay" style="margin: 0; color: #ed8936; font-size: 1.1rem; font-weight: bold; writing-mode: horizontal-tb;">0 pt</div>
-      </div>
+      <div id="writeSentenceDisplay" class="sentence" style="margin-right: 30px; display: none;"></div>
   </div>
 
   <div class="container" id="readingContainer" style="display: none;">
@@ -379,11 +371,6 @@
         let kanjiPracticeDataLoaded = false;
         let currentAnimId = 0;
 
-        // ふりがな自動生成用の変数
-        let kuroshiroInstance = null;
-        let isKuroshiroReady = false;
-        let isKuroshiroInitializing = false; // 初期化の重複を防ぐガード
-
         let autoUpdateInterval = null;
         let lastRawData = "";
         let isSettingsLoaded = false;
@@ -475,7 +462,6 @@
             }
         }
 
-        let saveTimeout = null; // タイマーの重複を防ぐ変数
         window.updateScoreDisplay = function() {
             const topReadScoreEl = document.getElementById('topReadScore');
             if (topReadScoreEl) topReadScoreEl.textContent = `${readScore} pt`;
@@ -503,8 +489,8 @@
                 btn.innerHTML = `<span>ミニゲーム 🔒</span><span style="font-size:0.8rem;">あと${remaining}pt</span>`;
             }
             
-            if (saveTimeout) clearTimeout(saveTimeout);
-            saveTimeout = setTimeout(() => window.saveProgressToStorage(), 1000);
+            // タイマーを使わず、ポイントが変わった瞬間に確実に即時保存するように変更
+            window.saveProgressToStorage();
         }
 
         window.updateMgBestRecordsDisplay = function() {
@@ -535,7 +521,8 @@
             if (updated) {
                 mgBestRecords[type] = record;
                 window.updateMgBestRecordsDisplay();
-                setTimeout(() => window.saveProgressToStorage(), 1000);
+                // ゲーム結果も即時保存するように変更
+                window.saveProgressToStorage();
             }
         }
 
@@ -546,26 +533,7 @@
             document.getElementById('backToTopBtnMain').style.display = 'none';
         }
 
-        // ふりがな生成器の初期化（裏側で辞書を読み込みます）
-        window.initKuroshiro = async function() {
-            if (isKuroshiroReady || isKuroshiroInitializing || typeof Kuroshiro === 'undefined') return;
-            isKuroshiroInitializing = true;
-            try {
-                // CDNからの読み込み形式の違い(defaultエクスポート)に対応
-                const KuroshiroClass = Kuroshiro.default || Kuroshiro;
-                const KuromojiAnalyzerClass = typeof KuromojiAnalyzer !== 'undefined' ? (KuromojiAnalyzer.default || KuromojiAnalyzer) : null;
-                
-                kuroshiroInstance = new KuroshiroClass();
-                await kuroshiroInstance.init(new KuromojiAnalyzerClass({ dictPath: "https://cdn.jsdelivr.net/npm/kuromoji@0.1.2/dict" }));
-                isKuroshiroReady = true;
-            } catch(e) {
-                console.error("ふりがな辞書の読み込みに失敗しました", e);
-            } finally {
-                isKuroshiroInitializing = false;
-            }
-        };
-
-        // テキストにふりがなを付与する関数
+        // テキストに手動ふりがなを付与する関数
         window.processFurigana = async function(text) {
             if (!text || text.trim() === '') return text;
             
@@ -577,21 +545,11 @@
                 return htmlText;
             }
 
-            // 手動ルビがなく、漢字が含まれていて準備が完了していれば自動でルビを振る
-            if (isKuroshiroReady && /[\u4E00-\u9FFF々]/.test(text)) {
-                try {
-                    return await kuroshiroInstance.convert(text, { mode: "furigana", to: "hiragana" });
-                } catch(e) {
-                    return text;
-                }
-            }
             return text;
         };
 
         // 初期データの取得
         window.fetchProblems = async function() {
-            // ★トップページを開いた瞬間に行っていた辞書の読み込みを停止します（フリーズ対策）
-            // window.initKuroshiro();
             try {
                 const url = `https://docs.google.com/spreadsheets/d/1a2CyIJCM5Nqy6Hah6249_Era1jyw11QmhAIJQGzoesA/export?format=csv&gid=649883566`;
                 const res = await fetch(`${url}&t=${Date.now()}`);
@@ -840,11 +798,6 @@
         }
 
         window.showKanjiDetail = async (kanji) => {
-            // ★漢字詳細が開かれたタイミングで、ふりがな辞書を準備します（初回のみ読み込まれます）
-            if (!isKuroshiroReady) {
-                await window.initKuroshiro();
-            }
-
             currentAnimId++; 
             document.getElementById('kdKanjiTitle').textContent = kanji;
             document.getElementById('kdOnReading').innerHTML = '<span class="loading-spinner" style="border-color:#3182ce; border-top-color:transparent; width: 12px; height: 12px; border-width: 2px; vertical-align: middle;"></span>';
@@ -1274,15 +1227,14 @@
             const block = document.createElement('div');
             // 右から左へ並べるため column
             block.style.cssText = 'display:flex; flex-direction:column; align-items:center; gap:20px; writing-mode: vertical-rl; margin-bottom: 10px;';
-            const size = 250;
+            const size = 125; // 答えマスのサイズを250pxから半分の125pxに変更
             
-            const readingLabel = document.createElement('div');
-            readingLabel.style.cssText = 'font-weight:bold; color:#2b6cb0; text-align:center; font-size: 1.5rem; padding-top: 20px;';
-            readingLabel.textContent = `【 ${reading} 】`;
-            
+            const ansGroup = document.createElement('div');
+            ansGroup.style.cssText = 'display: flex; flex-direction: column; align-items: center; gap: 10px; writing-mode: horizontal-tb;';
+
             const ansDisplayWrapper = document.createElement('div');
             // 複数文字がある場合は上下に並べる
-            ansDisplayWrapper.style.cssText = 'display: flex; flex-direction: row; gap: 10px;';
+            ansDisplayWrapper.style.cssText = 'display: flex; flex-direction: column; gap: 10px;';
             
             const charDisplays = [];
             const chars = Array.from(word);
@@ -1295,7 +1247,8 @@
 
             const ansBtn = document.createElement('button');
             ansBtn.textContent = '答え';
-            ansBtn.style.cssText = 'width: 100%; background:white; border:2px solid #cbd5e0; border-radius:6px; padding:10px 0; font-weight:bold; cursor:pointer; font-size: 1.1rem; color: #4a5568; box-sizing: border-box; text-align: center; writing-mode: horizontal-tb; margin-top: 10px;';
+            // ボタンの大きさを1/4にし、答えマスの下に配置
+            ansBtn.style.cssText = 'width: 25%; min-width: 60px; background:white; border:2px solid #cbd5e0; border-radius:6px; padding:5px 0; font-weight:bold; cursor:pointer; font-size: 0.9rem; color: #4a5568; box-sizing: border-box; text-align: center; writing-mode: horizontal-tb;';
 
             let currentLocalAnimId = 0;
             ansBtn.onclick = async () => {
@@ -1328,9 +1281,8 @@
                 for (let loop = 0; loop < 3; loop++) {
                     if (currentLocalAnimId !== animId) break;
                     
-                    // 各マスにSVGをセットし、パスを非表示にする
-                    for (let i = 0; i < charDisplays.length; i++) {
-                        const item = charDisplays[i];
+                    // 全ての文字の書き順アニメーションを同時に開始する
+                    const animPromises = charDisplays.map(async (item, i) => {
                         const svgText = svgDataArray[i];
                         if (svgText) {
                             item.el.innerHTML = svgText;
@@ -1343,40 +1295,36 @@
                                     const len = p.getTotalLength();
                                     p.style.cssText = `fill:none;stroke:#3182ce;stroke-width:4;stroke-linecap:round;stroke-dasharray:${len};stroke-dashoffset:${len}`;
                                 });
+
+                                for (const p of paths) {
+                                    if (currentLocalAnimId !== animId) break;
+                                    const len = p.getTotalLength();
+                                    const anim = p.animate([{ strokeDashoffset: len }, { strokeDashoffset: 0 }], { duration: 600, fill: 'forwards' });
+                                    
+                                    // アニメーション終了の確実な待機
+                                    await new Promise(resolve => {
+                                        anim.onfinish = resolve;
+                                        anim.oncancel = resolve;
+                                    });
+                                    p.style.strokeDashoffset = '0'; 
+                                }
                             }
                         } else {
                             item.el.innerHTML = `<span style="font-size: ${size * 0.6}px; color: #3182ce; font-family: 'Klee One', serif;">${item.char}</span>`;
                         }
-                    }
+                    });
+                    
+                    // 並列実行された全てのアニメーションを待機
+                    await Promise.all(animPromises);
 
-                    // 文字ごとに順次アニメーション実行
-                    for (let i = 0; i < charDisplays.length; i++) {
-                        if (currentLocalAnimId !== animId) break;
-                        const item = charDisplays[i];
-                        const svg = item.el.querySelector('svg');
-                        if (svg) {
-                            const paths = Array.from(svg.querySelectorAll('path'));
-                            for (const p of paths) {
-                                if (currentLocalAnimId !== animId) break;
-                                const len = p.getTotalLength();
-                                const anim = p.animate([{ strokeDashoffset: len }, { strokeDashoffset: 0 }], { duration: 600, fill: 'forwards' });
-                                
-                                // アニメーション終了の確実な待機
-                                await new Promise(resolve => {
-                                    anim.onfinish = resolve;
-                                    anim.oncancel = resolve;
-                                });
-                                p.style.strokeDashoffset = '0'; 
-                            }
-                        }
-                    }
                     if (loop < 2 && currentLocalAnimId === animId) await new Promise(r => setTimeout(r, 1000));
                 }
             };
             
-            block.appendChild(readingLabel);
-            block.appendChild(ansDisplayWrapper);
-            block.appendChild(ansBtn);
+            ansGroup.appendChild(ansDisplayWrapper);
+            ansGroup.appendChild(ansBtn);
+            
+            block.appendChild(ansGroup);
             
             return block;
         }
