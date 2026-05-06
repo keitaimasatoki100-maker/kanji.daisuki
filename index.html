@@ -383,6 +383,7 @@
         // ふりがな自動生成用の変数
         let kuroshiroInstance = null;
         let isKuroshiroReady = false;
+        let isKuroshiroInitializing = false; // 初期化の重複を防ぐガード
 
         let autoUpdateInterval = null;
         let lastRawData = "";
@@ -475,6 +476,7 @@
             }
         }
 
+        let saveTimeout = null; // タイマーの重複を防ぐ変数
         window.updateScoreDisplay = function() {
             const topReadScoreEl = document.getElementById('topReadScore');
             if (topReadScoreEl) topReadScoreEl.textContent = `${readScore} pt`;
@@ -501,7 +503,9 @@
                 btn.disabled = true; btn.style.opacity = '0.6';
                 btn.innerHTML = `<span>ミニゲーム 🔒</span><span style="font-size:0.8rem;">あと${remaining}pt</span>`;
             }
-            setTimeout(() => window.saveProgressToStorage(), 1000);
+            
+            if (saveTimeout) clearTimeout(saveTimeout);
+            saveTimeout = setTimeout(() => window.saveProgressToStorage(), 1000);
         }
 
         window.updateMgBestRecordsDisplay = function() {
@@ -545,7 +549,8 @@
 
         // ふりがな生成器の初期化（裏側で辞書を読み込みます）
         window.initKuroshiro = async function() {
-            if (kuroshiroInstance || typeof Kuroshiro === 'undefined') return;
+            if (isKuroshiroReady || isKuroshiroInitializing || typeof Kuroshiro === 'undefined') return;
+            isKuroshiroInitializing = true;
             try {
                 // CDNからの読み込み形式の違い(defaultエクスポート)に対応
                 const KuroshiroClass = Kuroshiro.default || Kuroshiro;
@@ -556,6 +561,8 @@
                 isKuroshiroReady = true;
             } catch(e) {
                 console.error("ふりがな辞書の読み込みに失敗しました", e);
+            } finally {
+                isKuroshiroInitializing = false;
             }
         };
 
@@ -589,6 +596,13 @@
                 const url = `https://docs.google.com/spreadsheets/d/1a2CyIJCM5Nqy6Hah6249_Era1jyw11QmhAIJQGzoesA/export?format=csv&gid=649883566`;
                 const res = await fetch(`${url}&t=${Date.now()}`);
                 const data = await res.text();
+                
+                // 万が一スプレッドシートの権限エラー等でHTMLページが返された場合の安全装置
+                if (data.trim().startsWith('<!DOCTYPE html>') || data.includes('<html')) {
+                    console.error("データの取得に失敗しました。スプレッドシートが公開されているか確認してください。");
+                    return;
+                }
+
                 allProblems = window.parseCSV(data).slice(1).map(cols => {
                     // C列ではなくX列などから抽出できるように、行の生データ(raw)も保持しておく
                     return { grade: cols[0], unit: cols[1], sentence: cols[2], raw: cols };
@@ -622,6 +636,11 @@
                 const url = `https://docs.google.com/spreadsheets/d/1a2CyIJCM5Nqy6Hah6249_Era1jyw11QmhAIJQGzoesA/export?format=csv&gid=589390040`;
                 const res = await fetch(`${url}&t=${Date.now()}`);
                 const csv = await res.text();
+
+                if (csv.trim().startsWith('<!DOCTYPE html>') || csv.includes('<html')) {
+                    throw new Error("Invalid data format");
+                }
+
                 kanjiPracticeRawData = window.parseCSV(csv);
                 const grades = [...new Set(kanjiPracticeRawData.slice(1).map(r => r[0]?.trim()).filter(v => v))];
                 selector.innerHTML = '<option value="">学年を選択...</option>';
@@ -747,7 +766,11 @@
                         if (currentAnimId !== animId) break;
                         const len = p.getTotalLength();
                         const anim = p.animate([{ strokeDashoffset: len }, { strokeDashoffset: 0 }], { duration: 600, fill: 'forwards' });
-                        await anim.finished;
+                        // 特定のブラウザでのフリーズを防ぐためPromiseでラップ
+                        await new Promise(resolve => {
+                            anim.onfinish = resolve;
+                            anim.oncancel = resolve;
+                        });
                         p.style.strokeDashoffset = '0'; 
                     }
                     if (loop < 2 && currentAnimId === animId) await new Promise(r => setTimeout(r, 1000));
@@ -801,10 +824,15 @@
                 for (const p of parts) {
                     if (currentAnimId !== animId) break;
                     const angle = Math.random() * Math.PI * 2;
-                    p.animate([
+                    const anim = p.animate([
                         { transform: `translate(${Math.cos(angle)*150}px, ${Math.sin(angle)*150}px) scale(0.2)`, opacity: 0 },
                         { transform: 'translate(0,0) scale(1)', opacity: 1 }
                     ], { duration: 800, easing: 'cubic-bezier(0.34, 1.56, 0.64, 1)', fill: 'forwards' });
+                    
+                    await new Promise(resolve => {
+                        anim.onfinish = resolve;
+                        anim.oncancel = resolve;
+                    });
                     p.style.opacity = '1';
                     await new Promise(r => setTimeout(r, 200));
                 }
@@ -1327,7 +1355,12 @@
                                 if (currentLocalAnimId !== animId) break;
                                 const len = p.getTotalLength();
                                 const anim = p.animate([{ strokeDashoffset: len }, { strokeDashoffset: 0 }], { duration: 600, fill: 'forwards' });
-                                await anim.finished;
+                                
+                                // アニメーション終了の確実な待機
+                                await new Promise(resolve => {
+                                    anim.onfinish = resolve;
+                                    anim.oncancel = resolve;
+                                });
                                 p.style.strokeDashoffset = '0'; 
                             }
                         }
@@ -1901,14 +1934,22 @@
                 const gid = url.match(/gid=([0-9]+)/)?.[1] || "0";
                 const res = await fetch(`https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=${gid}&t=${Date.now()}`);
                 const text = await res.text();
+                
+                if (text.trim().startsWith('<!DOCTYPE html>') || text.includes('<html')) {
+                    throw new Error("Invalid HTML response");
+                }
+
                 const rows = window.parseCSV(text);
                 const newProbs = rows.slice(1).map(r => ({ grade: r[0]?.trim() || "未分類", unit: r[1]?.trim() || "未分類", sentence: r[2]?.trim() || "" })).filter(p => p.sentence);
                 if (newProbs.length > 0) { allProblems = newProbs; window.updateSelectors(); window.loadProblemEditor(); alert('読み込みました'); }
-            } catch(e) { alert('読み込みに失敗しました。'); }
+            } catch(e) { alert('読み込みに失敗しました。URLや権限設定を確認してください。'); }
         };
 
-        window.loadProgressFromStorage();
-        window.fetchProblems();
+        // ページが完全に読み込まれてから安全に初期化を実行する
+        window.addEventListener('DOMContentLoaded', () => {
+            window.loadProgressFromStorage();
+            window.fetchProblems();
+        });
   </script>
  </body>
 </html>
