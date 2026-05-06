@@ -126,7 +126,7 @@
           </button>
           <button class="top-menu-btn btn-write" onclick="goToPracticeMode()">
               <span>正しく書けるかな？</span>
-              <span id="topWriteScore" style="margin-top: 25px; font-size: 1.2rem; font-weight: bold; writing-mode: horizontal-tb;">0 pt</span>
+              <span style="font-size: 0.9rem; font-weight: normal; margin-right: 15px; line-height: 1.4;">えんぴつとノートをよういしてね</span>
           </button>
           <button class="top-menu-btn btn-print" disabled style="opacity: 0.6; cursor: not-allowed;"><span>プリント印刷 🔒</span></button>
           <button id="topMinigameBtn" class="top-menu-btn btn-minigame" onclick="goToMinigameMenu()" disabled style="opacity: 0.6;">
@@ -354,9 +354,8 @@
    </div>
   </div>
 
-  <script type="module">
+  <script>
         // === Variables Definition ===
-        const apiKey = ""; 
         const correctPassword = "kanji"; 
         const unitOrder = ["小学1年生", "小学2年生", "小学3年生", "小学4年生", "小学5年生", "小学6年生", "中学1年生", "中学2年生", "中学3年生"];
         const DEFAULT_SHEET_URL = "https://docs.google.com/spreadsheets/d/1a2CyIJCM5Nqy6Hah6249_Era1jyw11QmhAIJQGzoesA/edit?gid=649883566#gid=649883566";
@@ -477,8 +476,11 @@
         }
 
         window.updateScoreDisplay = function() {
-            document.getElementById('topReadScore').textContent = `${readScore} pt`;
-            document.getElementById('topWriteScore').textContent = `${writeScore} pt`;
+            const topReadScoreEl = document.getElementById('topReadScore');
+            if (topReadScoreEl) topReadScoreEl.textContent = `${readScore} pt`;
+            
+            const topWriteScoreEl = document.getElementById('topWriteScore');
+            if (topWriteScoreEl) topWriteScoreEl.textContent = `${writeScore} pt`;
             
             const kpScoreEl = document.getElementById('topKanjiPracticeScore');
             if (kpScoreEl) kpScoreEl.textContent = `${kanjiPracticeScore} pt`;
@@ -1213,28 +1215,9 @@
                 });
 
                 blanks.forEach(data => {
-                    const block = document.createElement('div');
-                    // 読み仮名(右)、入力欄(左) の順に並べるため column
-                    block.style.cssText = 'display: flex; flex-direction: column; align-items: center; gap: 10px; writing-mode: vertical-rl;';
-                    
-                    const readingLabel = document.createElement('div');
-                    readingLabel.style.cssText = 'font-weight:bold; color:#2b6cb0; text-align:center; font-size: 1.5rem; padding-top: 20px;';
-                    readingLabel.textContent = `【 ${data.reading} 】`;
-                    block.appendChild(readingLabel);
-                    
-                    const charsWrapper = document.createElement('div');
-                    // 複数文字がある場合は上下に並べる
-                    charsWrapper.style.cssText = 'display: flex; flex-direction: row; gap: 10px;';
-
-                    const chars = Array.from(data.kanji);
-                    chars.forEach(char => {
-                        const box = window.createInlineCharCanvas(char, p);
-                        charsWrapper.appendChild(box);
-                        totalKanjiInCurrentSet++;
-                    });
-                    
-                    block.appendChild(charsWrapper);
-                    canvasesWrapper.appendChild(block);
+                    const box = window.createWordAnswerBox(data.kanji, data.reading);
+                    canvasesWrapper.appendChild(box);
+                    totalKanjiInCurrentSet += Array.from(data.kanji).length;
                 });
 
                 const rightContent = document.createElement('div');
@@ -1254,132 +1237,110 @@
             if (prog) prog.textContent = `0/${totalKanjiInCurrentSet} 漢字`;
         }
 
-        window.createInlineCharCanvas = function(targetChar, prob) {
-            const wrapper = document.createElement('div');
+        window.createWordAnswerBox = function(word, reading) {
+            const block = document.createElement('div');
             // 右から左へ並べるため column
-            wrapper.style.cssText = 'display:flex; flex-direction:column; align-items:center; gap:20px; writing-mode: vertical-rl; margin-bottom: 10px;';
+            block.style.cssText = 'display:flex; flex-direction:column; align-items:center; gap:20px; writing-mode: vertical-rl; margin-bottom: 10px;';
             const size = 250;
             
-            // キャンバスとアクションボタンを縦に並べるグループ
-            const canvasGroup = document.createElement('div');
-            canvasGroup.style.cssText = 'display: flex; flex-direction: column; align-items: center; gap: 10px; writing-mode: horizontal-tb;';
+            const readingLabel = document.createElement('div');
+            readingLabel.style.cssText = 'font-weight:bold; color:#2b6cb0; text-align:center; font-size: 1.5rem; padding-top: 20px;';
+            readingLabel.textContent = `【 ${reading} 】`;
             
-            // 1. キャンバス (入力欄)
-            const canvasContainer = document.createElement('div');
-            canvasContainer.style.cssText = 'position: relative; display: flex; align-items: center; justify-content: center;';
+            const ansDisplayWrapper = document.createElement('div');
+            // 複数文字がある場合は上下に並べる
+            ansDisplayWrapper.style.cssText = 'display: flex; flex-direction: row; gap: 10px;';
             
-            const canvas = document.createElement('canvas');
-            canvas.width = size; canvas.height = size;
-            canvas.style.cssText = `width:${size}px; height:${size}px; background:white; border:2px dashed #cbd5e0; border-radius: 8px; cursor:crosshair; touch-action:none; display: block;`;
-            canvasContainer.appendChild(canvas);
-
-            // 2. クリアボタン (キャンバスの下に配置)
-            const actionBtnWrap = document.createElement('div');
-            actionBtnWrap.style.cssText = 'display: flex; flex-direction: row; gap: 10px; justify-content: center; width: 100%;';
-            
-            const clearBtn = document.createElement('button');
-            clearBtn.textContent = 'クリア';
-            clearBtn.className = 'btn-gray';
-            clearBtn.style.cssText = 'flex: 1; padding:10px 0; font-size:1rem; border-radius:6px; border: none; background: #a0aec0; color: white; cursor: pointer; box-sizing: border-box; text-align: center;';
-            
-            actionBtnWrap.appendChild(clearBtn);
-
-            canvasGroup.appendChild(canvasContainer);
-            canvasGroup.appendChild(actionBtnWrap);
-
-            // 3. 答えボタン と 答え表示マス
-            const ansWrap = document.createElement('div');
-            ansWrap.style.cssText = 'display: flex; flex-direction: column; align-items: center; gap: 10px; writing-mode: horizontal-tb;';
-            
-            const ansDisplay = document.createElement('div');
-            ansDisplay.style.cssText = `width:${size}px; height:${size}px; border:2px solid #cbd5e0; background:#f7fafc; border-radius: 8px; display: flex; align-items: center; justify-content: center; position: relative;`;
+            const charDisplays = [];
+            const chars = Array.from(word);
+            for (const char of chars) {
+                const ansDisplay = document.createElement('div');
+                ansDisplay.style.cssText = `width:${size}px; height:${size}px; border:2px solid #cbd5e0; background:#f7fafc; border-radius: 8px; display: flex; align-items: center; justify-content: center; position: relative; writing-mode: horizontal-tb;`;
+                ansDisplayWrapper.appendChild(ansDisplay);
+                charDisplays.push({ char, el: ansDisplay });
+            }
 
             const ansBtn = document.createElement('button');
             ansBtn.textContent = '答え';
-            ansBtn.style.cssText = 'width: 100%; background:white; border:2px solid #cbd5e0; border-radius:6px; padding:10px 0; font-weight:bold; cursor:pointer; font-size: 1.1rem; color: #4a5568; box-sizing: border-box; text-align: center;';
+            ansBtn.style.cssText = 'width: 100%; background:white; border:2px solid #cbd5e0; border-radius:6px; padding:10px 0; font-weight:bold; cursor:pointer; font-size: 1.1rem; color: #4a5568; box-sizing: border-box; text-align: center; writing-mode: horizontal-tb; margin-top: 10px;';
 
-            ansWrap.appendChild(ansDisplay);
-            ansWrap.appendChild(ansBtn);
-
-            const ctx = canvas.getContext('2d');
-            const canvasData = { canvas, ctx, isDrawing: false, hasDrawn: false };
-            activeCanvases.push(canvasData);
-            
-            const clear = () => {
-                ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, size, size);
-                ctx.beginPath(); ctx.strokeStyle = '#f1f5f9'; ctx.setLineDash([4,4]);
-                ctx.moveTo(size/2, 0); ctx.lineTo(size/2, size);
-                ctx.moveTo(0, size/2); ctx.lineTo(size, size/2); ctx.stroke();
-                ctx.setLineDash([]);
-                canvasData.hasDrawn = false;
-                
-                const svg = canvasContainer.querySelector('.svg-wrap');
-                if(svg) svg.remove();
-                canvas.style.display = 'block';
-
-                ansDisplay.innerHTML = '';
-                ansDisplay.style.background = '#f7fafc';
-                ansDisplay.style.borderColor = '#cbd5e0';
-            };
-            clear();
-            clearBtn.onclick = clear;
-            
             let currentLocalAnimId = 0;
             ansBtn.onclick = async () => {
                 const animId = ++currentLocalAnimId;
-                const url = `https://cdn.jsdelivr.net/gh/KanjiVG/kanjivg@master/kanji/${targetChar.charCodeAt(0).toString(16).padStart(5, '0')}.svg`;
-                try {
-                    const res = await fetch(url);
-                    let svgText = await res.text();
-                    const svgMatch = svgText.match(/<svg[^>]*>[\s\S]*<\/svg>/i);
-                    if (svgMatch) svgText = svgMatch[0];
-                    
-                    ansDisplay.style.background = '#ebf8ff';
-                    ansDisplay.style.borderColor = '#63b3ed';
-                    
-                    for (let loop = 0; loop < 3; loop++) {
-                        if (currentLocalAnimId !== animId) break;
-                        
-                        ansDisplay.innerHTML = svgText;
-                        const svg = ansDisplay.querySelector('svg');
-                        if (!svg) return;
-                        svg.querySelectorAll('text').forEach(t=>t.remove());
-                        svg.style.cssText = 'width:90%;height:90%;display:block;';
-                        
-                        const paths = Array.from(svg.querySelectorAll('path'));
-                        paths.forEach(p => {
-                            const len = p.getTotalLength();
-                            p.style.cssText = `fill:none;stroke:#3182ce;stroke-width:4;stroke-linecap:round;stroke-dasharray:${len};stroke-dashoffset:${len}`;
-                        });
+                
+                // 各文字のSVGデータを取得
+                const svgDataArray = [];
+                for (const item of charDisplays) {
+                    const code = item.char.charCodeAt(0).toString(16).padStart(5, '0');
+                    const url = `https://cdn.jsdelivr.net/gh/KanjiVG/kanjivg@master/kanji/${code}.svg`;
+                    let svgText = '';
+                    try {
+                        const res = await fetch(url);
+                        svgText = await res.text();
+                        const svgMatch = svgText.match(/<svg[^>]*>[\s\S]*<\/svg>/i);
+                        if (svgMatch) svgText = svgMatch[0];
+                    } catch(e) {
+                        svgText = null;
+                    }
+                    svgDataArray.push(svgText);
+                }
+                
+                if (currentLocalAnimId !== animId) return;
 
-                        for (const p of paths) {
-                            if (currentLocalAnimId !== animId) break;
-                            const len = p.getTotalLength();
-                            const anim = p.animate([{ strokeDashoffset: len }, { strokeDashoffset: 0 }], { duration: 600, fill: 'forwards' });
-                            await anim.finished;
-                            p.style.strokeDashoffset = '0'; 
+                charDisplays.forEach(item => {
+                    item.el.style.background = '#ebf8ff';
+                    item.el.style.borderColor = '#63b3ed';
+                });
+                
+                for (let loop = 0; loop < 3; loop++) {
+                    if (currentLocalAnimId !== animId) break;
+                    
+                    // 各マスにSVGをセットし、パスを非表示にする
+                    for (let i = 0; i < charDisplays.length; i++) {
+                        const item = charDisplays[i];
+                        const svgText = svgDataArray[i];
+                        if (svgText) {
+                            item.el.innerHTML = svgText;
+                            const svg = item.el.querySelector('svg');
+                            if (svg) {
+                                svg.querySelectorAll('text').forEach(t=>t.remove());
+                                svg.style.cssText = 'width:90%;height:90%;display:block;';
+                                const paths = Array.from(svg.querySelectorAll('path'));
+                                paths.forEach(p => {
+                                    const len = p.getTotalLength();
+                                    p.style.cssText = `fill:none;stroke:#3182ce;stroke-width:4;stroke-linecap:round;stroke-dasharray:${len};stroke-dashoffset:${len}`;
+                                });
+                            }
+                        } else {
+                            item.el.innerHTML = `<span style="font-size: ${size * 0.6}px; color: #3182ce; font-family: 'Klee One', serif;">${item.char}</span>`;
                         }
-                        if (loop < 2 && currentLocalAnimId === animId) await new Promise(r => setTimeout(r, 1000));
                     }
-                } catch(e) { 
-                    if (currentLocalAnimId === animId) {
-                        ansDisplay.innerHTML = `<span style="font-size: ${size * 0.6}px; color: #3182ce; font-family: 'Klee One', serif;">${targetChar}</span>`;
+
+                    // 文字ごとに順次アニメーション実行
+                    for (let i = 0; i < charDisplays.length; i++) {
+                        if (currentLocalAnimId !== animId) break;
+                        const item = charDisplays[i];
+                        const svg = item.el.querySelector('svg');
+                        if (svg) {
+                            const paths = Array.from(svg.querySelectorAll('path'));
+                            for (const p of paths) {
+                                if (currentLocalAnimId !== animId) break;
+                                const len = p.getTotalLength();
+                                const anim = p.animate([{ strokeDashoffset: len }, { strokeDashoffset: 0 }], { duration: 600, fill: 'forwards' });
+                                await anim.finished;
+                                p.style.strokeDashoffset = '0'; 
+                            }
+                        }
                     }
+                    if (loop < 2 && currentLocalAnimId === animId) await new Promise(r => setTimeout(r, 1000));
                 }
             };
-
-            const start = (e) => { canvasData.isDrawing = true; ctx.beginPath(); const rect = canvas.getBoundingClientRect(); ctx.moveTo((e.touches?e.touches[0].clientX:e.clientX)-rect.left, (e.touches?e.touches[0].clientY:e.clientY)-rect.top); e.preventDefault(); };
-            const draw = (e) => { if(!canvasData.isDrawing) return; canvasData.hasDrawn = true; const rect = canvas.getBoundingClientRect(); ctx.lineTo((e.touches?e.touches[0].clientX:e.clientX)-rect.left, (e.touches?e.touches[0].clientY:e.clientY)-rect.top); ctx.strokeStyle='black'; ctx.lineWidth=8; ctx.lineCap='round'; ctx.stroke(); e.preventDefault(); };
-            const stop = () => { canvasData.isDrawing = false; };
             
-            canvas.addEventListener('mousedown', start); canvas.addEventListener('mousemove', draw); canvas.addEventListener('mouseup', stop); canvas.addEventListener('mouseout', stop);
-            canvas.addEventListener('touchstart', start, {passive:false}); canvas.addEventListener('touchmove', draw, {passive:false}); canvas.addEventListener('touchmove', (e) => { e.preventDefault(); }, {passive:false}); canvas.addEventListener('touchend', stop);
+            block.appendChild(readingLabel);
+            block.appendChild(ansDisplayWrapper);
+            block.appendChild(ansBtn);
             
-            // 右から順番に追加 (vertical-rl & flex-col のため)
-            wrapper.appendChild(canvasGroup); // キャンバスとまるつけ・クリア
-            wrapper.appendChild(ansWrap);     // 答えマスと答えボタン
-            
-            return wrapper;
+            return block;
         }
 
         window.updateWriteSentenceDisplay = (idx) => {
