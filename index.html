@@ -8,7 +8,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Klee+One:wght@400;600&display=swap" rel="stylesheet">
   
-  <!-- 自動でふりがなを振るためのライブラリを追加 -->
   <script src="https://cdn.jsdelivr.net/npm/kuroshiro@1.2.0/dist/kuroshiro.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/kuroshiro-analyzer-kuromoji@1.1.0/dist/kuroshiro-analyzer-kuromoji.min.js"></script>
   
@@ -591,7 +590,8 @@
 
         // 初期データの取得
         window.fetchProblems = async function() {
-            window.initKuroshiro(); // アプリ起動時にふりがな辞書を読み込む
+            // ★トップページを開いた瞬間に行っていた辞書の読み込みを停止します（フリーズ対策）
+            // window.initKuroshiro();
             try {
                 const url = `https://docs.google.com/spreadsheets/d/1a2CyIJCM5Nqy6Hah6249_Era1jyw11QmhAIJQGzoesA/export?format=csv&gid=649883566`;
                 const res = await fetch(`${url}&t=${Date.now()}`);
@@ -840,6 +840,11 @@
         }
 
         window.showKanjiDetail = async (kanji) => {
+            // ★漢字詳細が開かれたタイミングで、ふりがな辞書を準備します（初回のみ読み込まれます）
+            if (!isKuroshiroReady) {
+                await window.initKuroshiro();
+            }
+
             currentAnimId++; 
             document.getElementById('kdKanjiTitle').textContent = kanji;
             document.getElementById('kdOnReading').innerHTML = '<span class="loading-spinner" style="border-color:#3182ce; border-top-color:transparent; width: 12px; height: 12px; border-width: 2px; vertical-align: middle;"></span>';
