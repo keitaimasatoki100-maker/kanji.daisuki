@@ -32,6 +32,8 @@
         .kanji-practice-btn-container { display: grid; grid-template-columns: repeat(5, 60px); gap: 15px; }
         .kanji-practice-btn { background: white; border: 2px solid #e53e3e; color: #e53e3e; font-size: 2rem; width: 60px; height: 60px; border-radius: 15px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: all 0.2s; font-family: 'Klee One', 'UD デジタル 教科書体 N-R', serif; writing-mode: horizontal-tb; padding: 0; }
         .kanji-practice-btn:hover { transform: scale(1.1); background: #fff5f5; box-shadow: 0 6px 12px rgba(229, 62, 62, 0.2); }
+        .kanji-practice-btn.completed { border-color: #3182ce; color: #3182ce; background: #ebf8ff; }
+        .kanji-practice-btn.completed:hover { background: #bee3f8; box-shadow: 0 6px 12px rgba(49, 130, 206, 0.2); }
         .dialog-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 5000; align-items: center; justify-content: center; writing-mode: horizontal-tb; }
         .dialog-content { background: white; padding: 25px; border-radius: 20px; max-width: 450px; width: 90%; display: flex; flex-direction: column; align-items: center; max-height: 90vh; overflow-y: auto; }
         .btn-blue { background: #3182ce; color: white; border: none; padding: 10px 20px; border-radius: 25px; cursor: pointer; font-weight: bold; }
@@ -353,6 +355,7 @@
 
         let readScore = 0, writeScore = 0, kanjiPracticeScore = 0, minigamePlayCount = 0, completedUnits = new Set(), mgBestRecords = {};
         let completedKanjiReadings = new Set(); // 追加：漢字練習問題のクリア記録用
+        let completedKanjis = new Set(); // 追加：全問正解した漢字ボタンの記録用
         let allProblems = [];
         let activeCanvases = [];
         let totalKanjiInCurrentSet = 0;
@@ -437,7 +440,7 @@
 
         window.saveProgressToStorage = function() {
             try {
-                const data = { readScore, writeScore, kanjiPracticeScore, minigamePlayCount, completedUnits: Array.from(completedUnits), mgBestRecords, completedKanjiReadings: Array.from(completedKanjiReadings) };
+                const data = { readScore, writeScore, kanjiPracticeScore, minigamePlayCount, completedUnits: Array.from(completedUnits), mgBestRecords, completedKanjiReadings: Array.from(completedKanjiReadings), completedKanjis: Array.from(completedKanjis) };
                 localStorage.setItem("kanjiNaviSaveData", JSON.stringify(data));
             } catch(e) {
                 console.error("保存エラー:", e);
@@ -456,6 +459,7 @@
                     completedUnits = new Set(data.completedUnits || []);
                     if(data.mgBestRecords) mgBestRecords = data.mgBestRecords;
                     if(data.completedKanjiReadings) completedKanjiReadings = new Set(data.completedKanjiReadings);
+                    if(data.completedKanjis) completedKanjis = new Set(data.completedKanjis);
                 }
                 window.updateScoreDisplay();
                 window.updateMgBestRecordsDisplay();
@@ -713,8 +717,9 @@
                 grid.className = 'kanji-practice-btn-container';
                 kanjis.forEach(k => {
                     const btn = document.createElement('button');
-                    btn.className = 'kanji-practice-btn';
+                    btn.className = 'kanji-practice-btn' + (completedKanjis.has(k) ? ' completed' : '');
                     btn.textContent = k;
+                    btn.dataset.kanji = k;
                     btn.onclick = () => window.showKanjiDetail(k);
                     grid.appendChild(btn);
                 });
@@ -946,6 +951,17 @@
             setTimeout(() => {
                 const firstInput = document.querySelector('#kdSentencesList .kanji-detail-input');
                 if (firstInput) firstInput.focus();
+
+                // 過去のクリアデータ補完用
+                const allInputs = Array.from(document.querySelectorAll('#kdSentencesList .kanji-detail-input'));
+                if (allInputs.length > 0 && allInputs.every(i => completedKanjiReadings.has(i.getAttribute('data-key')))) {
+                    if (!completedKanjis.has(kanji)) {
+                        completedKanjis.add(kanji);
+                        window.saveProgressToStorage();
+                        const kanjiBtn = document.querySelector(`.kanji-practice-btn[data-kanji="${kanji}"]`);
+                        if (kanjiBtn) kanjiBtn.classList.add('completed');
+                    }
+                }
             }, 300);
 
             // 練習用キャンバスの初期化
@@ -1136,6 +1152,17 @@
                 
                 window.updateScoreDisplay();
                 
+                // 全問正解判定
+                const allInputs = Array.from(document.querySelectorAll('#kdSentencesList .kanji-detail-input'));
+                if (allInputs.length > 0 && allInputs.every(i => i.disabled || completedKanjiReadings.has(i.getAttribute('data-key')))) {
+                    if (!completedKanjis.has(window.kdCurrentKanji)) {
+                        completedKanjis.add(window.kdCurrentKanji);
+                        window.saveProgressToStorage();
+                        const kanjiBtn = document.querySelector(`.kanji-practice-btn[data-kanji="${window.kdCurrentKanji}"]`);
+                        if (kanjiBtn) kanjiBtn.classList.add('completed');
+                    }
+                }
+
                 setTimeout(() => window.nextKanjiDetailInput(input), 300);
             }
         };
