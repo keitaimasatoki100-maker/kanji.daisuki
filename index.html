@@ -291,17 +291,17 @@
 
           <div id="kdPracticeArea" style="width: 100%; display: flex; flex-direction: column; align-items: center; margin-bottom: 15px;">
               <div style="font-weight: bold; color: #4a5568; margin-bottom: 10px;">✏️ なぞってれんしゅう</div>
-              <div style="position: relative; width: 250px; height: 250px; background: white; border: 2px dashed #cbd5e0; border-radius: 10px; overflow: hidden; margin-bottom: 10px;">
-                  <div id="kdPracticeGuide" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 180px; line-height: 1; color: #edf2f7; font-family: 'Klee One', 'UD デジタル 教科書体 N-R', serif; pointer-events: none; z-index: 1;"></div>
-                  <canvas id="kdPracticeCanvas1" width="250" height="250" style="position: absolute; top: 0; left: 0; z-index: 2; touch-action: none; cursor: crosshair; background: transparent;"></canvas>
+              <div style="position: relative; width: 200px; height: 200px; background: white; border: 2px dashed #cbd5e0; border-radius: 10px; overflow: hidden; margin-bottom: 10px;">
+                  <div id="kdPracticeGuide" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 160px; line-height: 1; color: #edf2f7; font-family: 'Klee One', 'UD デジタル 教科書体 N-R', serif; pointer-events: none; z-index: 1;"></div>
+                  <canvas id="kdPracticeCanvas1" width="200" height="200" style="position: absolute; top: 0; left: 0; z-index: 2; touch-action: none; cursor: crosshair; background: transparent;"></canvas>
               </div>
               <div style="display: flex; gap: 10px; margin-bottom: 20px; justify-content: center;">
                   <button onclick="window.clearKdPracticeCanvas(1)" style="padding: 8px 25px; font-weight: bold; font-size: 1rem; border-radius: 10px; background: #a0aec0; color: white; border: none; cursor: pointer;">クリア</button>
               </div>
 
               <div style="font-weight: bold; color: #4a5568; margin-bottom: 10px;">✏️ ひとりでれんしゅう</div>
-              <div style="position: relative; width: 250px; height: 250px; background: white; border: 2px dashed #cbd5e0; border-radius: 10px; overflow: hidden; margin-bottom: 10px;">
-                  <canvas id="kdPracticeCanvas2" width="250" height="250" style="position: absolute; top: 0; left: 0; z-index: 2; touch-action: none; cursor: crosshair; background: transparent;"></canvas>
+              <div style="position: relative; width: 200px; height: 200px; background: white; border: 2px dashed #cbd5e0; border-radius: 10px; overflow: hidden; margin-bottom: 10px;">
+                  <canvas id="kdPracticeCanvas2" width="200" height="200" style="position: absolute; top: 0; left: 0; z-index: 2; touch-action: none; cursor: crosshair; background: transparent;"></canvas>
               </div>
               <div style="display: flex; gap: 10px; justify-content: center;">
                   <button onclick="window.clearKdPracticeCanvas(2)" style="padding: 8px 25px; font-weight: bold; font-size: 1rem; border-radius: 10px; background: #a0aec0; color: white; border: none; cursor: pointer;">クリア</button>
@@ -585,6 +585,39 @@
         }
 
         // =====================
+        // セレクター同期処理
+        // =====================
+        window.syncGrade = function(val) {
+            ['gradeSelector', 'readGradeSelector', 'fcGradeSelector', 'printGradeSelector', 'kanjiPracticeSelector'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.value = val;
+            });
+            const units = [...new Set(allProblems.filter(p => p.grade === val).map(p => p.unit))];
+            ['unitSelector', 'readUnitSelector', 'fcUnitSelector', 'printUnitSelector'].forEach(id => {
+                const sel = document.getElementById(id);
+                if (sel) {
+                    sel.innerHTML = '<option value="">単元...</option><option value="all">すべて</option>';
+                    units.forEach(u => sel.innerHTML += `<option value="${u}">${u}</option>`);
+                }
+            });
+            window.syncUnit(""); // 学年が変わったら単元はリセット
+        };
+
+        window.syncUnit = function(val) {
+            ['unitSelector', 'readUnitSelector', 'fcUnitSelector', 'printUnitSelector'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.value = val;
+            });
+        };
+
+        window.syncRange = function(val) {
+            ['rangeSelector', 'readRangeSelector', 'fcRangeSelector', 'printRangeSelector'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.value = val;
+            });
+        };
+
+        // =====================
         // 漢字練習 (色付きアニメ)
         // =====================
         window.loadKanjiPracticeData = async function() {
@@ -614,21 +647,19 @@
             document.getElementById('topPage').style.display = 'none'; 
             document.getElementById('kanjiPracticeContainer').style.display = 'flex'; 
             document.getElementById('backToTopBtnMain').style.display = 'block'; 
-            if (!document.getElementById('kanjiPracticeSelector').value) {
-                document.getElementById('kanjiPracticeSelector').value = document.getElementById('gradeSelector').value || document.getElementById('readGradeSelector').value || document.getElementById('fcGradeSelector').value;
-            }
             window.onKanjiPracticeGradeChange();
         };
 
         window.onKanjiPracticeGradeChange = async () => {
+            const grade = document.getElementById('kanjiPracticeSelector').value;
+            window.syncGrade(grade);
+
             // データが読み込まれていなければ、ここで読み込む
             if (!kanjiPracticeDataLoaded) {
-                const currentVal = document.getElementById('kanjiPracticeSelector').value;
                 await window.loadKanjiPracticeData();
-                if (currentVal) document.getElementById('kanjiPracticeSelector').value = currentVal;
+                document.getElementById('kanjiPracticeSelector').value = grade;
             }
 
-            const grade = document.getElementById('kanjiPracticeSelector').value;
             const content = document.getElementById('kanjiPracticeContentArea');
             content.innerHTML = '';
             if (!grade) return;
@@ -1128,22 +1159,22 @@
             document.getElementById('mainContainer').style.display = 'flex'; 
             document.getElementById('backToTopBtnMain').style.display = 'block'; 
             
-            document.getElementById('gradeSelector').value = document.getElementById('readGradeSelector').value || document.getElementById('fcGradeSelector').value;
-            window.onGradeChange();
-            document.getElementById('unitSelector').value = document.getElementById('readUnitSelector').value || document.getElementById('fcUnitSelector').value;
             window.filterByUnitWrite();
         };
 
         window.onGradeChange = () => {
-            const grade = document.getElementById('gradeSelector').value;
-            const units = [...new Set(allProblems.filter(p => p.grade === grade).map(p => p.unit))];
-            const sel = document.getElementById('unitSelector');
-            sel.innerHTML = '<option value="">単元...</option><option value="all">すべて</option>';
-            units.forEach(u => sel.innerHTML += `<option value="${u}">${u}</option>`);
+            window.syncGrade(document.getElementById('gradeSelector').value);
+            window.filterByUnitWrite();
         };
 
-        window.onUnitChange = () => { window.filterByUnitWrite(); };
-        window.onRangeChange = () => { window.filterByUnitWrite(); };
+        window.onUnitChange = () => { 
+            window.syncUnit(document.getElementById('unitSelector').value);
+            window.filterByUnitWrite(); 
+        };
+        window.onRangeChange = () => { 
+            window.syncRange(document.getElementById('rangeSelector').value);
+            window.filterByUnitWrite(); 
+        };
 
         window.filterByUnitWrite = () => {
             const grade = document.getElementById('gradeSelector').value;
@@ -1373,29 +1404,31 @@
             document.getElementById('readingContainer').style.display = 'flex';
             document.getElementById('backToTopBtnMain').style.display = 'block';
             
-            document.getElementById('readGradeSelector').value = document.getElementById('gradeSelector').value || document.getElementById('fcGradeSelector').value;
-            window.onReadGradeChange();
-            document.getElementById('readUnitSelector').value = document.getElementById('unitSelector').value || document.getElementById('fcUnitSelector').value;
             window.onReadUnitChange();
         };
 
         window.onReadGradeChange = () => {
-            const grade = document.getElementById('readGradeSelector').value;
-            const units = [...new Set(allProblems.filter(p => p.grade === grade).map(p => p.unit))];
-            const sel = document.getElementById('readUnitSelector');
-            sel.innerHTML = '<option value="">単元...</option><option value="all">すべて</option>';
-            units.forEach(u => sel.innerHTML += `<option value="${u}">${u}</option>`);
+            window.syncGrade(document.getElementById('readGradeSelector').value);
+            window.onReadUnitChange();
         };
 
         window.onReadUnitChange = () => {
+            window.syncUnit(document.getElementById('readUnitSelector').value);
             const grade = document.getElementById('readGradeSelector').value;
             const unit = document.getElementById('readUnitSelector').value;
-            if (!grade || !unit) return;
+            if (!grade || !unit) { 
+                readProbs = [];
+                window.renderReadCards();
+                return; 
+            }
             readProbs = allProblems.filter(p => p.grade === grade && (unit === 'all' || p.unit === unit));
             currentReadIndex = 0;
             window.renderReadCards();
         };
-        window.onReadRangeChange = () => { window.onReadUnitChange(); };
+        window.onReadRangeChange = () => { 
+            window.syncRange(document.getElementById('readRangeSelector').value);
+            window.onReadUnitChange(); 
+        };
 
         window.renderReadCards = () => {
             const container = document.getElementById('readCardsArea');
@@ -1513,23 +1546,22 @@
             document.getElementById('flashcardPage').style.display = 'flex';
             document.getElementById('backToTopBtnMain').style.display = 'block';
             
-            const grade = document.getElementById('gradeSelector').value || document.getElementById('readGradeSelector').value;
-            document.getElementById('fcGradeSelector').value = grade;
-            window.onFcGradeChange();
-            document.getElementById('fcUnitSelector').value = document.getElementById('unitSelector').value || document.getElementById('readUnitSelector').value;
             window.filterFlashcards();
         };
 
         window.onFcGradeChange = () => {
-            const grade = document.getElementById('fcGradeSelector').value;
-            const units = [...new Set(allProblems.filter(p => p.grade === grade).map(p => p.unit))];
-            const sel = document.getElementById('fcUnitSelector');
-            sel.innerHTML = '<option value="">単元...</option><option value="all">すべて</option>';
-            units.forEach(u => sel.innerHTML += `<option value="${u}">${u}</option>`);
+            window.syncGrade(document.getElementById('fcGradeSelector').value);
+            window.filterFlashcards();
         };
 
-        window.onFcUnitChange = () => { window.filterFlashcards(); };
-        window.onFcRangeChange = () => { window.filterFlashcards(); };
+        window.onFcUnitChange = () => { 
+            window.syncUnit(document.getElementById('fcUnitSelector').value);
+            window.filterFlashcards(); 
+        };
+        window.onFcRangeChange = () => { 
+            window.syncRange(document.getElementById('fcRangeSelector').value);
+            window.filterFlashcards(); 
+        };
 
         window.filterFlashcards = () => {
             const grade = document.getElementById('fcGradeSelector').value;
@@ -1619,7 +1651,7 @@
             const currentIndex = units.indexOf(currentUnit);
             if (currentIndex > -1 && currentIndex < units.length - 1) {
                 document.getElementById('fcUnitSelector').value = units[currentIndex + 1];
-                window.filterFlashcards();
+                window.onFcUnitChange();
             } else {
                 fcIdx = 0;
                 fcState = 'question';
@@ -1635,21 +1667,22 @@
             document.getElementById('topPage').style.display = 'none';
             document.getElementById('printPage').style.display = 'flex';
             
-            document.getElementById('printGradeSelector').value = document.getElementById('gradeSelector').value || document.getElementById('readGradeSelector').value || document.getElementById('fcGradeSelector').value;
-            window.onPrintGradeChange();
+            window.renderPrintPreview();
         };
         
         window.onPrintGradeChange = () => {
-            const grade = document.getElementById('printGradeSelector').value;
-            const units = [...new Set(allProblems.filter(p => p.grade === grade).map(p => p.unit))];
-            const sel = document.getElementById('printUnitSelector');
-            sel.innerHTML = '<option value="">単元...</option><option value="all">すべて</option>';
-            units.forEach(u => sel.innerHTML += `<option value="${u}">${u}</option>`);
+            window.syncGrade(document.getElementById('printGradeSelector').value);
             window.renderPrintPreview();
         };
 
-        window.onPrintUnitChange = () => { window.renderPrintPreview(); };
-        window.onPrintRangeChange = () => { window.renderPrintPreview(); };
+        window.onPrintUnitChange = () => { 
+            window.syncUnit(document.getElementById('printUnitSelector').value);
+            window.renderPrintPreview(); 
+        };
+        window.onPrintRangeChange = () => { 
+            window.syncRange(document.getElementById('printRangeSelector').value);
+            window.renderPrintPreview(); 
+        };
 
         window.renderPrintPreview = () => {
             const container = document.getElementById('printAreaWrapper');
