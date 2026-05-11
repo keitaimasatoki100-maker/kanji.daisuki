@@ -239,6 +239,8 @@
                   <button onclick="startMinigame('keisan')" style="width: 100%; padding: 20px 15px; font-size: 1.6rem; border-radius: 20px; background: white; color: #dd6b20; border: 5px solid #dd6b20; cursor: pointer; font-weight: bold; box-shadow: 0 8px 15px rgba(0,0,0,0.1);">漢字計算ゲーム</button>
                   <div id="bestScoreKeisan" style="font-size: 1.1rem; color: #4a5568; font-weight: bold; text-align: center;"></div>
               </div>
+              <!-- ことわざゲームのボタンが追加される場所 -->
+              <div id="mgKotowazaContainer" style="display: flex; flex-direction: column; gap: 30px; width: 100%;"></div>
           </div>
       </div>
   </div>
@@ -383,12 +385,62 @@
         let currentMgIndex = 0;
         let currentMgScore = 0;
         let currentMgType = '';
+        let currentMgCategory = '';
         let mgStartTime = null;
         let mgTimerInterval = null;
 
         const mgBushuData = [{q:"<span style='font-size:4rem;color:#e53e3e;'>氵</span><br>この部首のなまえは？",a:"さんずい",choices:["さんずい","きへん","ごんべん","にんべん"]},{q:"<span style='font-size:4rem;color:#e53e3e;'>訁</span><br>この部首のなまえは？",a:"ごんべん",choices:["ごんべん","しんにょう","くさかんむり","きへん"]},{q:"<span style='font-size:4rem;color:#e53e3e;'>木</span><br>この部首のなまえは？",a:"きへん",choices:["きへん","くさかんむり","つちへん","さんずい"]},{q:"<span style='font-size:4rem;color:#e53e3e;'>亻</span><br>この部首のなまえは？",a:"にんべん",choices:["にんべん","きへん","ぎょうにんべん","てへん"]},{q:"<span style='font-size:4rem;color:#e53e3e;'>艹</span><br>この部首のなまえは？",a:"くさかんむり",choices:["くさかんむり","たけかんむり","うかんむり","あめかんむり"]},{q:"<span style='font-size:4rem;color:#e53e3e;'>⻌</span><br>この部首のなまえは？",a:"しんにょう",choices:["しんにょう","えんにょう","ぎょうにんべん","さんずい"]},{q:"<span style='font-size:4rem;color:#e53e3e;'>口</span><br>この部首のなまえは？",a:"くちへん",choices:["くちへん","くにがまえ","めへん","ひへん"]},{q:"<span style='font-size:4rem;color:#e53e3e;'>釒</span><br>この部首のなまえは？",a:"かねへん",choices:["かねへん","いしへん","きへん","さんずい"]},{q:"<span style='font-size:4rem;color:#e53e3e;'>穴</span><br>この部首のなまえは？",a:"あなかんむり",choices:["あなかんむり","うかんむり","わかんむり","あめかんむり"]},{q:"<span style='font-size:4rem;color:#e53e3e;'>日</span><br>この部首のなまえは？",a:"ひへん",choices:["ひへん","つきへん","めへん","田"]}];
         const mgNaritachiData = [{q:"<span style='font-size:4rem;'>☀️</span><br>たいようの形からできたものは？",a:"日",choices:["日","月","木","水"]},{q:"<span style='font-size:4rem;'>🌙</span><br>みかづきの形からできたものは？",a:"月",choices:["月","日","夕","夜"]},{q:"<span style='font-size:4rem;'>🌊</span><br>みずが流れる様子からできたものは？",a:"川",choices:["川","水","雨","海"]},{q:"<span style='font-size:4rem;'>🌳</span><br>木の根元に印をつけて「もと」を表したものは？",a:"本",choices:["本","木","末","未"]},{q:"<span style='font-size:4rem;'>🚶🌳</span><br>ひとが木に寄りかかってやすむ様子からできたものは？",a:"休",choices:["休","体","林","保"]},{q:"<span style='font-size:4rem;'>🌲🌲</span><br>木がふたつ並んで、たくさん木があることを表すものは？",a:"林",choices:["林","森","木","枝"]},{q:"<span style='font-size:4rem;'>👁️</span><br>めの形からできたものは？",a:"目",choices:["目","見","貝","自"]},{q:"<span style='font-size:4rem;'>🪶</span><br>とりのはねの形からできたものは？",a:"羽",choices:["羽","鳥","飛","翼"]},{q:"<span style='font-size:4rem;'>⛰️</span><br>やまの形からできたものは？",a:"山",choices:["山","川","石","岩"]},{q:"<span style='font-size:4rem;'>🧍</span><br>ひとが立っている様子を横から見てできたものは？",a:"人",choices:["人","入","大","立"]}];
         const mgKeisanData = [{q:"<span style='font-size:4rem;'>山 ＋ 石</span><br>＝ ？",a:"岩",choices:["岩","砂","炭","岸"]},{q:"<span style='font-size:4rem;'>木 ＋ 木</span><br>＝ ？",a:"林",choices:["林","森","本","枝"]},{q:"<span style='font-size:4rem;'>日 ＋ 月</span><br>＝ ？",a:"明",choices:["明","星","晴","朝"]},{q:"<span style='font-size:4rem;'>人 ＋ 木</span><br>＝ ？",a:"休",choices:["休","体","保","信"]},{q:"<span style='font-size:4rem;'>口 ＋ 鳥</span><br>＝ ？",a:"鳴",choices:["鳴","唄","唱","叫"]},{q:"<span style='font-size:4rem;'>門 ＋ 日</span><br>＝ ？",a:"間",choices:["間","問","開","閉"]},{q:"<span style='font-size:4rem;'>女 ＋ 子</span><br>＝ ？",a:"好",choices:["好","妹","姉","娘"]},{q:"<span style='font-size:4rem;'>木 ＋ 目</span><br>＝ ？",a:"相",choices:["相","箱","想","植"]},{q:"<span style='font-size:4rem;'>言 ＋ 舌</span><br>＝ ？",a:"話",choices:["話","語","読","記"]},{q:"<span style='font-size:4rem;'>禾 ＋ 火</span><br>＝ ？",a:"秋",choices:["秋","冬","春","夏"]}];
+
+        // 100個のことわざデータ
+        const kotowazaRawData = {
+            "どうぶつ・いきもの": [
+                "猿も{木|き}から落ちる", "{犬|いぬ}も歩けば棒に当たる", "{猫|ねこ}に小判", "{豚|ぶた}に真珠", "捕らぬ{狸|たぬき}の皮算用",
+                "泣きっ面に{蜂|はち}", "{馬|うま}の耳に念仏", "{雀|すずめ}の涙", "{烏|からす}の行水", "{鶴|つる}の一声",
+                "{亀|かめ}の甲より年の功", "井の中の{蛙|かわず}大海を知らず", "立つ{鳥|とり}跡を濁さず", "飛んで火に入る夏の{虫|むし}",
+                "飼い{犬|いぬ}に手を噛まれる", "借りてきた{猫|ねこ}", "蛇ににらまれた{蛙|かえる}", "とんびが{鷹|たか}を生む",
+                "{虎|とら}の威を借る狐", "蛙の子は{蛙|かえる}", "鳩が{豆|まめ}鉄砲を食ったよう", "逃がした{魚|さかな}は大きい",
+                "{虫|むし}の知らせ", "まな板の上の{鯉|こい}", "一寸の{虫|むし}にも五分の魂"
+            ],
+            "からだ": [
+                "{頭|あたま}隠して尻隠さず", "{目|め}から鼻へ抜ける", "{耳|みみ}にたこができる", "{口|くち}は災いの元", "{歯|は}に衣着せぬ",
+                "{腹|はら}が減っては戦はできぬ", "{手|て}も足も出ない", "{足|あし}元から鳥が立つ", "{喉|のど}元過ぎれば熱さを忘れる",
+                "{目|め}を疑う", "{耳|みみ}を疑う", "{口|くち}がすべる", "{鼻|はな}が高い", "{肩|かた}で風を切る",
+                "{手|て}を抜く", "{足|あし}を洗う", "{胸|むね}をなでおろす", "{腹|はら}をくくる", "{背|せ}に腹は代えられない",
+                "{目|め}の中に入れても痛くない"
+            ],
+            "たべもの・植物・もの": [
+                "{花|はな}より団子", "腐っても{鯛|たい}", "{餅|もち}は餅屋", "絵に描いた{餅|もち}", "{棚|たな}からぼたもち",
+                "{瓢箪|ひょうたん}から駒", "{豆腐|とうふ}に鎹", "{糠|ぬか}に釘", "{石|いし}の上にも三年", "{鉄|てつ}は熱いうちに打て",
+                "{壁|かべ}に耳あり障子に目あり", "{火|ひ}のない所に煙は立たぬ", "焼け{石|いし}に水", "どんぐりの{背|せ}比べ",
+                "{木|き}を見て森を見ず", "枯れ{木|き}も山のにぎわい", "{根|ね}も葉もない", "{瓜|うり}二つ", "蒔かぬ{種|たね}は生えぬ",
+                "{水|みず}の泡", "{氷|こおり}の山", "{玉|たま}に瑕", "{塵|ちり}も積もれば山となる", "{箸|はし}にも棒にも掛からない",
+                "{針|はり}のむしろ"
+            ],
+            "自然・数・人・その他": [
+                "{雨|あめ}降って地固まる", "{月|つき}とすっぽん", "{風|かぜ}の前の塵", "{雲|くも}をつかむよう", "{雪|ゆき}に雪折れなし",
+                "{天|てん}は二物を与えず", "光{陰|いん}矢の如し", "{一|いち}石二鳥", "{二|に}度あることは三度ある", "{三|さん}人寄れば文殊の知恵",
+                "{十|じゅう}人十色", "{百|ひゃく}聞は一見に如かず", "{千|せん}里の道も一歩から", "{万|ばん}事休す", "{急|いそ}がば回れ",
+                "{善|ぜん}は急げ", "{笑|わら}う門には福来たる", "{泣|な}く子と地頭には勝てぬ", "{知|し}らぬが仏", "{仏|ほとけ}の顔も三度まで",
+                "{鬼|おに}の居ぬ間に洗濯", "{鬼|おに}に金棒", "{親|おや}しき仲にも礼儀あり", "{子|こ}はかすがい", "{朱|しゅ}に交われば赤くなる",
+                "{類|るい}は友を呼ぶ", "{良|よ}薬は口に苦し", "{嘘|うそ}も方便", "{備|そな}えあれば憂いなし", "{石|いし}橋をたたいて渡る"
+            ]
+        };
+
+        const mgKotowazaCategories = {};
+        Object.keys(kotowazaRawData).forEach(cat => {
+            mgKotowazaCategories[cat] = kotowazaRawData[cat].map(raw => {
+                let qText = raw;
+                let ans = "";
+                const matches = [...raw.matchAll(/\{(.+?)\|(.+?)\}/g)];
+                matches.forEach(m => {
+                    ans += m[2];
+                    qText = qText.replace(m[0], `<span style="color:#e53e3e; text-decoration:underline; font-weight:bold;">${m[1]}</span>`);
+                });
+                return { q: qText, a: ans };
+            });
+        });
 
         // === Utils ===
         window.getCircleNumber = function(num) {
@@ -517,6 +569,16 @@
             const kRecord = mgBestRecords.keisan || { score: 0, time: null };
             const keisanEl = document.getElementById('bestScoreKeisan');
             if(keisanEl) keisanEl.textContent = `最高正解数: ${kRecord.score}問` + (kRecord.time !== null ? ` (最速全問正解: ${formatTime(kRecord.time)})` : '');
+
+            // ことわざの記録表示を更新
+            Object.keys(mgKotowazaCategories).forEach(cat => {
+                const key = `kotowaza_${cat}`;
+                const record = mgBestRecords[key] || { score: 0, time: null };
+                const el = document.getElementById(`bestScoreKotowaza_${window.getHash(cat)}`);
+                if (el) {
+                    el.textContent = `最高正解数: ${record.score}問` + (record.time !== null ? ` (最速全問正解: ${formatTime(record.time)})` : '');
+                }
+            });
         }
 
         window.checkAndSaveMgRecord = function(type, score, totalQuestions, timeInSec) {
@@ -567,10 +629,13 @@
                     return;
                 }
 
-                allProblems = window.parseCSV(data).slice(1).map(cols => {
+                const rows = window.parseCSV(data);
+
+                allProblems = rows.slice(1).map(cols => {
                     // C列ではなくX列などから抽出できるように、行の生データ(raw)も保持しておく
                     return { grade: cols[0], unit: cols[1], sentence: cols[2], raw: cols };
                 }).filter(p => p.sentence);
+                
                 window.updateSelectors();
             } catch(e) { console.error("データ取得エラー", e); }
         }
@@ -1164,6 +1229,11 @@
                 }
 
                 setTimeout(() => window.nextKanjiDetailInput(input), 300);
+            } else if (userVal.length >= 10 && !answer.startsWith(userVal)) {
+                // 間違った読みが10文字以上入力されたら、自動で解答を表示
+                input.value = answer;
+                input.style.color = '#e53e3e';
+                input.dataset.mustClear = "true";
             }
         };
 
@@ -1480,7 +1550,7 @@
                     
                     inputsHtml += `
                         <span class="reading-input-wrapper" style="position: relative; display: inline-flex; align-items: center; justify-content: center; height: ${boxHeight}; vertical-align: middle;">
-                            <span style="font-size: 1.2rem;">（</span><input type="text" class="reading-input" data-answer="${yomi}" style="height: ${inputHeight}; font-size: 1.1rem; padding: 2px 0;" oninput="window.checkReading(this, '${yomi}')" onkeydown="if(event.key==='Enter'){event.preventDefault(); window.nextReadingInput(this);}"><span style="font-size: 1.2rem;">）</span>
+                            <span style="font-size: 1.2rem;">（</span><input type="text" class="reading-input" data-answer="${yomi}" style="height: ${inputHeight}; font-size: 1.1rem; padding: 2px 0;" oninput="window.checkReading(this, '${yomi}')" onkeydown="window.handleReadingKeydown(event, this, '${yomi}')"><span style="font-size: 1.2rem;">）</span>
                         </span>
                     `;
                     sentenceHtml += `<span style="color:#2b6cb0;font-weight:bold;text-decoration:underline;text-decoration-color:#cbd5e0;text-decoration-thickness:2px; display: inline-flex; align-items: center; justify-content: center; height: ${boxHeight}; vertical-align: middle;">${kanji}</span>`;
@@ -1508,7 +1578,38 @@
             }, 50);
         };
 
+        window.handleReadingKeydown = function(event, input, answer) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                const userVal = input.value.trim().replace(/[\u30a1-\u30f6]/g, m => String.fromCharCode(m.charCodeAt(0)-0x60));
+                if (userVal === answer) {
+                    window.checkReading(input, answer);
+                } else if (userVal !== '') {
+                    // まちがえた場合は正解を赤色で表示し、全消しを要求するフラグを立てる
+                    input.value = answer;
+                    input.style.color = '#e53e3e';
+                    input.dataset.mustClear = "true";
+                } else {
+                    window.nextReadingInput(input);
+                }
+            }
+        };
+
         window.checkReading = function(input, answer) {
+            // 文字が変更（消去・入力）されたら色を元に戻す
+            input.style.color = '';
+            
+            // 一度全部消さないと正解にしないための処理
+            if (input.dataset.mustClear === "true") {
+                if (input.value !== answer && input.value !== '') {
+                    input.value = '';
+                }
+                if (input.value === '') {
+                    input.dataset.mustClear = "false";
+                }
+                return;
+            }
+
             const userVal = input.value.trim().replace(/[\u30a1-\u30f6]/g, m => String.fromCharCode(m.charCodeAt(0)-0x60));
             if (userVal === answer) {
                 input.classList.add('correct');
@@ -1522,6 +1623,11 @@
                     const next = allInputs.find(i => !i.classList.contains('correct'));
                     if (next) next.focus();
                 }
+            } else if (userVal.length >= 10 && !answer.startsWith(userVal)) {
+                // 間違った読みが10文字以上入力されたら、自動で解答を表示
+                input.value = answer;
+                input.style.color = '#e53e3e';
+                input.dataset.mustClear = "true";
             }
         };
 
@@ -1789,20 +1895,50 @@
         // ミニゲーム
         // =====================
         window.goToMinigameMenu = () => {
-            const plays = Math.floor((readScore + writeScore + kanjiPracticeScore) / 100) * 3 - minigamePlayCount;
-            if (plays <= 0) { alert("ポイントが足りません！"); return; }
-            document.getElementById('minigameRemainingPlays').textContent = `あと ${plays} 回あそべるよ！`;
+            document.getElementById('minigameRemainingPlays').textContent = `何度でもあそべるよ！`;
             window.goToTopMode();
             document.getElementById('topPage').style.display = 'none';
             document.getElementById('minigameMenuPage').style.display = 'flex';
+            
+            // ことわざゲームのボタンを動的に生成
+            const kotowazaContainer = document.getElementById('mgKotowazaContainer');
+            if (kotowazaContainer) {
+                kotowazaContainer.innerHTML = '';
+                const cats = Object.keys(mgKotowazaCategories);
+                if (cats.length > 0) {
+                    cats.forEach(cat => {
+                        const probCount = mgKotowazaCategories[cat].length;
+                        if (probCount > 0) {
+                            const wrapper = document.createElement('div');
+                            wrapper.style.cssText = 'display: flex; flex-direction: column; align-items: center; gap: 10px; width: 100%;';
+                            
+                            const btn = document.createElement('button');
+                            btn.textContent = `ことわざゲーム（${cat}）`;
+                            btn.style.cssText = 'width: 100%; padding: 20px 15px; font-size: 1.6rem; border-radius: 20px; background: white; color: #805ad5; border: 5px solid #805ad5; cursor: pointer; font-weight: bold; box-shadow: 0 8px 15px rgba(0,0,0,0.1);';
+                            btn.onclick = () => window.startMinigame('kotowaza', cat);
+                            
+                            const scoreDiv = document.createElement('div');
+                            scoreDiv.id = `bestScoreKotowaza_${window.getHash(cat)}`;
+                            scoreDiv.style.cssText = 'font-size: 1.1rem; color: #4a5568; font-weight: bold; text-align: center;';
+                            
+                            wrapper.appendChild(btn);
+                            wrapper.appendChild(scoreDiv);
+                            kotowazaContainer.appendChild(wrapper);
+                        }
+                    });
+                }
+            }
+            
+            window.updateMgBestRecordsDisplay();
         };
 
-        window.startMinigame = (type) => {
-            if (Math.floor((readScore + writeScore + kanjiPracticeScore) / 100) * 3 - minigamePlayCount <= 0) { alert("ポイント不足です！"); return; }
+        window.startMinigame = (type, category = '') => {
             minigamePlayCount++;
             window.updateScoreDisplay(); 
 
             currentMgType = type;
+            currentMgCategory = category;
+            
             document.getElementById('minigameMenuPage').style.display = 'none';
             document.getElementById('minigamePlayPage').style.display = 'flex';
             document.getElementById('mgEndOverlay').style.display = 'none';
@@ -1811,6 +1947,10 @@
             if (type === 'bushu') currentMgData = [...mgBushuData].sort(() => Math.random() - 0.5).slice(0, 10);
             else if (type === 'naritachi') currentMgData = [...mgNaritachiData].sort(() => Math.random() - 0.5).slice(0, 10);
             else if (type === 'keisan') currentMgData = [...mgKeisanData].sort(() => Math.random() - 0.5).slice(0, 10);
+            else if (type === 'kotowaza') {
+                const probs = mgKotowazaCategories[category] || [];
+                currentMgData = [...probs].sort(() => Math.random() - 0.5).slice(0, 10);
+            }
             
             currentMgIndex = 0; currentMgScore = 0; mgStartTime = Date.now();
             if (mgTimerInterval) clearInterval(mgTimerInterval);
@@ -1826,23 +1966,78 @@
             if (currentMgIndex >= currentMgData.length) { window.endMinigame(); return; }
             const prob = currentMgData[currentMgIndex];
             document.getElementById('mgScore').textContent = `${currentMgIndex + 1} / ${currentMgData.length} 問`;
+            
+            // ことわざは長文になる可能性があるためフォントサイズを調整
+            if (currentMgType === 'kotowaza') {
+                document.getElementById('mgQuestionText').style.fontSize = '1.8rem';
+            } else {
+                document.getElementById('mgQuestionText').style.fontSize = '2.2rem';
+            }
+            
             document.getElementById('mgQuestionText').innerHTML = prob.q; 
+            
             const choicesContainer = document.getElementById('mgChoices');
             choicesContainer.innerHTML = '';
-            [...prob.choices].sort(() => Math.random() - 0.5).forEach(choice => {
-                const btn = document.createElement('button');
-                btn.textContent = choice;
-                btn.style.cssText = 'padding:15px 30px; font-size:1.8rem; border-radius:15px; border:2px solid #cbd5e0; background:white; color:#4a5568; cursor:pointer; font-weight:bold; min-width:200px; transition:all 0.2s;';
-                btn.onmouseover = () => { btn.style.background = '#edf2f7'; btn.style.transform = 'scale(1.05)'; };
-                btn.onmouseout = () => { btn.style.background = 'white'; btn.style.transform = 'scale(1)'; };
-                btn.onclick = () => window.handleMgAnswer(choice === prob.a, btn);
-                choicesContainer.appendChild(btn);
-            });
+            
+            if (currentMgType === 'kotowaza') {
+                const inputWrap = document.createElement('div');
+                inputWrap.style.cssText = 'display: flex; flex-direction: column; align-items: center; gap: 15px; width: 100%;';
+                
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.placeholder = 'ひらがなで入力';
+                input.style.cssText = 'padding: 15px 20px; font-size: 2rem; border-radius: 15px; border: 3px solid #cbd5e0; text-align: center; outline: none; width: 80%; max-width: 400px;';
+                
+                input.oninput = () => {
+                    const userVal = input.value.trim().replace(/[\u30a1-\u30f6]/g, m => String.fromCharCode(m.charCodeAt(0)-0x60));
+                    if (userVal === prob.a && !input.disabled) {
+                        window.playCorrectSound();
+                        input.disabled = true;
+                        window.handleMgAnswer(true, null);
+                    }
+                };
+                
+                input.onkeydown = (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        const userVal = input.value.trim().replace(/[\u30a1-\u30f6]/g, m => String.fromCharCode(m.charCodeAt(0)-0x60));
+                        if (userVal === prob.a) {
+                            if (!input.disabled) {
+                                window.playCorrectSound();
+                                input.disabled = true;
+                                window.handleMgAnswer(true, null);
+                            }
+                        } else if (userVal !== '') {
+                            input.disabled = true;
+                            window.handleMgAnswer(false, null);
+                        }
+                    }
+                };
+                
+                inputWrap.appendChild(input);
+                choicesContainer.appendChild(inputWrap);
+                
+                setTimeout(() => input.focus(), 100);
+            } else {
+                [...prob.choices].sort(() => Math.random() - 0.5).forEach(choice => {
+                    const btn = document.createElement('button');
+                    btn.textContent = choice;
+                    btn.style.cssText = 'padding:15px 30px; font-size:1.8rem; border-radius:15px; border:2px solid #cbd5e0; background:white; color:#4a5568; cursor:pointer; font-weight:bold; min-width:200px; transition:all 0.2s;';
+                    btn.onmouseover = () => { btn.style.background = '#edf2f7'; btn.style.transform = 'scale(1.05)'; };
+                    btn.onmouseout = () => { btn.style.background = 'white'; btn.style.transform = 'scale(1)'; };
+                    btn.onclick = () => window.handleMgAnswer(choice === prob.a, btn);
+                    choicesContainer.appendChild(btn);
+                });
+            }
         };
 
         window.handleMgAnswer = (isCorrect, btn) => {
-            if (isCorrect) { btn.style.background = '#c6f6d5'; btn.style.borderColor = '#48bb78'; btn.style.color = '#2f855a'; currentMgScore++; }
-            else { btn.style.background = '#fed7d7'; btn.style.borderColor = '#f56565'; btn.style.color = '#c53030'; }
+            if (currentMgType !== 'kotowaza') {
+                if (isCorrect) { btn.style.background = '#c6f6d5'; btn.style.borderColor = '#48bb78'; btn.style.color = '#2f855a'; currentMgScore++; }
+                else { btn.style.background = '#fed7d7'; btn.style.borderColor = '#f56565'; btn.style.color = '#c53030'; }
+            } else {
+                if (isCorrect) currentMgScore++;
+            }
             
             const overlay = document.getElementById('mgResultOverlay');
             overlay.style.display = 'flex';
@@ -1856,18 +2051,15 @@
         window.endMinigame = () => {
             if (mgTimerInterval) clearInterval(mgTimerInterval);
             const diffInSec = Math.floor((Date.now() - mgStartTime) / 1000);
-            window.checkAndSaveMgRecord(currentMgType, currentMgScore, currentMgData.length, diffInSec);
+            
+            const recordKey = currentMgType === 'kotowaza' ? `kotowaza_${currentMgCategory}` : currentMgType;
+            window.checkAndSaveMgRecord(recordKey, currentMgScore, currentMgData.length, diffInSec);
             
             document.getElementById('mgEndOverlay').style.display = 'flex';
             document.getElementById('mgFinalScore').innerHTML = `${currentMgData.length}問中 ${currentMgScore}問 正解！<br><span style="font-size:2rem;color:#718096;">タイム：${Math.floor(diffInSec/60)>0?Math.floor(diffInSec/60)+'分':''}${diffInSec%60}秒</span>`;
             
-            const plays = Math.floor((readScore + writeScore + kanjiPracticeScore) / 100) * 3 - minigamePlayCount;
             const btnContainer = document.getElementById('mgEndButtons');
-            if (plays > 0) {
-                btnContainer.innerHTML = `<div style="display:flex;gap:20px;"><button class="btn-blue" onclick="goToMinigameMenu()" style="font-size:1.8rem;background:#48bb78;">別のゲーム</button><button class="btn-blue" onclick="startMinigame('${currentMgType}')" style="font-size:1.8rem;">もう１回</button></div>`;
-            } else {
-                btnContainer.innerHTML = `<div style="font-size:1.5rem;color:#e53e3e;font-weight:bold;margin-bottom:20px;">あそべる回数がなくなりました。</div><button class="btn-blue" onclick="goToTopMode()" style="font-size:1.8rem;background:#718096;">トップへ</button>`;
-            }
+            btnContainer.innerHTML = `<div style="display:flex;gap:20px;"><button class="btn-blue" onclick="goToMinigameMenu()" style="font-size:1.8rem;background:#48bb78;">別のゲーム</button><button class="btn-blue" onclick="startMinigame('${currentMgType}', '${currentMgCategory || ''}')" style="font-size:1.8rem;">もう１回</button></div>`;
         };
 
         // =====================
