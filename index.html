@@ -277,7 +277,7 @@
               <p style="margin: 5px 0;"><strong>訓読み：</strong> <span id="kdKunReading"></span></p>
               <div id="kdSentencesArea" style="margin-top: 10px; border-top: 1px dashed #cbd5e0; padding-top: 10px;">
                   <strong style="color: #4a5568;">【<ruby>例<rt>れい</rt>文<rt>ぶん</rt></ruby>】</strong>
-                  <ul id="kdSentencesList" style="margin: 5px 0 0 0; padding-left: 20px; font-size: 1rem; color: #2d3748;"></ul>
+                  <ul id="kdSentencesList" style="margin: 10px 0 0 0; padding-left: 1.5em; font-size: 1.1rem; color: #2d3748; list-style-position: outside;"></ul>
               </div>
           </div>
 
@@ -455,6 +455,24 @@
             return Math.abs(hash).toString(36);
         }
 
+        // 答えを表示・非表示にする共通関数
+        window.showAnswer = function(input, answer) {
+            if (input.disabled) return;
+            
+            if (input.value === answer && input.dataset.mustClear === "true") {
+                // すでに答えが表示されている場合は消す（トグル）
+                input.value = '';
+                input.style.color = '';
+                input.dataset.mustClear = "false";
+            } else {
+                // 答えを表示する
+                input.value = answer;
+                input.style.color = '#e53e3e';
+                input.dataset.mustClear = "true";
+            }
+            input.focus();
+        };
+
         // CSVデータを正確にパース（空セルやセル内改行に対応）する関数
         window.parseCSV = function(text) {
             const rows = [];
@@ -619,7 +637,8 @@
         // 初期データの取得
         window.fetchProblems = async function() {
             try {
-                const url = `https://docs.google.com/spreadsheets/d/1a2CyIJCM5Nqy6Hah6249_Era1jyw11QmhAIJQGzoesA/export?format=csv&gid=649883566`;
+                // GitHub PagesなどからでもCORSエラーにならず取得できるよう、gvizエンドポイントを使用
+                const url = `https://docs.google.com/spreadsheets/d/1a2CyIJCM5Nqy6Hah6249_Era1jyw11QmhAIJQGzoesA/gviz/tq?tqx=out:csv&gid=649883566`;
                 const res = await fetch(`${url}&t=${Date.now()}`);
                 const data = await res.text();
                 
@@ -694,8 +713,8 @@
             const selector = document.getElementById('kanjiPracticeSelector');
             selector.innerHTML = '<option value="">読込中...</option>';
             try {
-                // データをより安定して取得できるエンドポイントに変更
-                const url = `https://docs.google.com/spreadsheets/d/1a2CyIJCM5Nqy6Hah6249_Era1jyw11QmhAIJQGzoesA/export?format=csv&gid=589390040`;
+                // データをより安定して取得できるエンドポイントに変更（GitHub対応）
+                const url = `https://docs.google.com/spreadsheets/d/1a2CyIJCM5Nqy6Hah6249_Era1jyw11QmhAIJQGzoesA/gviz/tq?tqx=out:csv&gid=589390040`;
                 const res = await fetch(`${url}&t=${Date.now()}`);
                 const csv = await res.text();
 
@@ -1114,7 +1133,14 @@
                         
                         wrapper.innerHTML = `
                             <span style="color:#2b6cb0;font-weight:bold;text-decoration:underline;text-decoration-color:#cbd5e0;text-decoration-thickness:2px; margin-right: 2px;">${kanjiText}</span>
-                            <span style="font-size: 1.1rem;">（</span><input type="text" class="reading-input kanji-detail-input" data-answer="${yomi}" data-key="${uniqueKey}" style="writing-mode: horizontal-tb; width: ${Math.max(2, yomi.length + 0.5)}em; height: 1.8em; font-size: 1.1rem; padding: 2px; text-align: center; line-height: 1; color: inherit; background: ${bgColor};" oninput="window.checkKanjiDetailReading(this, '${yomi}')" onkeydown="window.handleKanjiDetailKeydown(event, this, '${yomi}')"><span style="font-size: 1.1rem;">）</span>
+                            <span style="display: inline-flex; flex-direction: column; align-items: center; justify-content: center; writing-mode: horizontal-tb; vertical-align: middle;">
+                                <span style="position: relative; display: inline-flex; align-items: center; justify-content: center;">
+                                    <span style="font-size: 1.1rem;">（</span>
+                                    <input type="text" class="reading-input kanji-detail-input" data-answer="${yomi}" data-key="${uniqueKey}" style="writing-mode: horizontal-tb; width: ${Math.max(2, yomi.length + 0.5)}em; height: 1.8em; font-size: 1.1rem; padding: 2px; text-align: center; line-height: 1; color: inherit; background: ${bgColor};" oninput="window.checkKanjiDetailReading(this, '${yomi}')" onkeydown="window.handleKanjiDetailKeydown(event, this, '${yomi}')">
+                                    <span style="font-size: 1.1rem;">）</span>
+                                </span>
+                                <button onclick="window.showAnswer(this.previousElementSibling.querySelector('input'), '${yomi}')" tabindex="-1" style="font-size: 0.75rem; padding: 2px 8px; border: 1px solid #cbd5e0; border-radius: 4px; background: white; cursor: pointer; color: #4a5568; line-height: 1.2; margin-top: 4px; white-space: nowrap;">答え</button>
+                            </span>
                         `;
                         
                         ruby.replaceWith(wrapper);
@@ -1137,18 +1163,18 @@
                     osc.type = 'sine';
                     osc.frequency.setValueAtTime(freq, ctx.currentTime + startTime);
                     gain.gain.setValueAtTime(0.15, ctx.currentTime + startTime);
-                    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + startTime + duration);
+                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + startTime + duration);
                     osc.connect(gain);
                     gain.connect(ctx.destination);
                     osc.start(ctx.currentTime + startTime);
                     osc.stop(ctx.currentTime + startTime + duration);
                 };
-                playTone(987.77, 0, 0.2);    // 高い音
-                playTone(783.99, 0.15, 0.4); // 少し低い音
-            } catch(e) { console.warn("音が再生できませんでした", e); }
+                playTone(784, 0, 0.2);
+                playTone(1046.5, 0.2, 0.4);
+            } catch(e) {}
         };
 
-        // エンターキーを押したとき（間違えた場合）の処理
+        // 詳細画面でのエンターキーなどのキー操作処理
         window.handleKanjiDetailKeydown = function(event, input, answer) {
             if (event.key === 'Enter') {
                 event.preventDefault();
@@ -1156,10 +1182,7 @@
                 if (userVal === answer) {
                     window.checkKanjiDetailReading(input, answer);
                 } else if (userVal !== '') {
-                    // まちがえた場合は正解を赤色で表示し、全消しを要求するフラグを立てる
-                    input.value = answer;
-                    input.style.color = '#e53e3e';
-                    input.dataset.mustClear = "true";
+                    window.showAnswer(input, answer);
                 } else {
                     window.nextKanjiDetailInput(input);
                 }
@@ -1201,7 +1224,7 @@
                     circle = document.createElement('span');
                     circle.className = 'correct-mark';
                     circle.textContent = '〇';
-                    circle.style.cssText = 'position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #e53e3e; font-size: 2.5rem; font-weight: bold; pointer-events: none; opacity: 0.8; z-index: 10; font-family: sans-serif;';
+                    circle.style.cssText = 'position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #e53e3e; font-size: 2.5rem; font-weight: bold; pointer-events: none; opacity: 0.8; z-index: 10; font-family: sans-serif; writing-mode: horizontal-tb;';
                     input.parentElement.appendChild(circle);
                 }
 
@@ -1229,11 +1252,6 @@
                 }
 
                 setTimeout(() => window.nextKanjiDetailInput(input), 300);
-            } else if (userVal.length >= 10 && !answer.startsWith(userVal)) {
-                // 間違った読みが10文字以上入力されたら、自動で解答を表示
-                input.value = answer;
-                input.style.color = '#e53e3e';
-                input.dataset.mustClear = "true";
             }
         };
 
@@ -1537,8 +1555,8 @@
             card.className = 'sentence-card';
             card.style.cssText = 'min-width: 100px; padding-top: 40px; text-align: center;';
             
-            let inputsHtml = '<div style="font-size: 1.5rem; line-height: 1.8; margin-top: 0; letter-spacing: 0.05em; white-space: nowrap;">';
-            let sentenceHtml = '<div class="sentence" style="margin-top: 0; letter-spacing: 0.05em; white-space: nowrap;">';
+            let inputsHtml = '<div style="font-size: 1.5rem; line-height: 2.5; margin-top: 0; letter-spacing: 0.05em; white-space: nowrap; margin-left: 10px;">';
+            let sentenceHtml = '<div class="sentence" style="margin-top: 0; letter-spacing: 0.05em; white-space: nowrap; line-height: 2.5;">';
             
             const parts = p.sentence.split(/(\{.+?\|.+?\})/);
             
@@ -1549,8 +1567,13 @@
                     const inputHeight = (yomi.length * 1.1 + 0.5) + 'em';
                     
                     inputsHtml += `
-                        <span class="reading-input-wrapper" style="position: relative; display: inline-flex; align-items: center; justify-content: center; height: ${boxHeight}; vertical-align: middle;">
-                            <span style="font-size: 1.2rem;">（</span><input type="text" class="reading-input" data-answer="${yomi}" style="height: ${inputHeight}; font-size: 1.1rem; padding: 2px 0;" oninput="window.checkReading(this, '${yomi}')" onkeydown="window.handleReadingKeydown(event, this, '${yomi}')"><span style="font-size: 1.2rem;">）</span>
+                        <span class="reading-input-wrapper" style="display: inline-flex; flex-direction: column; align-items: center; justify-content: center; writing-mode: horizontal-tb; vertical-align: middle; margin: 0 5px;">
+                            <span style="position: relative; display: inline-flex; align-items: center; justify-content: center; writing-mode: vertical-rl; height: ${boxHeight};">
+                                <span style="font-size: 1.2rem;">（</span>
+                                <input type="text" class="reading-input" data-answer="${yomi}" style="height: ${inputHeight}; font-size: 1.1rem; padding: 2px 0;" oninput="window.checkReading(this, '${yomi}')" onkeydown="window.handleReadingKeydown(event, this, '${yomi}')">
+                                <span style="font-size: 1.2rem;">）</span>
+                            </span>
+                            <button onclick="window.showAnswer(this.previousElementSibling.querySelector('input'), '${yomi}')" tabindex="-1" style="font-size: 0.75rem; padding: 2px 8px; border: 1px solid #cbd5e0; border-radius: 4px; background: white; cursor: pointer; color: #4a5568; line-height: 1.2; margin-top: 6px; white-space: nowrap;">答え</button>
                         </span>
                     `;
                     sentenceHtml += `<span style="color:#2b6cb0;font-weight:bold;text-decoration:underline;text-decoration-color:#cbd5e0;text-decoration-thickness:2px; display: inline-flex; align-items: center; justify-content: center; height: ${boxHeight}; vertical-align: middle;">${kanji}</span>`;
@@ -1611,9 +1634,27 @@
             }
 
             const userVal = input.value.trim().replace(/[\u30a1-\u30f6]/g, m => String.fromCharCode(m.charCodeAt(0)-0x60));
+            
+            // ローマ字入力中などのアルファベットは判定を一時保留
+            if (userVal.match(/[a-zA-Z]/)) return;
+
             if (userVal === answer) {
+                // 正解音を鳴らす
+                window.playCorrectSound();
+
                 input.classList.add('correct');
                 input.disabled = true;
+
+                // 〇マークを表示する
+                let circle = input.parentElement.querySelector('.correct-mark');
+                if (!circle) {
+                    circle = document.createElement('span');
+                    circle.className = 'correct-mark';
+                    circle.textContent = '〇';
+                    circle.style.cssText = 'position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #e53e3e; font-size: 2.5rem; font-weight: bold; pointer-events: none; opacity: 0.8; z-index: 10; font-family: sans-serif; writing-mode: horizontal-tb;';
+                    input.parentElement.appendChild(circle);
+                }
+
                 readScore += 3;
                 window.updateScoreDisplay();
                 const allInputs = Array.from(document.querySelectorAll('.reading-input'));
@@ -1623,11 +1664,6 @@
                     const next = allInputs.find(i => !i.classList.contains('correct'));
                     if (next) next.focus();
                 }
-            } else if (userVal.length >= 10 && !answer.startsWith(userVal)) {
-                // 間違った読みが10文字以上入力されたら、自動で解答を表示
-                input.value = answer;
-                input.style.color = '#e53e3e';
-                input.dataset.mustClear = "true";
             }
         };
 
@@ -2154,7 +2190,8 @@
             try {
                 const sheetId = url.match(/\/d\/([a-zA-Z0-9-_]+)/)?.[1];
                 const gid = url.match(/gid=([0-9]+)/)?.[1] || "0";
-                const res = await fetch(`https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=${gid}&t=${Date.now()}`);
+                // GitHub PagesなどからでもCORSエラーにならず取得できるよう、gvizエンドポイントを使用
+                const res = await fetch(`https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&gid=${gid}&t=${Date.now()}`);
                 const text = await res.text();
                 
                 if (text.trim().startsWith('<!DOCTYPE html>') || text.includes('<html')) {
