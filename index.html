@@ -60,50 +60,66 @@
         .fc-card-container { width: 350px; max-width: 90%; height: 85vh; max-height: 1200px; margin: 0 20px; }
         .fc-card-inner { width: 100%; height: 100%; background: white; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; }
         @media (max-width: 600px) { .container { padding: 20px; margin: 10px; } .sentence { font-size: 1.2rem; } .fc-card-container { width: 280px; height: 85vh; } .fc-card-inner { padding: 20px; } .top-title { position: static; transform: none; font-size: 1.6rem; margin-right: 20px; white-space: nowrap; } .top-menu { margin-right: 0; gap: 10px; flex-direction: column; } .top-menu-btn { width: 60px; height: 280px; font-size: 1.1rem; padding: 15px 5px; } }
-        /* 印刷用スタイル */
+
+        #printPage { display: none; background: #e2e8f0; min-height: 100vh; width: 100vw; writing-mode: horizontal-tb; padding: 20px; box-sizing: border-box; overflow-y: auto; flex-direction: column; align-items: center; gap: 20px; }
+        .print-controls { background: white; padding: 15px 25px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); display: flex; gap: 15px; align-items: center; flex-wrap: wrap; justify-content: center; width: 100%; max-width: 1000px; box-sizing: border-box; }
+        .print-controls select { padding: 8px 12px; border-radius: 8px; border: 2px solid #cbd5e0; font-weight: bold; font-size: 1rem; cursor: pointer; outline: none; }
+        
+        #printAreaWrapper { display: flex; flex-direction: column; gap: 40px; align-items: center; width: 100%; }
+
+        .page-wrapper { margin: 0 auto; padding: 0; width: 297mm; height: 210mm; box-shadow: 0 10px 25px rgba(0,0,0,0.15); background: white; box-sizing: border-box; position: relative; overflow: hidden; page-break-after: always; break-after: page; flex-shrink: 0; }
+        .print-area-page { width: 100%; height: 100%; padding: 15mm 12mm 15mm 15mm; box-sizing: border-box; display: flex; flex-direction: row; writing-mode: vertical-rl; text-orientation: upright; font-family: 'Klee One', 'UD デジタル 教科書体 N-R', '教科書体', serif; background: white; overflow: hidden; }
+
+        /* 右側ヘッダーブロック（国語バッジ、単元名、名前枠） */
+        .print-meta-col { width: 32mm; height: 100%; border: 2px solid #000; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; padding: 5mm 1mm; margin-left: 8mm; position: relative; flex-shrink: 0; }
+        .print-badge-wrap { display: flex; flex-direction: column; align-items: center; margin-bottom: 4mm; }
+        .print-badge-sub { font-size: 8.5pt; font-weight: bold; letter-spacing: 0.1em; margin-bottom: 1.5mm; }
+        .print-badge-main { background: #e2e8f0; color: #000; font-size: 14pt; font-weight: bold; padding: 4mm 1.5mm; border-radius: 8mm / 4mm; text-align: center; width: 6mm; line-height: 1.1; border: 1.5px solid #000; }
+        .print-instruction { font-size: 9pt; line-height: 1.4; margin-bottom: 4mm; font-weight: bold; text-align: left; width: 100%; padding: 0 1.5mm; box-sizing: border-box; }
+        .print-unit-title-wrap { flex-grow: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .print-unit-desc { font-size: 8pt; color: #4a5568; margin-bottom: 2mm; }
+        .print-unit-title { font-size: 16pt; font-weight: bold; margin: 0; line-height: 1.3; text-align: center; }
+        .print-page-meta { font-size: 8pt; margin-bottom: 3mm; border-bottom: 1px solid #000; width: 80%; text-align: center; padding-bottom: 1mm; }
+        .print-name-area { width: 100%; display: flex; flex-direction: column; border-top: 2px solid #000; box-sizing: border-box; }
+        .print-grade-group { height: 15mm; display: flex; align-items: center; justify-content: flex-end; padding-left: 2mm; border-bottom: 1px solid #000; font-size: 9.5pt; font-weight: bold; }
+        .print-name-field { height: 35mm; display: flex; align-items: center; justify-content: flex-end; padding-left: 2mm; font-size: 10.5pt; font-weight: bold; }
+        .name-space { flex-grow: 1; }
+
+        /* 問題エリアグリッド（10問が綺麗に並ぶ） */
+        .print-problems-grid { flex-grow: 1; display: flex; flex-direction: row; justify-content: space-between; height: 100%; min-width: 0; }
+        .print-problem-col { width: 16mm; height: 100%; display: block; position: relative; flex-shrink: 0; text-align: center; }
+        .print-problem-col.empty { visibility: hidden; }
+        
+        .print-prob-num { font-size: 14pt; font-weight: bold; margin-bottom: 5mm; display: block; width: 100%; text-align: center; }
+        .print-prob-text-line { font-size: 14pt; line-height: 1.9; text-align: left; writing-mode: vertical-rl; text-orientation: upright; display: block; width: 100%; height: auto; }
+        
+        /* 漢字マスのスタイル */
+        .print-char-block { display: inline-block; margin: 1.5mm 0; position: relative; vertical-align: middle; text-align: center; }
+        .print-kanji-cell { width: 14mm; height: 14mm; border: 1.5px solid #000; background: white; display: inline-block; position: relative; vertical-align: middle; box-sizing: border-box; }
+        .print-kanji-cell::before { content: ''; position: absolute; top: 0; left: 50%; width: 0; height: 100%; border-left: 1px dashed #999; }
+        .print-kanji-cell::after { content: ''; position: absolute; top: 50%; left: 0; width: 100%; height: 0; border-top: 1px dashed #999; }
+        .print-yomi-cell { font-size: 8.5pt; line-height: 1.1; position: absolute; right: -5.5mm; top: 50%; transform: translateY(-50%); width: 4.5mm; text-align: center; font-weight: bold; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .print-ans-char { font-family: 'Klee One', 'UD デジタル 教科書体 N-R', serif; font-size: 22pt; color: #e53e3e; font-weight: bold; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 5; }
+
+        /* かっこ問題スタイル（送り仮名） */
+        .print-bracket-cell { display: inline-block; position: relative; margin: 1.5mm 0; text-align: center; vertical-align: middle; width: 14mm; height: 28mm; }
+        .print-bracket-cell::before { content: '〔'; font-size: 15pt; position: absolute; top: 0; left: 50%; transform: translateX(-50%); }
+        .print-bracket-cell::after { content: '〕'; font-size: 15pt; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); }
+        .print-bracket-ans { font-family: 'Klee One', 'UD デジタル 教科書体 N-R', serif; font-size: 15pt; color: #e53e3e; font-weight: bold; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); writing-mode: vertical-rl; }
+        .print-bracket-side-yomi { font-size: 8.5pt; position: absolute; right: -5.5mm; top: 50%; transform: translateY(-50%); writing-mode: vertical-rl; font-weight: bold; text-align: center; width: 4.5mm; }
+
         @media print {
             @page { size: A4 landscape; margin: 0; }
-            body { background: white !important; margin: 0 !important; padding: 0 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            body { background: white !important; margin: 0 !important; padding: 0 !important; writing-mode: horizontal-tb !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
             #topPage, #mainContainer, #readingContainer, #flashcardPage, #minigameMenuPage, #minigamePlayPage, #backToTopBtnMain, #celebration-overlay, #editDialog, #kanjiDetailModal, #kanjiPracticeContainer, .print-controls, .print-hint { display: none !important; }
-            #printPage { display: block !important; position: static !important; width: auto !important; height: auto !important; background: white !important; overflow: visible !important; }
+            #printPage { display: block !important; position: static !important; width: auto !important; height: auto !important; background: white !important; overflow: visible !important; padding: 0 !important; }
             #printAreaWrapper { margin: 0 !important; padding: 0 !important; display: block !important; max-width: none !important; gap: 0 !important; }
             .page-wrapper { margin: 0 auto !important; padding: 0 !important; width: 297mm !important; height: 210mm !important; page-break-after: always !important; break-after: page !important; box-shadow: none !important; }
             .page-wrapper:last-child { page-break-after: auto !important; break-after: auto !important; }
-            .print-area-page { box-shadow: none !important; margin: 0 !important; width: 297mm !important; height: 210mm !important; flex-direction: row-reverse; display: flex; padding: 10mm; box-sizing: border-box; font-family: 'Klee One', 'UD デジタル 教科書体 N-R', serif; writing-mode: horizontal-tb; }
+            .print-area-page { box-shadow: none !important; margin: 0 !important; width: 297mm !important; height: 210mm !important; }
             .page-break { display: none !important; }
-            .print-meta-col { width: auto; border-left: 2px dashed #999; display: flex; flex-direction: column; align-items: flex-start; padding-left: 10px; margin-left: 5px; writing-mode: vertical-rl; flex-shrink: 0; padding-top: 15px; }
-            .print-meta-box { border: 1px solid #333; padding: 15px 5px; font-size: 14px; margin: 0; text-align: center; border-radius: 4px; white-space: nowrap; }
-            .print-name-box { font-size: 1.2rem; margin-top: auto; margin-right: 2rem; margin-left: 1.5rem; margin-bottom: 30px; display: flex; flex-direction: row; align-items: center; height: 120mm; }
-            .name-space { flex: 1; }
-            .print-bracket { display: flex; flex-direction: row; justify-content: space-between; align-items: center; }
-            .bracket-space { flex: 1; }
-            .print-answer-text { color: #e53e3e; font-weight: 600; font-family: 'Klee One', 'UD デジタル 教科書体 N-R', serif; display: flex; flex: 1; align-items: center; justify-content: center; text-align: center; }
-            .print-problems-grid { flex: 1; display: flex; flex-direction: column; min-width: 0; width: 100%; }
-            .print-problem-row { flex: 1; display: flex; flex-direction: row-reverse; border-bottom: 2px dashed #999; min-height: 0; height: 100%; }
-            .print-problem-row:last-child { border-bottom: none; }
-            .print-problem-col { flex: 1; flex-shrink: 1; writing-mode: vertical-rl; text-orientation: upright; display: flex; flex-direction: column; justify-content: flex-start; align-items: flex-start; padding: 10px 5px; }
-            .print-problem-col.empty { visibility: hidden; }
-            .print-prob-answer-line { display: flex; flex-direction: row; align-items: center; }
-            .print-underline { border-right: 1.5px solid black; padding-right: 2px; margin-right: 2px; }
-            .print-rows-1 .print-problem-col, .print-rows-2 .print-problem-col { padding: 10px 5px; }
-            .print-rows-1 .print-prob-text-line, .print-rows-2 .print-prob-text-line { font-size: 1.2rem; line-height: 2; margin-top: 40px; }
-            .print-rows-1 .print-prob-num, .print-rows-2 .print-prob-num { font-size: 1.1rem; margin-bottom: 5px; }
-            .print-rows-1 .print-bracket, .print-rows-2 .print-bracket { font-size: 1.2rem; margin-bottom: 5px; height: 35mm; }
-            .print-rows-1 .print-bracket.large, .print-rows-2 .print-bracket.large { height: 70mm; }
-            .print-rows-1 .print-prob-answer-line, .print-rows-2 .print-prob-answer-line { margin-left: 15px; }
-            .print-rows-3 .print-problem-col { padding: 8px 3px; }
-            .print-rows-3 .print-prob-text-line { font-size: 1.0rem; line-height: 1.8; margin-top: 30px; }
-            .print-rows-3 .print-prob-num { font-size: 1.0rem; margin-bottom: 4px; }
-            .print-rows-3 .print-bracket { font-size: 1.0rem; margin-bottom: 4px; height: 24mm; }
-            .print-rows-3 .print-bracket.large { height: 48mm; }
-            .print-rows-3 .print-prob-answer-line { margin-left: 10px; }
-            .print-rows-4 .print-problem-col, .print-rows-5 .print-problem-col { padding: 5px 2px; }
-            .print-rows-4 .print-prob-text-line, .print-rows-5 .print-prob-text-line { font-size: 0.85rem; line-height: 1.4; margin-top: 15px; }
-            .print-rows-4 .print-prob-num, .print-rows-5 .print-prob-num { font-size: 0.85rem; margin-bottom: 2px; }
-            .print-rows-4 .print-bracket, .print-rows-5 .print-bracket { font-size: 0.85rem; margin-bottom: 2px; height: 15mm; }
-            .print-rows-4 .print-bracket.large, .print-rows-5 .print-bracket.large { height: 30mm; }
-            .print-rows-4 .print-prob-answer-line, .print-rows-5 .print-prob-answer-line { margin-left: 5px; }
         }
+
         .edit-controls { margin-bottom: 15px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; justify-content: space-between; }
         .btn-red { background: #ef4444; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; }
         .btn-gray { background: #6b7280; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; }
@@ -126,10 +142,11 @@
               <span>正しく書けるかな？</span>
               <span style="font-size: 0.9rem; font-weight: normal; margin-right: 15px; line-height: 1.4;">えんぴつとノートをよういしてね</span>
           </button>
+          <!-- プリント印刷ボタンをロック状態に変更 -->
           <button class="top-menu-btn btn-print" disabled style="opacity: 0.6; cursor: not-allowed;"><span>プリント印刷 🔒</span></button>
-          <button id="topMinigameBtn" class="top-menu-btn btn-minigame" onclick="goToMinigameMenu()" disabled style="opacity: 0.6;">
-              <span>ミニゲーム 🔒</span>
-              <span id="minigameLockText" style="font-size:0.9rem;">ポイント不足</span>
+          <!-- ミニゲームボタンはポイント状況によって動的に制御 -->
+          <button id="topMinigameBtn" class="top-menu-btn btn-minigame" onclick="goToMinigameMenu()">
+              <span>ミニゲーム</span>
           </button>
       </div>
   </div>
@@ -239,7 +256,6 @@
                   <button onclick="startMinigame('keisan')" style="width: 100%; padding: 20px 15px; font-size: 1.6rem; border-radius: 20px; background: white; color: #dd6b20; border: 5px solid #dd6b20; cursor: pointer; font-weight: bold; box-shadow: 0 8px 15px rgba(0,0,0,0.1);">漢字計算ゲーム</button>
                   <div id="bestScoreKeisan" style="font-size: 1.1rem; color: #4a5568; font-weight: bold; text-align: center;"></div>
               </div>
-              <!-- ことわざゲームのボタンが追加される場所 -->
               <div id="mgKotowazaContainer" style="display: flex; flex-direction: column; gap: 30px; width: 100%;"></div>
           </div>
       </div>
@@ -350,14 +366,13 @@
   </div>
 
   <script>
-        // === Variables Definition ===
         const correctPassword = "kanji"; 
         const unitOrder = ["小学1年生", "小学2年生", "小学3年生", "小学4年生", "小学5年生", "小学6年生", "中学1年生", "中学2年生", "中学3年生"];
         const DEFAULT_SHEET_URL = "https://docs.google.com/spreadsheets/d/1a2CyIJCM5Nqy6Hah6249_Era1jyw11QmhAIJQGzoesA/edit?gid=649883566#gid=649883566";
 
         let readScore = 0, writeScore = 0, kanjiPracticeScore = 0, minigamePlayCount = 0, completedUnits = new Set(), mgBestRecords = {};
-        let completedKanjiReadings = new Set(); // 追加：漢字練習問題のクリア記録用
-        let completedKanjis = new Set(); // 追加：全問正解した漢字ボタンの記録用
+        let completedKanjiReadings = new Set(); 
+        let completedKanjis = new Set(); 
         let allProblems = [];
         let activeCanvases = [];
         let totalKanjiInCurrentSet = 0;
@@ -393,7 +408,7 @@
         const mgNaritachiData = [{q:"<span style='font-size:4rem;'>☀️</span><br>たいようの形からできたものは？",a:"日",choices:["日","月","木","水"]},{q:"<span style='font-size:4rem;'>🌙</span><br>みかづきの形からできたものは？",a:"月",choices:["月","日","夕","夜"]},{q:"<span style='font-size:4rem;'>🌊</span><br>みずが流れる様子からできたものは？",a:"川",choices:["川","水","雨","海"]},{q:"<span style='font-size:4rem;'>🌳</span><br>木の根元に印をつけて「もと」を表したものは？",a:"本",choices:["本","木","末","未"]},{q:"<span style='font-size:4rem;'>🚶🌳</span><br>ひとが木に寄りかかってやすむ様子からできたものは？",a:"休",choices:["休","体","林","保"]},{q:"<span style='font-size:4rem;'>🌲🌲</span><br>木がふたつ並んで、たくさん木があることを表すものは？",a:"林",choices:["林","森","木","枝"]},{q:"<span style='font-size:4rem;'>👁️</span><br>めの形からできたものは？",a:"目",choices:["目","見","貝","自"]},{q:"<span style='font-size:4rem;'>🪶</span><br>とりのはねの形からできたものは？",a:"羽",choices:["羽","鳥","飛","翼"]},{q:"<span style='font-size:4rem;'>⛰️</span><br>やまの形からできたものは？",a:"山",choices:["山","川","石","岩"]},{q:"<span style='font-size:4rem;'>🧍</span><br>ひとが立っている様子を横から見てできたものは？",a:"人",choices:["人","入","大","立"]}];
         const mgKeisanData = [{q:"<span style='font-size:4rem;'>山 ＋ 石</span><br>＝ ？",a:"岩",choices:["岩","砂","炭","岸"]},{q:"<span style='font-size:4rem;'>木 ＋ 木</span><br>＝ ？",a:"林",choices:["林","森","本","枝"]},{q:"<span style='font-size:4rem;'>日 ＋ 月</span><br>＝ ？",a:"明",choices:["明","星","晴","朝"]},{q:"<span style='font-size:4rem;'>人 ＋ 木</span><br>＝ ？",a:"休",choices:["休","体","保","信"]},{q:"<span style='font-size:4rem;'>口 ＋ 鳥</span><br>＝ ？",a:"鳴",choices:["鳴","唄","唱","叫"]},{q:"<span style='font-size:4rem;'>門 ＋ 日</span><br>＝ ？",a:"間",choices:["間","問","開","閉"]},{q:"<span style='font-size:4rem;'>女 ＋ 子</span><br>＝ ？",a:"好",choices:["好","妹","姉","娘"]},{q:"<span style='font-size:4rem;'>木 ＋ 目</span><br>＝ ？",a:"相",choices:["相","箱","想","植"]},{q:"<span style='font-size:4rem;'>言 ＋ 舌</span><br>＝ ？",a:"話",choices:["話","語","読","記"]},{q:"<span style='font-size:4rem;'>禾 ＋ 火</span><br>＝ ？",a:"秋",choices:["秋","冬","春","夏"]}];
 
-        // 100個のことわざデータ
+        // 100個のことわざデータ（波括弧を完全に修復し全問題に正解の漢字・読みを設定）
         const kotowazaRawData = {
             "どうぶつ・いきもの": [
                 "猿も{木|き}から落ちる", "{犬|いぬ}も歩けば棒に当たる", "{猫|ねこ}に小判", "{豚|ぶた}に真珠", "捕らぬ{狸|たぬき}の皮算用",
@@ -432,13 +447,15 @@
         Object.keys(kotowazaRawData).forEach(cat => {
             mgKotowazaCategories[cat] = kotowazaRawData[cat].map(raw => {
                 let qText = raw;
-                let ans = "";
-                const matches = [...raw.matchAll(/\{(.+?)\|(.+?)\}/g)];
+                let ansKanji = "";
+                let ansYomi = "";
+                const matches = [...raw.matchAll(/\{(.+?鍵?)\|(.+?)\}/g)];
                 matches.forEach(m => {
-                    ans += m[2];
+                    ansKanji += m[1];
+                    ansYomi += m[2];
                     qText = qText.replace(m[0], `<span style="color:#e53e3e; text-decoration:underline; font-weight:bold;">${m[1]}</span>`);
                 });
-                return { q: qText, a: ans };
+                return { q: qText, aKanji: ansKanji, aYomi: ansYomi };
             });
         });
 
@@ -460,12 +477,12 @@
             if (input.disabled) return;
             
             if (input.value === answer && input.dataset.mustClear === "true") {
-                // すでに答えが表示されている場合は消す（トグル）
                 input.value = '';
                 input.style.color = '';
                 input.dataset.mustClear = "false";
+                const circle = input.parentElement.querySelector('.correct-mark');
+                if (circle) circle.remove();
             } else {
-                // 答えを表示する
                 input.value = answer;
                 input.style.color = '#e53e3e';
                 input.dataset.mustClear = "true";
@@ -473,7 +490,7 @@
             input.focus();
         };
 
-        // CSVデータを正確にパース（空セルやセル内改行に対応）する関数
+        // CSVデータを正確にパース
         window.parseCSV = function(text) {
             const rows = [];
             let row = [];
@@ -542,30 +559,31 @@
             const topReadScoreEl = document.getElementById('topReadScore');
             if (topReadScoreEl) topReadScoreEl.textContent = `${readScore} pt`;
             
-            const topWriteScoreEl = document.getElementById('topWriteScore');
-            if (topWriteScoreEl) topWriteScoreEl.textContent = `${writeScore} pt`;
-            
             const kpScoreEl = document.getElementById('topKanjiPracticeScore');
             if (kpScoreEl) kpScoreEl.textContent = `${kanjiPracticeScore} pt`;
             
             const readEl = document.getElementById('readScoreDisplay');
             if (readEl) readEl.textContent = `${readScore} pt`;
-            const writeEl = document.getElementById('writeScoreDisplay');
-            if (writeEl) writeEl.textContent = `${writeScore} pt`;
 
-            const total = readScore + writeScore + kanjiPracticeScore;
+            // ミニゲームボタンのロック制御（「正しく読めるかな？」と「漢字練習」の合計100ptごとに3回）
+            const total = readScore + kanjiPracticeScore;
             const plays = Math.floor(total / 100) * 3 - minigamePlayCount;
             const btn = document.getElementById('topMinigameBtn');
-            if (plays > 0) {
-                btn.disabled = false; btn.style.opacity = '1';
-                btn.innerHTML = `<span>ミニゲーム</span><span style="font-size:0.9rem;color:#d53f8c;">あと${plays}回</span>`;
-            } else {
-                const remaining = 100 - (total % 100);
-                btn.disabled = true; btn.style.opacity = '0.6';
-                btn.innerHTML = `<span>ミニゲーム 🔒</span><span style="font-size:0.8rem;">あと${remaining}pt</span>`;
+            if (btn) {
+                if (plays > 0) {
+                    btn.disabled = false;
+                    btn.style.opacity = '1';
+                    btn.style.cursor = 'pointer';
+                    btn.innerHTML = `<span>ミニゲーム</span><span style="font-size:0.9rem;color:#d53f8c;">あと${plays}回</span>`;
+                } else {
+                    const remaining = 100 - (total % 100);
+                    btn.disabled = true;
+                    btn.style.opacity = '0.6';
+                    btn.style.cursor = 'not-allowed';
+                    btn.innerHTML = `<span>ミニゲーム 🔒</span><span style="font-size:0.8rem;">あと${remaining}pt</span>`;
+                }
             }
-            
-            // タイマーを使わず、ポイントが変わった瞬間に確実に即時保存するように変更
+
             window.saveProgressToStorage();
         }
 
@@ -588,7 +606,6 @@
             const keisanEl = document.getElementById('bestScoreKeisan');
             if(keisanEl) keisanEl.textContent = `最高正解数: ${kRecord.score}問` + (kRecord.time !== null ? ` (最速全問正解: ${formatTime(kRecord.time)})` : '');
 
-            // ことわざの記録表示を更新
             Object.keys(mgKotowazaCategories).forEach(cat => {
                 const key = `kotowaza_${cat}`;
                 const record = mgBestRecords[key] || { score: 0, time: null };
@@ -607,7 +624,6 @@
             if (updated) {
                 mgBestRecords[type] = record;
                 window.updateMgBestRecordsDisplay();
-                // ゲーム結果も即時保存するように変更
                 window.saveProgressToStorage();
             }
         }
@@ -619,39 +635,30 @@
             document.getElementById('backToTopBtnMain').style.display = 'none';
         }
 
-        // テキストに手動ふりがなを付与する関数
         window.processFurigana = async function(text) {
             if (!text || text.trim() === '') return text;
-            
-            // 手動ルビの構文が含まれている場合はそれを優先して変換する
             if (text.match(/\{.+?\|.+?\}/) || text.match(/[一-龠々]+\([ぁ-んァ-ヶー]+\)/) || text.match(/[一-龠々]+（[ぁ-んァ-ヶー]+）/)) {
                 let htmlText = text.replace(/\{(.+?)\|(.+?)\}/g, '<ruby>$1<rt>$2</rt></ruby>');
                 htmlText = htmlText.replace(/([一-龠々]+)\(([ぁ-んァ-ヶー]+)\)/g, '<ruby>$1<rt>$2</rt></ruby>');
                 htmlText = htmlText.replace(/([一-龠々]+)（([ぁ-んァ-ヶー]+)）/g, '<ruby>$1<rt>$2</rt></ruby>');
                 return htmlText;
             }
-
             return text;
         };
 
-        // 初期データの取得
         window.fetchProblems = async function() {
             try {
-                // GitHub PagesなどからでもCORSエラーにならず取得できるよう、gvizエンドポイントを使用
                 const url = `https://docs.google.com/spreadsheets/d/1a2CyIJCM5Nqy6Hah6249_Era1jyw11QmhAIJQGzoesA/gviz/tq?tqx=out:csv&gid=649883566`;
                 const res = await fetch(`${url}&t=${Date.now()}`);
                 const data = await res.text();
                 
-                // 万が一スプレッドシートの権限エラー等でHTMLページが返された場合の安全装置
                 if (data.trim().startsWith('<!DOCTYPE html>') || data.includes('<html')) {
-                    console.error("データの取得に失敗しました。スプレッドシートが公開されているか確認してください。");
+                    console.error("データの取得に失敗しました。");
                     return;
                 }
 
                 const rows = window.parseCSV(data);
-
                 allProblems = rows.slice(1).map(cols => {
-                    // C列ではなくX列などから抽出できるように、行の生データ(raw)も保持しておく
                     return { grade: cols[0], unit: cols[1], sentence: cols[2], raw: cols };
                 }).filter(p => p.sentence);
                 
@@ -688,7 +695,7 @@
                     units.forEach(u => sel.innerHTML += `<option value="${u}">${u}</option>`);
                 }
             });
-            window.syncUnit(""); // 学年が変わったら単元はリセット
+            window.syncUnit(""); 
         };
 
         window.syncUnit = function(val) {
@@ -713,7 +720,6 @@
             const selector = document.getElementById('kanjiPracticeSelector');
             selector.innerHTML = '<option value="">読込中...</option>';
             try {
-                // データをより安定して取得できるエンドポイントに変更（GitHub対応）
                 const url = `https://docs.google.com/spreadsheets/d/1a2CyIJCM5Nqy6Hah6249_Era1jyw11QmhAIJQGzoesA/gviz/tq?tqx=out:csv&gid=589390040`;
                 const res = await fetch(`${url}&t=${Date.now()}`);
                 const csv = await res.text();
@@ -742,7 +748,6 @@
             const grade = document.getElementById('kanjiPracticeSelector').value;
             window.syncGrade(grade);
 
-            // データが読み込まれていなければ、ここで読み込む
             if (!kanjiPracticeDataLoaded) {
                 await window.loadKanjiPracticeData();
                 document.getElementById('kanjiPracticeSelector').value = grade;
@@ -755,12 +760,10 @@
             const unitsMap = new Map();
             const unitsOrder = [];
             
-            // 漢字詳細用シート (kanjiPracticeRawData) から抽出する
             kanjiPracticeRawData.slice(1).forEach(r => {
                 const rowGrade = r[0]?.trim();
                 if (rowGrade !== grade) return;
                 
-                // T列 (インデックス19) から単元名を取得
                 const unit = (r.length > 19 ? r[19]?.trim() : '') || '未分類';
                 
                 if (!unitsMap.has(unit)) { 
@@ -768,10 +771,7 @@
                     unitsOrder.push(unit); 
                 }
                 
-                // X列 (インデックス23) から漢字を取得
                 let kanjiData = r.length > 23 ? r[23]?.trim() : '';
-
-                // 万が一列がずれている場合のための保険
                 if (!kanjiData || kanjiData.trim() === '') {
                     for (let i = 20; i < r.length; i++) {
                         const cell = r[i] || '';
@@ -781,7 +781,6 @@
                     }
                 }
 
-                // 見つかった漢字をボタン用リストに追加
                 if (kanjiData) {
                     for (const char of kanjiData) {
                         if (char.match(/[\u4E00-\u9FFF々]/)) {
@@ -827,7 +826,6 @@
                 for (let loop = 0; loop < 3; loop++) {
                     if (currentAnimId !== animId) break;
                     
-                    // アニメーション開始前にSVGを再生成して完全にリセットする
                     container.innerHTML = svgText;
                     const svg = container.querySelector('svg');
                     if (!svg) return;
@@ -835,18 +833,15 @@
                     svg.style.cssText = 'width:100%;height:100%;display:block;';
                     const paths = Array.from(svg.querySelectorAll('path'));
 
-                    // すべてのパス（線）を非表示にリセット
                     paths.forEach(p => {
                         const len = p.getTotalLength();
                         p.style.cssText = `fill:none;stroke:#3182ce;stroke-width:4;stroke-linecap:round;stroke-dasharray:${len};stroke-dashoffset:${len}`;
                     });
 
-                    // 1画ずつアニメーション
                     for (const p of paths) {
                         if (currentAnimId !== animId) break;
                         const len = p.getTotalLength();
                         const anim = p.animate([{ strokeDashoffset: len }, { strokeDashoffset: 0 }], { duration: 600, fill: 'forwards' });
-                        // 特定のブラウザでのフリーズを防ぐためPromiseでラップ
                         await new Promise(resolve => {
                             anim.onfinish = resolve;
                             anim.oncancel = resolve;
@@ -924,7 +919,7 @@
             document.getElementById('kdKanjiTitle').textContent = kanji;
             document.getElementById('kdOnReading').innerHTML = '<span class="loading-spinner" style="border-color:#3182ce; border-top-color:transparent; width: 12px; height: 12px; border-width: 2px; vertical-align: middle;"></span>';
             document.getElementById('kdKunReading').innerHTML = '<span class="loading-spinner" style="border-color:#3182ce; border-top-color:transparent; width: 12px; height: 12px; border-width: 2px; vertical-align: middle;"></span>';
-            document.getElementById('kdSentencesList').innerHTML = '<li><span class="loading-spinner" style="border-color:#3182ce; border-top-color:transparent; width: 12px; height: 12px; border-width: 2px; margin-right: 8px; vertical-align: middle;"></span>例文を探しています...</li>';
+            document.getElementById('kdSentencesList').innerHTML = '<li>例文を探しています...</li>';
             
             document.getElementById('kdYColumnDataArea').style.display = 'none';
             document.getElementById('kdYColumnText').innerHTML = '';
@@ -950,20 +945,16 @@
                 }).join('、') || 'なし';
                 document.getElementById('kdKunReading').innerHTML = kunReadings;
             } catch(e) {
-                document.getElementById('kdOnReading').textContent = '取得できませんでした';
+                document.getElementById('kdOnReading').textContent = '未取得';
                 document.getElementById('kdKunReading').textContent = '取得できませんでした';
             }
 
             const listEl = document.getElementById('kdSentencesList');
             listEl.innerHTML = '';
             
-            // B列(インデックス1)の漢字を対象にして行を検索する
             const kanjiRow = kanjiPracticeRawData.find(r => r[1]?.trim() === kanji);
-            
-            // --- 例文の取得と表示 (Z列: インデックス25) ---
             let zColumnData = kanjiRow ? kanjiRow[25] || '' : '';
 
-            // ズレ対策：Z列が空の場合、インデックス20より右側で「{」を含むセルを探す
             if (!zColumnData || zColumnData.trim() === '') {
                 if (kanjiRow) {
                     for (let i = 20; i < kanjiRow.length; i++) {
@@ -977,7 +968,6 @@
 
             if (zColumnData && zColumnData.trim() !== '') {
                 const sentences = zColumnData.split(/\\n|\n/).filter(s => s.trim() !== '');
-                // 各例文をふりがな付きに変換し、対象漢字を問題化
                 for (const s of sentences) {
                     const li = document.createElement('li');
                     const furiganaHtml = await window.processFurigana(s);
@@ -989,7 +979,6 @@
             } else {
                 const sentences = allProblems.filter(p => p.sentence.includes(kanji)).slice(0, 3);
                 if (sentences.length > 0) {
-                    // 問題文から引用した場合もふりがな付きに変換し、対象漢字を問題化
                     for (const p of sentences) {
                         const li = document.createElement('li');
                         const furiganaHtml = await window.processFurigana(p.sentence);
@@ -1003,19 +992,14 @@
                 }
             }
 
-            // --- 覚え方情報の取得と表示 ---
             let oboekataColumnData = '';
-            
             if (kanjiPracticeRawData.length > 0 && kanjiRow) {
                 const header = kanjiPracticeRawData[0];
                 const oboekataIdx = header.findIndex(h => h && h.includes('覚え方'));
-                
                 if (oboekataIdx !== -1) {
                     oboekataColumnData = kanjiRow[oboekataIdx] || '';
                 }
             }
-
-            // 万が一「覚え方」という列名が見つからなかった場合のフォールバック（直接Y列:インデックス24を取得）
             if (!oboekataColumnData || oboekataColumnData.trim() === '') {
                 if (kanjiRow && kanjiRow.length > 24) {
                     oboekataColumnData = kanjiRow[24] || '';
@@ -1024,19 +1008,16 @@
 
             const yArea = document.getElementById('kdYColumnDataArea');
             if (oboekataColumnData && oboekataColumnData.trim() !== '') {
-                // 覚え方のテキストをふりがな付きに変換
                 document.getElementById('kdYColumnText').innerHTML = await window.processFurigana(oboekataColumnData);
                 yArea.style.display = 'block';
             } else {
                 yArea.style.display = 'none';
             }
 
-            // モーダルを開いた後、最初の入力欄に自動フォーカスする
             setTimeout(() => {
                 const firstInput = document.querySelector('#kdSentencesList .kanji-detail-input');
                 if (firstInput) firstInput.focus();
 
-                // 過去のクリアデータ補完用
                 const allInputs = Array.from(document.querySelectorAll('#kdSentencesList .kanji-detail-input'));
                 if (allInputs.length > 0 && allInputs.every(i => completedKanjiReadings.has(i.getAttribute('data-key')))) {
                     if (!completedKanjis.has(kanji)) {
@@ -1048,7 +1029,6 @@
                 }
             }, 300);
 
-            // 練習用キャンバスの初期化
             document.getElementById('kdPracticeGuide').textContent = kanji;
             window.kdCurrentKanji = kanji;
             window.initKdPracticeCanvas(1);
@@ -1057,7 +1037,6 @@
 
         window.closeKanjiDetailModal = () => { currentAnimId++; document.getElementById('kanjiDetailModal').style.display = 'none'; };
 
-        // 練習用キャンバスの処理
         let kdIsDrawing = { 1: false, 2: false };
         let kdHasDrawn = { 1: false, 2: false };
 
@@ -1088,7 +1067,6 @@
             if (!canvas) return;
             const ctx = canvas.getContext('2d');
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            // 補助線の描画
             ctx.beginPath(); 
             ctx.strokeStyle = '#e2e8f0'; 
             ctx.setLineDash([4,4]);
@@ -1097,61 +1075,9 @@
             ctx.moveTo(0, canvas.height/2); ctx.lineTo(canvas.width, canvas.height/2); 
             ctx.stroke();
             ctx.setLineDash([]);
-            
             kdHasDrawn[id] = false;
         };
 
-        // 例文を問題入力欄に変換する関数
-        window.createKanjiQuestionHtml = function(htmlStr, targetKanji) {
-            const tempDiv = document.createElement('div');
-            tempDiv.innerHTML = htmlStr;
-            const originalText = tempDiv.textContent; // テキストのみ抽出してユニークキーに利用
-            const sentenceHash = window.getHash(originalText);
-
-            const rubies = tempDiv.querySelectorAll('ruby');
-            rubies.forEach((ruby, index) => {
-                let kanjiText = '';
-                ruby.childNodes.forEach(node => {
-                    if (node.nodeType === Node.TEXT_NODE) {
-                        kanjiText += node.textContent;
-                    }
-                });
-                
-                // 対象の漢字を含んでいれば入力欄に置き換える
-                if (kanjiText.includes(targetKanji)) {
-                    const rt = ruby.querySelector('rt');
-                    const yomi = rt ? rt.textContent : '';
-                    
-                    if (yomi) {
-                        const uniqueKey = `${targetKanji}_${sentenceHash}_${index}`;
-                        const isCompleted = completedKanjiReadings.has(uniqueKey);
-                        const bgColor = isCompleted ? '#bee3f8' : 'white'; // クリア済みなら少し濃い水色、未クリアなら白
-                        
-                        const wrapper = document.createElement('span');
-                        wrapper.className = 'reading-input-wrapper';
-                        wrapper.style.cssText = `position: relative; display: inline-flex; align-items: center; justify-content: center; vertical-align: middle; margin: 0 5px;`;
-                        
-                        wrapper.innerHTML = `
-                            <span style="color:#2b6cb0;font-weight:bold;text-decoration:underline;text-decoration-color:#cbd5e0;text-decoration-thickness:2px; margin-right: 2px;">${kanjiText}</span>
-                            <span style="display: inline-flex; flex-direction: column; align-items: center; justify-content: center; writing-mode: horizontal-tb; vertical-align: middle;">
-                                <span style="position: relative; display: inline-flex; align-items: center; justify-content: center;">
-                                    <span style="font-size: 1.1rem;">（</span>
-                                    <input type="text" class="reading-input kanji-detail-input" data-answer="${yomi}" data-key="${uniqueKey}" style="writing-mode: horizontal-tb; width: ${Math.max(2, yomi.length + 0.5)}em; height: 1.8em; font-size: 1.1rem; padding: 2px; text-align: center; line-height: 1; color: inherit; background: ${bgColor};" oninput="window.checkKanjiDetailReading(this, '${yomi}')" onkeydown="window.handleKanjiDetailKeydown(event, this, '${yomi}')">
-                                    <span style="font-size: 1.1rem;">）</span>
-                                </span>
-                                <button onclick="window.showAnswer(this.previousElementSibling.querySelector('input'), '${yomi}')" tabindex="-1" style="font-size: 0.75rem; padding: 2px 8px; border: 1px solid #cbd5e0; border-radius: 4px; background: white; cursor: pointer; color: #4a5568; line-height: 1.2; margin-top: 4px; white-space: nowrap;">答え</button>
-                            </span>
-                        `;
-                        
-                        ruby.replaceWith(wrapper);
-                    }
-                }
-            });
-
-            return tempDiv.innerHTML;
-        };
-
-        // ピンポン音を鳴らす関数
         window.playCorrectSound = function() {
             try {
                 const AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -1174,7 +1100,6 @@
             } catch(e) {}
         };
 
-        // 詳細画面でのエンターキーなどのキー操作処理
         window.handleKanjiDetailKeydown = function(event, input, answer) {
             if (event.key === 'Enter') {
                 event.preventDefault();
@@ -1189,36 +1114,28 @@
             }
         };
 
-        // 詳細画面での入力の正解判定
         window.checkKanjiDetailReading = function(input, answer) {
-            // 文字が変更（消去・入力）されたら色を元に戻す
             input.style.color = '';
             
-            // 一度全部消さないと正解にしないための処理
             if (input.dataset.mustClear === "true") {
-                // 1文字でも変更（消去）されたら、自動的に全部消去する
                 if (input.value !== answer && input.value !== '') {
                     input.value = '';
                 }
-
                 if (input.value === '') {
-                    // 入力欄が完全に空になったらフラグを解除して、再度正解できるようにする
                     input.dataset.mustClear = "false";
+                    const circle = input.parentElement.querySelector('.correct-mark');
+                    if (circle) circle.remove();
                 }
-                // フラグが解除されるまでは正解判定を行わない
                 return;
             }
             
-            // ひらがな・カタカナをひらがなに統一して判定
             const userVal = input.value.trim().replace(/[\u30a1-\u30f6]/g, m => String.fromCharCode(m.charCodeAt(0)-0x60));
             if (userVal === answer) {
-                // 正解音を鳴らす
                 window.playCorrectSound();
                 
                 input.classList.add('correct');
                 input.disabled = true;
                 
-                // 〇マークを表示する
                 let circle = input.parentElement.querySelector('.correct-mark');
                 if (!circle) {
                     circle = document.createElement('span');
@@ -1230,17 +1147,14 @@
 
                 const key = input.getAttribute('data-key');
                 if (key && !completedKanjiReadings.has(key)) {
-                    // 初回正解で2ポイント
                     kanjiPracticeScore += 2;
                     completedKanjiReadings.add(key);
                 } else {
-                    // 2回目以降で1ポイント
                     kanjiPracticeScore += 1;
                 }
                 
                 window.updateScoreDisplay();
                 
-                // 全問正解判定
                 const allInputs = Array.from(document.querySelectorAll('#kdSentencesList .kanji-detail-input'));
                 if (allInputs.length > 0 && allInputs.every(i => i.disabled || completedKanjiReadings.has(i.getAttribute('data-key')))) {
                     if (!completedKanjis.has(window.kdCurrentKanji)) {
@@ -1255,7 +1169,6 @@
             }
         };
 
-        // エンターキーや正解時に次の入力欄へ移動する
         window.nextKanjiDetailInput = function(currentInput) {
             const allInputs = Array.from(document.querySelectorAll('#kdSentencesList .kanji-detail-input'));
             const idx = allInputs.indexOf(currentInput);
@@ -1265,15 +1178,11 @@
             }
         };
 
-        // =====================
-        // 正しく書けるかな？機能
-        // =====================
         window.goToPracticeMode = () => { 
             window.goToTopMode(); 
             document.getElementById('topPage').style.display = 'none'; 
             document.getElementById('mainContainer').style.display = 'flex'; 
             document.getElementById('backToTopBtnMain').style.display = 'block'; 
-            
             window.filterByUnitWrite();
         };
 
@@ -1316,8 +1225,6 @@
         window.renderCards = function(probs) {
             const container = document.getElementById('cardsArea');
             container.innerHTML = '';
-            
-            // 上下スクロール、右から左へ要素を配置
             container.style.cssText = 'display: flex; flex-direction: column; flex-wrap: nowrap; align-items: center; width: 100%; height: 100%; overflow-y: auto; overflow-x: hidden; writing-mode: vertical-rl; gap: 30px; padding: 20px 0;';
 
             const sentenceDisplay = document.getElementById('writeSentenceDisplay');
@@ -1336,8 +1243,6 @@
                 const card = document.createElement('div');
                 card.className = 'sentence-card';
                 card.dataset.probIndex = idx;
-                
-                // column にすることで、追加した要素が右から左へ並ぶ
                 card.style.cssText = 'width: 95%; max-width: 800px; height: auto; min-height: 0; display: flex; flex-direction: column; justify-content: flex-start; align-items: flex-start; padding: 20px; margin: 0; writing-mode: vertical-rl; gap: 30px; box-sizing: border-box; background: #f7fafc; border-radius: 15px; border-top: 5px solid #667eea; box-shadow: 0 4px 6px rgba(0,0,0,0.05); position: relative;';
                 
                 const numDiv = document.createElement('div');
@@ -1351,7 +1256,6 @@
                 sentenceDiv.innerHTML = htmlSentence;
 
                 const canvasesWrapper = document.createElement('div');
-                // 上下に並べるために row
                 canvasesWrapper.style.cssText = 'display: flex; flex-direction: row; gap: 20px; flex-wrap: wrap; justify-content: flex-start; align-items: flex-start; flex: 1;';
 
                 let blanks = [];
@@ -1370,15 +1274,12 @@
                 });
 
                 const rightContent = document.createElement('div');
-                // 上下に並べるため row
                 rightContent.style.cssText = 'display: flex; flex-direction: row; align-items: flex-start; gap: 15px;';
                 rightContent.appendChild(numDiv);
                 rightContent.appendChild(sentenceDiv);
 
-                // 右から左へ追加
-                card.appendChild(rightContent); // 一番右: 問題文
-                card.appendChild(canvasesWrapper); // 左: キャンバス群
-                
+                card.appendChild(rightContent); 
+                card.appendChild(canvasesWrapper); 
                 container.appendChild(card);
             });
             
@@ -1388,15 +1289,13 @@
 
         window.createWordAnswerBox = function(word, reading) {
             const block = document.createElement('div');
-            // 右から左へ並べるため column
             block.style.cssText = 'display:flex; flex-direction:column; align-items:center; gap:20px; writing-mode: vertical-rl; margin-bottom: 10px;';
-            const size = 125; // 答えマスのサイズを250pxから半分の125pxに変更
+            const size = 125; 
             
             const ansGroup = document.createElement('div');
             ansGroup.style.cssText = 'display: flex; flex-direction: column; align-items: center; gap: 10px; writing-mode: horizontal-tb;';
 
             const ansDisplayWrapper = document.createElement('div');
-            // 複数文字がある場合は上下に並べる
             ansDisplayWrapper.style.cssText = 'display: flex; flex-direction: column; gap: 10px;';
             
             const charDisplays = [];
@@ -1410,14 +1309,11 @@
 
             const ansBtn = document.createElement('button');
             ansBtn.textContent = '答え';
-            // ボタンの大きさを1/4にし、答えマスの下に配置
             ansBtn.style.cssText = 'width: 25%; min-width: 60px; background:white; border:2px solid #cbd5e0; border-radius:6px; padding:5px 0; font-weight:bold; cursor:pointer; font-size: 0.9rem; color: #4a5568; box-sizing: border-box; text-align: center; writing-mode: horizontal-tb;';
 
             let currentLocalAnimId = 0;
             ansBtn.onclick = async () => {
                 const animId = ++currentLocalAnimId;
-                
-                // 各文字のSVGデータを取得
                 const svgDataArray = [];
                 for (const item of charDisplays) {
                     const code = item.char.charCodeAt(0).toString(16).padStart(5, '0');
@@ -1444,7 +1340,6 @@
                 for (let loop = 0; loop < 3; loop++) {
                     if (currentLocalAnimId !== animId) break;
                     
-                    // 全ての文字の書き順アニメーションを同時に開始する
                     const animPromises = charDisplays.map(async (item, i) => {
                         const svgText = svgDataArray[i];
                         if (svgText) {
@@ -1463,8 +1358,6 @@
                                     if (currentLocalAnimId !== animId) break;
                                     const len = p.getTotalLength();
                                     const anim = p.animate([{ strokeDashoffset: len }, { strokeDashoffset: 0 }], { duration: 600, fill: 'forwards' });
-                                    
-                                    // アニメーション終了の確実な待機
                                     await new Promise(resolve => {
                                         anim.onfinish = resolve;
                                         anim.oncancel = resolve;
@@ -1477,24 +1370,18 @@
                         }
                     });
                     
-                    // 並列実行された全てのアニメーションを待機
                     await Promise.all(animPromises);
-
                     if (loop < 2 && currentLocalAnimId === animId) await new Promise(r => setTimeout(r, 1000));
                 }
             };
             
             ansGroup.appendChild(ansDisplayWrapper);
             ansGroup.appendChild(ansBtn);
-            
             block.appendChild(ansGroup);
-            
             return block;
         }
 
-        window.updateWriteSentenceDisplay = (idx) => {
-            // Nothing to do since problem is rendered directly in the cards now
-        };
+        window.updateWriteSentenceDisplay = (idx) => {};
 
         window.prevWriteProblem = () => {
             if (currentRenderedProblems.length === 0) return;
@@ -1509,7 +1396,6 @@
             if (block) block.scrollIntoView({ behavior: 'smooth', block: 'center' });
         };
 
-
         // =====================
         // 読み取りモード
         // =====================
@@ -1518,7 +1404,6 @@
             document.getElementById('topPage').style.display = 'none';
             document.getElementById('readingContainer').style.display = 'flex';
             document.getElementById('backToTopBtnMain').style.display = 'block';
-            
             window.onReadUnitChange();
         };
 
@@ -1608,7 +1493,6 @@
                 if (userVal === answer) {
                     window.checkReading(input, answer);
                 } else if (userVal !== '') {
-                    // まちがえた場合は正解を赤色で表示し、全消しを要求するフラグを立てる
                     input.value = answer;
                     input.style.color = '#e53e3e';
                     input.dataset.mustClear = "true";
@@ -1619,33 +1503,29 @@
         };
 
         window.checkReading = function(input, answer) {
-            // 文字が変更（消去・入力）されたら色を元に戻す
             input.style.color = '';
             
-            // 一度全部消さないと正解にしないための処理
             if (input.dataset.mustClear === "true") {
                 if (input.value !== answer && input.value !== '') {
                     input.value = '';
                 }
                 if (input.value === '') {
                     input.dataset.mustClear = "false";
+                    const circle = input.parentElement.querySelector('.correct-mark');
+                    if (circle) circle.remove();
                 }
                 return;
             }
 
             const userVal = input.value.trim().replace(/[\u30a1-\u30f6]/g, m => String.fromCharCode(m.charCodeAt(0)-0x60));
-            
-            // ローマ字入力中などのアルファベットは判定を一時保留
             if (userVal.match(/[a-zA-Z]/)) return;
 
             if (userVal === answer) {
-                // 正解音を鳴らす
                 window.playCorrectSound();
 
                 input.classList.add('correct');
                 input.disabled = true;
 
-                // 〇マークを表示する
                 let circle = input.parentElement.querySelector('.correct-mark');
                 if (!circle) {
                     circle = document.createElement('span');
@@ -1664,6 +1544,10 @@
                     const next = allInputs.find(i => !i.classList.contains('correct'));
                     if (next) next.focus();
                 }
+            } else if (userVal.length >= 10 && !answer.startsWith(userVal)) {
+                input.value = answer;
+                input.style.color = '#e53e3e';
+                input.dataset.mustClear = "true";
             }
         };
 
@@ -1714,7 +1598,6 @@
             document.getElementById('topPage').style.display = 'none';
             document.getElementById('flashcardPage').style.display = 'flex';
             document.getElementById('backToTopBtnMain').style.display = 'block';
-            
             window.filterFlashcards();
         };
 
@@ -1828,15 +1711,13 @@
             }
         };
 
-        // =====================
-        // プリントアウト
-        // =====================
         window.goToPrintMode = () => {
             window.goToTopMode();
             document.getElementById('topPage').style.display = 'none';
             document.getElementById('printPage').style.display = 'flex';
             
-            window.renderPrintPreview();
+            document.getElementById('printGradeSelector').value = document.getElementById('gradeSelector').value || document.getElementById('readGradeSelector').value || document.getElementById('fcGradeSelector').value;
+            window.onPrintGradeChange();
         };
         
         window.onPrintGradeChange = () => {
@@ -1858,68 +1739,186 @@
             container.innerHTML = '';
             const grade = document.getElementById('printGradeSelector').value;
             const unit = document.getElementById('printUnitSelector').value;
-            if (!grade || !unit) { container.innerHTML = '<div style="padding:50px;">学年と単元を選択してください</div>'; return; }
+            const range = document.getElementById('printRangeSelector').value;
+            if (!grade || !unit) { container.innerHTML = '<div style="padding:50px; font-weight: bold; writing-mode: horizontal-tb;">学年と単元を選択してください。</div>'; return; }
 
-            let filtered = allProblems.filter(p => p.grade === grade && (unit === 'all' || p.unit === unit));
-            if(document.getElementById('printRangeSelector').value === 'up-to') filtered = filtered.sort(() => Math.random() - 0.5).slice(0, 50);
+            let filtered = allProblems.filter(p => p.grade === grade);
+            if (unit !== 'all') {
+                if (range === 'only') {
+                    filtered = filtered.filter(p => p.unit === unit);
+                } else {
+                    const currentUnits = [...new Set(filtered.map(p => p.unit))];
+                    const targetIdx = currentUnits.indexOf(unit);
+                    filtered = filtered.filter(p => currentUnits.indexOf(p.unit) <= targetIdx);
+                }
+            }
+            if (range === 'up-to') filtered = filtered.sort(() => Math.random() - 0.5).slice(0, 50);
 
-            if (filtered.length === 0) { container.innerHTML = '<div style="padding:50px;">問題がありません</div>'; return; }
+            if (filtered.length === 0) { container.innerHTML = '<div style="padding:50px; font-weight: bold; writing-mode: horizontal-tb;">問題がありません。</div>'; return; }
 
             const chunks = [];
-            for (let i = 0; i < filtered.length; i += 20) chunks.push(filtered.slice(i, i + 20));
+            for (let i = 0; i < filtered.length; i += 10) {
+                chunks.push(filtered.slice(i, i + 10));
+            }
 
             chunks.forEach((probs, pIdx) => {
-                const pageInfo = chunks.length > 1 ? ` (${pIdx + 1}/${chunks.length})` : '';
-                const title = `${grade} ${unit==='all'?'すべて':unit} ${pageInfo}`;
+                const totalPages = chunks.length;
+                const pageNumDisplay = totalPages > 1 ? `${pIdx + 1} / ${totalPages}` : "";
+                const unitTitle = unit === 'all' ? 'すべて' : unit;
                 
-                const qPage = window.createPrintPageDOM(title, probs, pIdx * 20, false);
+                // 問題ページを安全にオブジェクトのまま追加
+                const qPage = window.createPrintPageDOM(grade, unitTitle, probs, pIdx * 10, false, pageNumDisplay);
                 container.appendChild(qPage);
-                container.innerHTML += '<div class="page-break"></div>';
                 
-                const aPage = window.createPrintPageDOM(title + " 【解答】", probs, pIdx * 20, true);
+                // 改ページを挿入
+                const pageBreak1 = document.createElement('div');
+                pageBreak1.className = 'page-break';
+                container.appendChild(pageBreak1);
+                
+                // 解答ページを安全にオブジェクトのまま追加
+                const aPage = window.createPrintPageDOM(grade, unitTitle + " 【解答】", probs, pIdx * 10, true, pageNumDisplay);
                 container.appendChild(aPage);
-                if(pIdx < chunks.length - 1) container.innerHTML += '<div class="page-break"></div>';
+                
+                if (pIdx < chunks.length - 1) {
+                    const pageBreak2 = document.createElement('div');
+                    pageBreak2.className = 'page-break';
+                    container.appendChild(pageBreak2);
+                }
             });
         };
 
-        window.createPrintPageDOM = function(title, problems, startIdx, showAns) {
+        window.createPrintPageDOM = function(grade, unitTitle, problems, startIdx, showAns, pageNumDisplay) {
             const wrap = document.createElement('div');
             wrap.className = 'page-wrapper';
+            
             const page = document.createElement('div');
             page.className = 'print-area-page';
-            
-            let html = `
+
+            let metaHtml = `
                 <div class="print-meta-col">
-                    <div class="print-meta-box">${title}</div>
-                    <div class="print-name-box"><span>名前（</span><span class="name-space"></span><span>）</span></div>
+                    <div class="print-badge-wrap">
+                        <span class="print-badge-sub">たしかめよう</span>
+                        <div class="print-badge-main">国語</div>
+                    </div>
+                    <div class="print-instruction">
+                        漢字を書きましょう。（　）は、送りがなも書きましょう。
+                    </div>
+                    <div class="print-unit-title-wrap">
+                        <span class="print-unit-desc">${grade || ''}</span>
+                        <h2 class="print-unit-title">${unitTitle || ''}</h2>
+                    </div>
+                    ${pageNumDisplay ? `<div class="print-page-meta">${pageNumDisplay}</div>` : ''}
+                    <div class="print-name-area">
+                        <div class="print-grade-group">組</div>
+                        <div class="print-name-field">名前<span class="name-space"></span></div>
+                    </div>
                 </div>
-                <div class="print-problems-grid print-rows-${Math.ceil(problems.length/10)}">
             `;
+
+            let problemsHtml = `<div class="print-problems-grid">`;
             
-            for (let i = 0; i < problems.length; i += 10) {
-                html += `<div class="print-problem-row">`;
-                problems.slice(i, i+10).forEach((prob, idx) => {
-                    const circleNum = window.getCircleNumber(startIdx + i + idx + 1);
-                    let probText = '', ansHtml = '';
-                    let ansList = [];
-                    prob.sentence.split(/(\{.+?\|.+?\})/).forEach(part => {
-                        if (part.startsWith('{')) {
-                            const [k, r] = part.slice(1, -1).split('|');
-                            probText += `<span class="print-underline">${r}</span>`;
-                            ansList.push(k);
-                        } else probText += `<span>${part}</span>`;
-                    });
-                    
-                    ansList.forEach(ans => {
-                        ansHtml += `<div class="print-bracket ${ansList.length===1?'large':''}"><span>（</span><span class="print-answer-text">${showAns?ans:''}</span><span>）</span></div>`;
-                    });
-                    
-                    html += `<div class="print-problem-col"><div class="print-prob-answer-line"><div class="print-prob-num">${circleNum}</div>${ansHtml}</div><div class="print-prob-text-line">${probText}</div></div>`;
+            problems.forEach((prob, idx) => {
+                const circleNum = window.getCircleNumber(startIdx + idx + 1);
+                let sentenceBlocksHtml = '';
+                
+                const sentenceText = prob.sentence || '';
+                const parts = sentenceText.split(/(\{.+?\|.+?\})/);
+                
+                parts.forEach(part => {
+                    if (part.startsWith('{') && part.endsWith('}')) {
+                        let [kanji, reading] = part.slice(1, -1).split('|');
+                        if (!kanji) kanji = '';
+                        if (!reading) reading = '';
+                        
+                        const kanjiChars = Array.from(kanji);
+                        const isAllKanji = kanjiChars.length > 0 && kanjiChars.every(c => c.match(/[\u4E00-\u9FFF々]/));
+                        
+                        if (isAllKanji) {
+                            kanjiChars.forEach((char, cIdx) => {
+                                let charYomi = reading;
+                                if (kanjiChars.length > 1) {
+                                    const yomiLen = Math.ceil(reading.length / kanjiChars.length);
+                                    charYomi = reading.substring(cIdx * yomiLen, (cIdx + 1) * yomiLen);
+                                }
+                                sentenceBlocksHtml += `
+                                    <span class="print-char-block">
+                                        <span class="print-kanji-cell">
+                                            ${showAns ? `<span class="print-ans-char">${char}</span>` : ''}
+                                        </span>
+                                        <span class="print-yomi-cell">
+                                            ${Array.from(charYomi || '').map(ch => `<span>${ch}</span>`).join('')}
+                                        </span>
+                                    </span>
+                                `;
+                            });
+                        } else {
+                            let currentKanjiPart = '';
+                            let currentKanaPart = '';
+                            
+                            kanjiChars.forEach(char => {
+                                if (char.match(/[\u4E00-\u9FFF々]/)) {
+                                    currentKanjiPart += char;
+                                } else {
+                                    currentKanaPart += char;
+                                }
+                            });
+                            
+                            let pureYomi = reading;
+                            if (currentKanaPart && reading && reading.endsWith(currentKanaPart)) {
+                                pureYomi = reading.substring(0, reading.length - currentKanaPart.length);
+                            }
+
+                            Array.from(currentKanjiPart).forEach((char, cIdx) => {
+                                let charYomi = pureYomi;
+                                if (currentKanjiPart.length > 1 && pureYomi) {
+                                    const yomiLen = Math.ceil(pureYomi.length / currentKanjiPart.length);
+                                    charYomi = pureYomi.substring(cIdx * yomiLen, (cIdx + 1) * yomiLen);
+                                }
+                                sentenceBlocksHtml += `
+                                    <span class="print-char-block">
+                                        <span class="print-kanji-cell">
+                                            ${showAns ? `<span class="print-ans-char">${char}</span>` : ''}
+                                        </span>
+                                        <span class="print-yomi-cell">
+                                            ${Array.from(charYomi || '').map(ch => `<span>${ch}</span>`).join('')}
+                                        </span>
+                                    </span>
+                                `;
+                            });
+
+                            if (currentKanaPart) {
+                                sentenceBlocksHtml += `
+                                    <span class="print-bracket-cell">
+                                        ${showAns ? `<span class="print-bracket-ans">${currentKanaPart}</span>` : ''}
+                                        <span class="print-bracket-side-yomi">${currentKanaPart}</span>
+                                    </span>
+                                `;
+                            }
+                        }
+                    } else {
+                        sentenceBlocksHtml += Array.from(part || '').map(char => {
+                            return `<span style="line-height: 1.1; display: inline-block; margin: 0.2mm 0;">${char}</span>`;
+                        }).join('');
+                    }
                 });
-                for(let j = problems.slice(i, i+10).length; j < 10; j++) html += `<div class="print-problem-col empty"></div>`;
-                html += `</div>`;
+                
+                problemsHtml += `
+                    <div class="print-problem-col">
+                        <div class="print-prob-num">${circleNum}</div>
+                        <div class="print-prob-text-line">
+                            ${sentenceBlocksHtml}
+                        </div>
+                    </div>
+                `;
+            });
+
+            for (let j = problems.length; j < 10; j++) {
+                problemsHtml += `<div class="print-problem-col empty"></div>`;
             }
-            page.innerHTML = html + `</div>`;
+
+            problemsHtml += `</div>`;
+            
+            page.innerHTML = metaHtml + problemsHtml;
             wrap.appendChild(page);
             return wrap;
         }
@@ -1927,16 +1926,15 @@
         window.triggerPrint = () => { window.print(); };
         window.goToTopFromPrint = () => window.goToTopMode();
 
-        // =====================
-        // ミニゲーム
-        // =====================
         window.goToMinigameMenu = () => {
-            document.getElementById('minigameRemainingPlays').textContent = `何度でもあそべるよ！`;
+            const total = readScore + kanjiPracticeScore;
+            const plays = Math.floor(total / 100) * 3 - minigamePlayCount;
+            if (plays <= 0) { alert("ポイントが足りません！"); return; }
+            document.getElementById('minigameRemainingPlays').textContent = `あと ${plays} 回あそべるよ！`;
             window.goToTopMode();
             document.getElementById('topPage').style.display = 'none';
             document.getElementById('minigameMenuPage').style.display = 'flex';
             
-            // ことわざゲームのボタンを動的に生成
             const kotowazaContainer = document.getElementById('mgKotowazaContainer');
             if (kotowazaContainer) {
                 kotowazaContainer.innerHTML = '';
@@ -1969,6 +1967,9 @@
         };
 
         window.startMinigame = (type, category = '') => {
+            const total = readScore + kanjiPracticeScore;
+            const plays = Math.floor(total / 100) * 3 - minigamePlayCount;
+            if (plays <= 0) { alert("ポイントが足りません！"); return; }
             minigamePlayCount++;
             window.updateScoreDisplay(); 
 
@@ -2003,7 +2004,6 @@
             const prob = currentMgData[currentMgIndex];
             document.getElementById('mgScore').textContent = `${currentMgIndex + 1} / ${currentMgData.length} 問`;
             
-            // ことわざは長文になる可能性があるためフォントサイズを調整
             if (currentMgType === 'kotowaza') {
                 document.getElementById('mgQuestionText').style.fontSize = '1.8rem';
             } else {
@@ -2011,7 +2011,6 @@
             }
             
             document.getElementById('mgQuestionText').innerHTML = prob.q; 
-            
             const choicesContainer = document.getElementById('mgChoices');
             choicesContainer.innerHTML = '';
             
@@ -2021,12 +2020,14 @@
                 
                 const input = document.createElement('input');
                 input.type = 'text';
-                input.placeholder = 'ひらがなで入力';
+                input.placeholder = '漢字かひらがなで入力';
                 input.style.cssText = 'padding: 15px 20px; font-size: 2rem; border-radius: 15px; border: 3px solid #cbd5e0; text-align: center; outline: none; width: 80%; max-width: 400px;';
                 
                 input.oninput = () => {
-                    const userVal = input.value.trim().replace(/[\u30a1-\u30f6]/g, m => String.fromCharCode(m.charCodeAt(0)-0x60));
-                    if (userVal === prob.a && !input.disabled) {
+                    const userVal = input.value.trim();
+                    const userYomi = userVal.replace(/[\u30a1-\u30f6]/g, m => String.fromCharCode(m.charCodeAt(0)-0x60));
+                    // 確実に1文字以上の入力があり（userVal !== ""）、かつ正解（漢字またはよみ）と一致する場合のみ判定
+                    if (userVal !== "" && (userVal === prob.aKanji || userYomi === prob.aYomi) && !input.disabled) {
                         window.playCorrectSound();
                         input.disabled = true;
                         window.handleMgAnswer(true, null);
@@ -2036,8 +2037,9 @@
                 input.onkeydown = (e) => {
                     if (e.key === 'Enter') {
                         e.preventDefault();
-                        const userVal = input.value.trim().replace(/[\u30a1-\u30f6]/g, m => String.fromCharCode(m.charCodeAt(0)-0x60));
-                        if (userVal === prob.a) {
+                        const userVal = input.value.trim();
+                        const userYomi = userVal.replace(/[\u30a1-\u30f6]/g, m => String.fromCharCode(m.charCodeAt(0)-0x60));
+                        if (userVal !== "" && (userVal === prob.aKanji || userYomi === prob.aYomi)) {
                             if (!input.disabled) {
                                 window.playCorrectSound();
                                 input.disabled = true;
@@ -2052,13 +2054,12 @@
                 
                 inputWrap.appendChild(input);
                 choicesContainer.appendChild(inputWrap);
-                
                 setTimeout(() => input.focus(), 100);
             } else {
                 [...prob.choices].sort(() => Math.random() - 0.5).forEach(choice => {
                     const btn = document.createElement('button');
                     btn.textContent = choice;
-                    btn.style.cssText = 'padding:15px 30px; font-size:1.8rem; border-radius:15px; border:2px solid #cbd5e0; background:white; color:#4a5568; cursor:pointer; font-weight:bold; min-width:200px; transition:all 0.2s;';
+                    btn.style.cssText = 'padding:15px 30px; font-size:1.8rem; border-radius:15px; border:2px solid #cbd5e0; background:white; color:#4a5568; pointer; font-weight:bold; min-width:200px; transition:all 0.2s;';
                     btn.onmouseover = () => { btn.style.background = '#edf2f7'; btn.style.transform = 'scale(1.05)'; };
                     btn.onmouseout = () => { btn.style.background = 'white'; btn.style.transform = 'scale(1)'; };
                     btn.onclick = () => window.handleMgAnswer(choice === prob.a, btn);
@@ -2079,7 +2080,10 @@
             overlay.style.display = 'flex';
             document.getElementById('mgResultMark').textContent = isCorrect ? '◯' : '✖';
             document.getElementById('mgResultMark').style.color = isCorrect ? '#48bb78' : '#f56565';
-            document.getElementById('mgResultText').textContent = isCorrect ? 'せいかい！' : `ざんねん... せいかいは「${currentMgData[currentMgIndex].a}」`;
+            
+            const currentProb = currentMgData[currentMgIndex];
+            const displayAns = currentMgType === 'kotowaza' ? `${currentProb.aKanji}（${currentProb.aYomi}）` : currentProb.a;
+            document.getElementById('mgResultText').textContent = isCorrect ? 'せいかい！' : `ざんねん... せいかいは「${displayAns}」`;
             
             setTimeout(() => { overlay.style.display = 'none'; currentMgIndex++; window.loadMgQuestion(); }, 1500);
         };
@@ -2094,13 +2098,16 @@
             document.getElementById('mgEndOverlay').style.display = 'flex';
             document.getElementById('mgFinalScore').innerHTML = `${currentMgData.length}問中 ${currentMgScore}問 正解！<br><span style="font-size:2rem;color:#718096;">タイム：${Math.floor(diffInSec/60)>0?Math.floor(diffInSec/60)+'分':''}${diffInSec%60}秒</span>`;
             
+            const total = readScore + kanjiPracticeScore;
+            const plays = Math.floor(total / 100) * 3 - minigamePlayCount;
             const btnContainer = document.getElementById('mgEndButtons');
-            btnContainer.innerHTML = `<div style="display:flex;gap:20px;"><button class="btn-blue" onclick="goToMinigameMenu()" style="font-size:1.8rem;background:#48bb78;">別のゲーム</button><button class="btn-blue" onclick="startMinigame('${currentMgType}', '${currentMgCategory || ''}')" style="font-size:1.8rem;">もう１回</button></div>`;
+            if (plays > 0) {
+                btnContainer.innerHTML = `<div style="display:flex;gap:20px;"><button class="btn-blue" onclick="goToMinigameMenu()" style="font-size:1.8rem;background:#48bb78;">別のゲーム</button><button class="btn-blue" onclick="startMinigame('${currentMgType}', '${currentMgCategory || ''}')" style="font-size:1.8rem;">もう１回</button></div>`;
+            } else {
+                btnContainer.innerHTML = `<div style="font-size:1.5rem;color:#e53e3e;font-weight:bold;margin-bottom:20px;">あそべる回数がなくなりました。</div><button class="btn-blue" onclick="goToTopMode()" style="font-size:1.8rem;background:#718096;">トップへ</button>`;
+            }
         };
 
-        // =====================
-        // 編集・AI機能
-        // =====================
         window.showEditDialog = () => { document.getElementById('editDialog').style.display = 'flex'; document.getElementById('passwordSection').style.display = 'block'; document.getElementById('editSection').style.display = 'none'; document.getElementById('passwordInput').value = ''; };
         window.closeEditDialog = () => { document.getElementById('editDialog').style.display = 'none'; };
         window.checkPassword = () => {
@@ -2190,7 +2197,6 @@
             try {
                 const sheetId = url.match(/\/d\/([a-zA-Z0-9-_]+)/)?.[1];
                 const gid = url.match(/gid=([0-9]+)/)?.[1] || "0";
-                // GitHub PagesなどからでもCORSエラーにならず取得できるよう、gvizエンドポイントを使用
                 const res = await fetch(`https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&gid=${gid}&t=${Date.now()}`);
                 const text = await res.text();
                 
@@ -2204,7 +2210,6 @@
             } catch(e) { alert('読み込みに失敗しました。URLや権限設定を確認してください。'); }
         };
 
-        // ページが完全に読み込まれてから安全に初期化を実行する
         window.addEventListener('DOMContentLoaded', () => {
             window.loadProgressFromStorage();
             window.fetchProblems();
