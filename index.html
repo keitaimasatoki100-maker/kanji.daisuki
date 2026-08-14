@@ -9,8 +9,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Klee+One:wght@400;600&display=swap" rel="stylesheet">
   
   <style>
-        * { font-family: 'UD デジタル 教科書体 N-R', 'UD Digi Kyokasho N-R', '教科書体', 'BIZ UDPGothic', sans-serif; }
-        body { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; margin: 0; padding: 10px; display: flex; justify-content: center; align-items: flex-start; writing-mode: vertical-rl; text-orientation: upright; padding-top: 10px; box-sizing: border-box; overflow-x: auto; }
+        * { font-family: 'UD デジタル 教科書体 N-R', 'UD Digi Kyokasho N-R', '教科書体', 'BIZ UDPGothic', sans-serif; box-sizing: border-box; }
+        body { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; margin: 0; padding: 10px; display: flex; justify-content: center; align-items: flex-start; writing-mode: vertical-rl; text-orientation: upright; padding-top: 10px; overflow-x: auto; }
         .container { background: white; border-radius: 20px; padding: 15px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); max-height: 95vh; height: 100%; text-align: center; writing-mode: vertical-rl; text-orientation: upright; overflow-y: auto; overflow-x: auto; margin-top: 0; position: relative; display: flex; flex-direction: column; align-items: flex-start; }
         #headerArea, #readHeaderArea, #kanjiPracticeHeaderArea { margin-bottom: 20px; display: flex; flex-direction: row; align-items: flex-start; gap: 15px; writing-mode: vertical-rl; text-orientation: upright; z-index: 100; flex-shrink: 0; }
         #cardsArea, #readCardsArea, #kanjiPracticeContentArea { display: flex; flex-direction: column; flex-wrap: wrap; align-content: flex-start; height: 100%; overflow-x: auto; padding: 10px 0; }
@@ -18,6 +18,7 @@
         .sentence-card { background: #f7fafc; border-radius: 15px; padding: 15px; margin: 40px 10px 10px 10px; border-top: 5px solid #667eea; writing-mode: vertical-rl; text-orientation: upright; display: inline-block; vertical-align: top; min-height: 60vh; max-height: 85vh; width: 55px; position: relative; flex-shrink: 0; }
         .sentence { font-size: 1.5rem; line-height: 1.8; color: #2d3748; writing-mode: vertical-rl; text-orientation: upright; margin-top: 10px; }
         .problem-number { position: absolute; top: -30px; left: 50%; transform: translateX(-50%); font-size: 1.2rem; font-weight: bold; color: #667eea; background: white; padding: 5px 10px; border-radius: 15px; border: 2px solid #667eea; writing-mode: vertical-rl; text-orientation: upright; }
+
         .top-menu { display: flex; flex-direction: column; gap: 25px; margin-right: 15%; }
         .top-menu-btn { width: 90px; height: 360px; padding: 30px 10px; font-size: 1.4rem; font-weight: bold; border: none; border-radius: 20px; cursor: pointer; box-shadow: 0 10px 20px rgba(0,0,0,0.15); transition: transform 0.2s, box-shadow 0.2s; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; line-height: 1.4; letter-spacing: 0.1em; box-sizing: border-box; }
         .top-menu-btn:hover { transform: translateX(-5px); box-shadow: 0 15px 25px rgba(0,0,0,0.2); }
@@ -27,6 +28,7 @@
         .btn-print { background: white; color: #8b5cf6; border: 4px solid #8b5cf6; }
         .btn-minigame { background: white; color: #d53f8c; border: 4px solid #d53f8c; }
         .btn-kanji-practice { background: white; color: #e53e3e; border: 4px solid #e53e3e; }
+
         .kanji-practice-unit-section { display: flex; flex-direction: column; align-items: flex-start; gap: 15px; margin-left: 40px; }
         .kanji-practice-unit-title { font-size: 1.5rem; color: #4a5568; margin: 0; font-weight: bold; border-left: 4px solid #cbd5e0; padding-left: 10px; writing-mode: vertical-rl; white-space: nowrap; }
         .kanji-practice-btn-container { display: grid; grid-template-columns: repeat(5, 60px); gap: 15px; }
@@ -34,6 +36,7 @@
         .kanji-practice-btn:hover { transform: scale(1.1); background: #fff5f5; box-shadow: 0 6px 12px rgba(229, 62, 62, 0.2); }
         .kanji-practice-btn.completed { border-color: #3182ce; color: #3182ce; background: #ebf8ff; }
         .kanji-practice-btn.completed:hover { background: #bee3f8; box-shadow: 0 6px 12px rgba(49, 130, 206, 0.2); }
+
         .dialog-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 5000; align-items: center; justify-content: center; writing-mode: horizontal-tb; }
         .dialog-content { background: white; padding: 25px; border-radius: 20px; max-width: 450px; width: 90%; display: flex; flex-direction: column; align-items: center; max-height: 90vh; overflow-y: auto; }
         .btn-blue { background: #3182ce; color: white; border: none; padding: 10px 20px; border-radius: 25px; cursor: pointer; font-weight: bold; }
@@ -41,20 +44,9 @@
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .reading-input { writing-mode: vertical-rl; text-orientation: upright; width: 1.5em; font-size: 1.2rem; border: 2px dashed #cbd5e0; border-radius: 6px; text-align: center; padding: 4px 0; outline: none; background: white; }
         .reading-input.correct { border-color: #48bb78; background: #f0fff4; }
-        .kanji-blank { display: inline-flex; flex-direction: row; align-items: center; justify-content: center; width: 40px; min-height: 40px; border: 2px dashed #cbd5e0; border-radius: 8px; margin: 20px 2px 2px 2px; vertical-align: middle; background: white; position: relative; transition: all 0.3s ease; padding: 8px 0; text-align: center; writing-mode: vertical-rl; text-orientation: upright; }
-        .kanji-blank.revealed { border: 2px solid #48bb78; background: #f0fff4; color: #2d3748; font-weight: bold; }
         .controls { margin-right: 15px; display: flex; flex-direction: row; align-items: center; gap: 15px; writing-mode: vertical-rl; text-orientation: upright; flex-shrink: 0; padding-top: 20px; }
         .progress { margin-right: 10px; font-size: 1.1rem; color: #4a5568; font-weight: bold; writing-mode: vertical-rl; text-orientation: upright; }
-        #celebration-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(255, 255, 255, 0.2); pointer-events: none; z-index: 9999; display: none; writing-mode: horizontal-tb; }
-        .kusudama-container { position: absolute; top: 20%; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; }
-        .kusudama { font-size: 120px; animation: shake 0.5s infinite alternate; }
-        .kusudama.open { animation: openBall 0.8s forwards; display: flex; gap: 10px; }
-        @keyframes shake { from { transform: rotate(-10deg); } to { transform: rotate(10deg); } }
-        @keyframes openBall { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); opacity: 0; } }
-        .congratulations-text { font-size: 3rem; font-weight: bold; color: #ff4500; text-shadow: 2px 2px 10px rgba(0,0,0,0.2); margin-top: 20px; opacity: 0; transform: translateY(20px); animation: fadeInUp 0.5s 0.5s forwards; }
-        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
-        .confetti { position: absolute; width: 10px; height: 10px; background: #f00; animation: fall 3s linear infinite; }
-        @keyframes fall { to { transform: translateY(100vh) rotate(360deg); } }
+
         .mode-switch-btn { position: fixed; left: 20px; top: 20px; background: linear-gradient(135deg, #ed8936, #dd6b20); color: white; border: none; padding: 20px 12px; border-radius: 15px; font-size: 1.1rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2); z-index: 1000; writing-mode: vertical-rl; text-orientation: upright; transition: transform 0.2s; }
         .mode-switch-btn:hover { transform: scale(1.05); }
         .fc-card-container { width: 350px; max-width: 90%; height: 85vh; max-height: 1200px; margin: 0 20px; }
@@ -66,11 +58,9 @@
         .print-controls select { padding: 8px 12px; border-radius: 8px; border: 2px solid #cbd5e0; font-weight: bold; font-size: 1rem; cursor: pointer; outline: none; }
         
         #printAreaWrapper { display: flex; flex-direction: column; gap: 40px; align-items: center; width: 100%; }
-
         .page-wrapper { margin: 0 auto; padding: 0; width: 297mm; height: 210mm; box-shadow: 0 10px 25px rgba(0,0,0,0.15); background: white; box-sizing: border-box; position: relative; overflow: hidden; page-break-after: always; break-after: page; flex-shrink: 0; }
         .print-area-page { width: 100%; height: 100%; padding: 15mm 12mm 15mm 15mm; box-sizing: border-box; display: flex; flex-direction: row; writing-mode: vertical-rl; text-orientation: upright; font-family: 'Klee One', 'UD デジタル 教科書体 N-R', '教科書体', serif; background: white; overflow: hidden; }
 
-        /* 右側ヘッダーブロック（国語バッジ、単元名、名前枠） */
         .print-meta-col { width: 32mm; height: 100%; border: 2px solid #000; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; padding: 5mm 1mm; margin-left: 8mm; position: relative; flex-shrink: 0; }
         .print-badge-wrap { display: flex; flex-direction: column; align-items: center; margin-bottom: 4mm; }
         .print-badge-sub { font-size: 8.5pt; font-weight: bold; letter-spacing: 0.1em; margin-bottom: 1.5mm; }
@@ -85,7 +75,6 @@
         .print-name-field { height: 35mm; display: flex; align-items: center; justify-content: flex-end; padding-left: 2mm; font-size: 10.5pt; font-weight: bold; }
         .name-space { flex-grow: 1; }
 
-        /* 問題エリアグリッド（10問が綺麗に並ぶ） */
         .print-problems-grid { flex-grow: 1; display: flex; flex-direction: row; justify-content: space-between; height: 100%; min-width: 0; }
         .print-problem-col { width: 16mm; height: 100%; display: block; position: relative; flex-shrink: 0; text-align: center; }
         .print-problem-col.empty { visibility: hidden; }
@@ -93,7 +82,6 @@
         .print-prob-num { font-size: 14pt; font-weight: bold; margin-bottom: 5mm; display: block; width: 100%; text-align: center; }
         .print-prob-text-line { font-size: 14pt; line-height: 1.9; text-align: left; writing-mode: vertical-rl; text-orientation: upright; display: block; width: 100%; height: auto; }
         
-        /* 漢字マスのスタイル */
         .print-char-block { display: inline-block; margin: 1.5mm 0; position: relative; vertical-align: middle; text-align: center; }
         .print-kanji-cell { width: 14mm; height: 14mm; border: 1.5px solid #000; background: white; display: inline-block; position: relative; vertical-align: middle; box-sizing: border-box; }
         .print-kanji-cell::before { content: ''; position: absolute; top: 0; left: 50%; width: 0; height: 100%; border-left: 1px dashed #999; }
@@ -101,7 +89,6 @@
         .print-yomi-cell { font-size: 8.5pt; line-height: 1.1; position: absolute; right: -5.5mm; top: 50%; transform: translateY(-50%); width: 4.5mm; text-align: center; font-weight: bold; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .print-ans-char { font-family: 'Klee One', 'UD デジタル 教科書体 N-R', serif; font-size: 22pt; color: #e53e3e; font-weight: bold; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 5; }
 
-        /* かっこ問題スタイル（送り仮名） */
         .print-bracket-cell { display: inline-block; position: relative; margin: 1.5mm 0; text-align: center; vertical-align: middle; width: 14mm; height: 28mm; }
         .print-bracket-cell::before { content: '〔'; font-size: 15pt; position: absolute; top: 0; left: 50%; transform: translateX(-50%); }
         .print-bracket-cell::after { content: '〕'; font-size: 15pt; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); }
@@ -111,7 +98,7 @@
         @media print {
             @page { size: A4 landscape; margin: 0; }
             body { background: white !important; margin: 0 !important; padding: 0 !important; writing-mode: horizontal-tb !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            #topPage, #mainContainer, #readingContainer, #flashcardPage, #minigameMenuPage, #minigamePlayPage, #backToTopBtnMain, #celebration-overlay, #editDialog, #kanjiDetailModal, #kanjiPracticeContainer, .print-controls, .print-hint { display: none !important; }
+            #topPage, #mainContainer, #readingContainer, #flashcardPage, #minigameMenuPage, #minigamePlayPage, #backToTopBtnMain, #editDialog, #kanjiDetailModal, #kanjiPracticeContainer, .print-controls, .print-hint { display: none !important; }
             #printPage { display: block !important; position: static !important; width: auto !important; height: auto !important; background: white !important; overflow: visible !important; padding: 0 !important; }
             #printAreaWrapper { margin: 0 !important; padding: 0 !important; display: block !important; max-width: none !important; gap: 0 !important; }
             .page-wrapper { margin: 0 auto !important; padding: 0 !important; width: 297mm !important; height: 210mm !important; page-break-after: always !important; break-after: page !important; box-shadow: none !important; }
@@ -123,11 +110,17 @@
         .edit-controls { margin-bottom: 15px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; justify-content: space-between; }
         .btn-red { background: #ef4444; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; }
         .btn-gray { background: #6b7280; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; }
+
+        /* カスタム通知トースト */
+        .toast-msg { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #2d3748; color: white; padding: 12px 24px; border-radius: 30px; box-shadow: 0 10px 20px rgba(0,0,0,0.2); font-weight: bold; z-index: 10000; writing-mode: horizontal-tb; text-align: center; font-size: 1.1rem; pointer-events: none; transition: opacity 0.3s ease; opacity: 0; }
+        .toast-msg.show { opacity: 1; }
   </style>
  </head>
  <body>
+  <div id="toastMessage" class="toast-msg"></div>
+
   <div id="topPage" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); z-index: 4000; display: flex; flex-direction: column; align-items: center; justify-content: center; writing-mode: vertical-rl; text-orientation: upright;">
-      <h1 class="top-title" style="margin-right: 5%;">漢字学習ナビ</h1>
+      <h1 class="top-title" style="margin-right: 5%; color: white; font-size: 2.2rem; font-weight: bold;">漢字学習ナビ</h1>
       <div class="top-menu">
           <button class="top-menu-btn btn-kanji-practice" onclick="goToKanjiPracticeMode()">
               <span>漢字練習</span>
@@ -142,9 +135,7 @@
               <span>正しく書けるかな？</span>
               <span style="font-size: 0.9rem; font-weight: normal; margin-right: 15px; line-height: 1.4;">えんぴつとノートをよういしてね</span>
           </button>
-          <!-- プリント印刷ボタンをロック状態に変更 -->
-          <button class="top-menu-btn btn-print" disabled style="opacity: 0.6; cursor: not-allowed;"><span>プリント印刷 🔒</span></button>
-          <!-- ミニゲームボタンはポイント状況によって動的に制御 -->
+          <button class="top-menu-btn btn-print" onclick="goToPrintMode()"><span>プリント印刷</span></button>
           <button id="topMinigameBtn" class="top-menu-btn btn-minigame" onclick="goToMinigameMenu()">
               <span>ミニゲーム</span>
           </button>
@@ -221,9 +212,9 @@
 
   <div id="printPage">
       <div class="print-controls">
-          <select id="printGradeSelector" onchange="onPrintGradeChange()" style="padding: 8px; border-radius: 8px; border: 1px solid #cbd5e0; font-weight: bold;"></select>
-          <select id="printUnitSelector" onchange="onPrintUnitChange()" style="padding: 8px; border-radius: 8px; border: 1px solid #cbd5e0; font-weight: bold;"></select>
-          <select id="printRangeSelector" onchange="onPrintRangeChange()" style="padding: 8px; border-radius: 8px; border: 1px solid #cbd5e0; font-weight: bold;">
+          <select id="printGradeSelector" onchange="onPrintGradeChange()"></select>
+          <select id="printUnitSelector" onchange="onPrintUnitChange()"></select>
+          <select id="printRangeSelector" onchange="onPrintRangeChange()">
               <option value="up-to">まで</option>
               <option value="only" selected>だけ</option>
           </select>
@@ -309,25 +300,6 @@
               <div id="kdYColumnText"></div>
           </div>
 
-          <div id="kdPracticeArea" style="width: 100%; display: flex; flex-direction: column; align-items: center; margin-bottom: 15px;">
-              <div style="font-weight: bold; color: #4a5568; margin-bottom: 10px;">✏️ なぞってれんしゅう</div>
-              <div style="position: relative; width: 200px; height: 200px; background: white; border: 2px dashed #cbd5e0; border-radius: 10px; overflow: hidden; margin-bottom: 10px;">
-                  <div id="kdPracticeGuide" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 160px; line-height: 1; color: #edf2f7; font-family: 'Klee One', 'UD デジタル 教科書体 N-R', serif; pointer-events: none; z-index: 1;"></div>
-                  <canvas id="kdPracticeCanvas1" width="200" height="200" style="position: absolute; top: 0; left: 0; z-index: 2; touch-action: none; cursor: crosshair; background: transparent;"></canvas>
-              </div>
-              <div style="display: flex; gap: 10px; margin-bottom: 20px; justify-content: center;">
-                  <button onclick="window.clearKdPracticeCanvas(1)" style="padding: 8px 25px; font-weight: bold; font-size: 1rem; border-radius: 10px; background: #a0aec0; color: white; border: none; cursor: pointer;">クリア</button>
-              </div>
-
-              <div style="font-weight: bold; color: #4a5568; margin-bottom: 10px;">✏️ ひとりでれんしゅう</div>
-              <div style="position: relative; width: 200px; height: 200px; background: white; border: 2px dashed #cbd5e0; border-radius: 10px; overflow: hidden; margin-bottom: 10px;">
-                  <canvas id="kdPracticeCanvas2" width="200" height="200" style="position: absolute; top: 0; left: 0; z-index: 2; touch-action: none; cursor: crosshair; background: transparent;"></canvas>
-              </div>
-              <div style="display: flex; gap: 10px; justify-content: center;">
-                  <button onclick="window.clearKdPracticeCanvas(2)" style="padding: 8px 25px; font-weight: bold; font-size: 1rem; border-radius: 10px; background: #a0aec0; color: white; border: none; cursor: pointer;">クリア</button>
-              </div>
-          </div>
-
           <button onclick="closeKanjiDetailModal()" style="margin-top: 15px; background: #e2e8f0; color:#4a5568; border: none; padding: 10px 30px; border-radius: 20px; cursor: pointer; font-weight: bold;">とじる</button>
       </div>
   </div>
@@ -404,11 +376,21 @@
         let mgStartTime = null;
         let mgTimerInterval = null;
 
+        // トースト通知表示関数
+        window.showToast = function(msg) {
+            const toast = document.getElementById('toastMessage');
+            if (!toast) return;
+            toast.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2500);
+        };
+
         const mgBushuData = [{q:"<span style='font-size:4rem;color:#e53e3e;'>氵</span><br>この部首のなまえは？",a:"さんずい",choices:["さんずい","きへん","ごんべん","にんべん"]},{q:"<span style='font-size:4rem;color:#e53e3e;'>訁</span><br>この部首のなまえは？",a:"ごんべん",choices:["ごんべん","しんにょう","くさかんむり","きへん"]},{q:"<span style='font-size:4rem;color:#e53e3e;'>木</span><br>この部首のなまえは？",a:"きへん",choices:["きへん","くさかんむり","つちへん","さんずい"]},{q:"<span style='font-size:4rem;color:#e53e3e;'>亻</span><br>この部首のなまえは？",a:"にんべん",choices:["にんべん","きへん","ぎょうにんべん","てへん"]},{q:"<span style='font-size:4rem;color:#e53e3e;'>艹</span><br>この部首のなまえは？",a:"くさかんむり",choices:["くさかんむり","たけかんむり","うかんむり","あめかんむり"]},{q:"<span style='font-size:4rem;color:#e53e3e;'>⻌</span><br>この部首のなまえは？",a:"しんにょう",choices:["しんにょう","えんにょう","ぎょうにんべん","さんずい"]},{q:"<span style='font-size:4rem;color:#e53e3e;'>口</span><br>この部首のなまえは？",a:"くちへん",choices:["くちへん","くにがまえ","めへん","ひへん"]},{q:"<span style='font-size:4rem;color:#e53e3e;'>釒</span><br>この部首のなまえは？",a:"かねへん",choices:["かねへん","いしへん","きへん","さんずい"]},{q:"<span style='font-size:4rem;color:#e53e3e;'>穴</span><br>この部首のなまえは？",a:"あなかんむり",choices:["あなかんむり","うかんむり","わかんむり","あめかんむり"]},{q:"<span style='font-size:4rem;color:#e53e3e;'>日</span><br>この部首のなまえは？",a:"ひへん",choices:["ひへん","つきへん","めへん","田"]}];
         const mgNaritachiData = [{q:"<span style='font-size:4rem;'>☀️</span><br>たいようの形からできたものは？",a:"日",choices:["日","月","木","水"]},{q:"<span style='font-size:4rem;'>🌙</span><br>みかづきの形からできたものは？",a:"月",choices:["月","日","夕","夜"]},{q:"<span style='font-size:4rem;'>🌊</span><br>みずが流れる様子からできたものは？",a:"川",choices:["川","水","雨","海"]},{q:"<span style='font-size:4rem;'>🌳</span><br>木の根元に印をつけて「もと」を表したものは？",a:"本",choices:["本","木","末","未"]},{q:"<span style='font-size:4rem;'>🚶🌳</span><br>ひとが木に寄りかかってやすむ様子からできたものは？",a:"休",choices:["休","体","林","保"]},{q:"<span style='font-size:4rem;'>🌲🌲</span><br>木がふたつ並んで、たくさん木があることを表すものは？",a:"林",choices:["林","森","木","枝"]},{q:"<span style='font-size:4rem;'>👁️</span><br>めの形からできたものは？",a:"目",choices:["目","見","貝","自"]},{q:"<span style='font-size:4rem;'>🪶</span><br>とりのはねの形からできたものは？",a:"羽",choices:["羽","鳥","飛","翼"]},{q:"<span style='font-size:4rem;'>⛰️</span><br>やまの形からできたものは？",a:"山",choices:["山","川","石","岩"]},{q:"<span style='font-size:4rem;'>🧍</span><br>ひとが立っている様子を横から見てできたものは？",a:"人",choices:["人","入","大","立"]}];
         const mgKeisanData = [{q:"<span style='font-size:4rem;'>山 ＋ 石</span><br>＝ ？",a:"岩",choices:["岩","砂","炭","岸"]},{q:"<span style='font-size:4rem;'>木 ＋ 木</span><br>＝ ？",a:"林",choices:["林","森","本","枝"]},{q:"<span style='font-size:4rem;'>日 ＋ 月</span><br>＝ ？",a:"明",choices:["明","星","晴","朝"]},{q:"<span style='font-size:4rem;'>人 ＋ 木</span><br>＝ ？",a:"休",choices:["休","体","保","信"]},{q:"<span style='font-size:4rem;'>口 ＋ 鳥</span><br>＝ ？",a:"鳴",choices:["鳴","唄","唱","叫"]},{q:"<span style='font-size:4rem;'>門 ＋ 日</span><br>＝ ？",a:"間",choices:["間","問","開","閉"]},{q:"<span style='font-size:4rem;'>女 ＋ 子</span><br>＝ ？",a:"好",choices:["好","妹","姉","娘"]},{q:"<span style='font-size:4rem;'>木 ＋ 目</span><br>＝ ？",a:"相",choices:["相","箱","想","植"]},{q:"<span style='font-size:4rem;'>言 ＋ 舌</span><br>＝ ？",a:"話",choices:["話","語","読","記"]},{q:"<span style='font-size:4rem;'>禾 ＋ 火</span><br>＝ ？",a:"秋",choices:["秋","冬","春","夏"]}];
 
-        // 100個のことわざデータ（波括弧を完全に修復し全問題に正解の漢字・読みを設定）
         const kotowazaRawData = {
             "どうぶつ・いきもの": [
                 "猿も{木|き}から落ちる", "{犬|いぬ}も歩けば棒に当たる", "{猫|ねこ}に小判", "{豚|ぶた}に真珠", "捕らぬ{狸|たぬき}の皮算用",
@@ -449,7 +431,7 @@
                 let qText = raw;
                 let ansKanji = "";
                 let ansYomi = "";
-                const matches = [...raw.matchAll(/\{(.+?鍵?)\|(.+?)\}/g)];
+                const matches = [...raw.matchAll(/\{(.+?)\|(.+?)\}/g)];
                 matches.forEach(m => {
                     ansKanji += m[1];
                     ansYomi += m[2];
@@ -459,7 +441,6 @@
             });
         });
 
-        // === Utils ===
         window.getCircleNumber = function(num) {
             if (num >= 1 && num <= 20) return String.fromCharCode(0x245F + num);
             if (num >= 21 && num <= 35) return String.fromCharCode(0x3251 + num - 21);
@@ -472,7 +453,6 @@
             return Math.abs(hash).toString(36);
         }
 
-        // 答えを表示・非表示にする共通関数
         window.showAnswer = function(input, answer) {
             if (input.disabled) return;
             
@@ -490,7 +470,6 @@
             input.focus();
         };
 
-        // CSVデータを正確にパース
         window.parseCSV = function(text) {
             const rows = [];
             let row = [];
@@ -565,7 +544,6 @@
             const readEl = document.getElementById('readScoreDisplay');
             if (readEl) readEl.textContent = `${readScore} pt`;
 
-            // ミニゲームボタンのロック制御（「正しく読めるかな？」と「漢字練習」の合計100ptごとに3回）
             const total = readScore + kanjiPracticeScore;
             const plays = Math.floor(total / 100) * 3 - minigamePlayCount;
             const btn = document.getElementById('topMinigameBtn');
@@ -679,9 +657,6 @@
             });
         }
 
-        // =====================
-        // セレクター同期処理
-        // =====================
         window.syncGrade = function(val) {
             ['gradeSelector', 'readGradeSelector', 'fcGradeSelector', 'printGradeSelector', 'kanjiPracticeSelector'].forEach(id => {
                 const el = document.getElementById(id);
@@ -712,9 +687,6 @@
             });
         };
 
-        // =====================
-        // 漢字練習 (色付きアニメ)
-        // =====================
         window.loadKanjiPracticeData = async function() {
             if (kanjiPracticeDataLoaded) return;
             const selector = document.getElementById('kanjiPracticeSelector');
@@ -914,6 +886,11 @@
             } catch(e) { console.error(e); }
         }
 
+        window.createKanjiQuestionHtml = function(text, kanji) {
+            if (!text) return '';
+            return text.replace(new RegExp(kanji, 'g'), `<span style="border-bottom:3px solid #e53e3e; font-weight:bold; color:#e53e3e;">${kanji}</span>`);
+        };
+
         window.showKanjiDetail = async (kanji) => {
             currentAnimId++; 
             document.getElementById('kdKanjiTitle').textContent = kanji;
@@ -1014,69 +991,10 @@
                 yArea.style.display = 'none';
             }
 
-            setTimeout(() => {
-                const firstInput = document.querySelector('#kdSentencesList .kanji-detail-input');
-                if (firstInput) firstInput.focus();
-
-                const allInputs = Array.from(document.querySelectorAll('#kdSentencesList .kanji-detail-input'));
-                if (allInputs.length > 0 && allInputs.every(i => completedKanjiReadings.has(i.getAttribute('data-key')))) {
-                    if (!completedKanjis.has(kanji)) {
-                        completedKanjis.add(kanji);
-                        window.saveProgressToStorage();
-                        const kanjiBtn = document.querySelector(`.kanji-practice-btn[data-kanji="${kanji}"]`);
-                        if (kanjiBtn) kanjiBtn.classList.add('completed');
-                    }
-                }
-            }, 300);
-
-            document.getElementById('kdPracticeGuide').textContent = kanji;
             window.kdCurrentKanji = kanji;
-            window.initKdPracticeCanvas(1);
-            window.initKdPracticeCanvas(2);
         }
 
         window.closeKanjiDetailModal = () => { currentAnimId++; document.getElementById('kanjiDetailModal').style.display = 'none'; };
-
-        let kdIsDrawing = { 1: false, 2: false };
-        let kdHasDrawn = { 1: false, 2: false };
-
-        window.initKdPracticeCanvas = function(id) {
-            const canvas = document.getElementById('kdPracticeCanvas' + id);
-            if (!canvas) return;
-            const newCanvas = canvas.cloneNode(true);
-            canvas.parentNode.replaceChild(newCanvas, canvas);
-            
-            window.clearKdPracticeCanvas(id);
-
-            const ctx = newCanvas.getContext('2d');
-            const start = (e) => { kdIsDrawing[id] = true; ctx.beginPath(); const rect = newCanvas.getBoundingClientRect(); ctx.moveTo((e.touches?e.touches[0].clientX:e.clientX)-rect.left, (e.touches?e.touches[0].clientY:e.clientY)-rect.top); e.preventDefault(); };
-            const draw = (e) => { if(!kdIsDrawing[id]) return; kdHasDrawn[id] = true; const rect = newCanvas.getBoundingClientRect(); ctx.lineTo((e.touches?e.touches[0].clientX:e.clientX)-rect.left, (e.touches?e.touches[0].clientY:e.clientY)-rect.top); ctx.strokeStyle='black'; ctx.lineWidth=8; ctx.lineCap='round'; ctx.stroke(); e.preventDefault(); };
-            const stop = () => { kdIsDrawing[id] = false; };
-            
-            newCanvas.addEventListener('mousedown', start); 
-            newCanvas.addEventListener('mousemove', draw); 
-            newCanvas.addEventListener('mouseup', stop); 
-            newCanvas.addEventListener('mouseout', stop);
-            newCanvas.addEventListener('touchstart', start, {passive:false}); 
-            newCanvas.addEventListener('touchmove', draw, {passive:false}); 
-            newCanvas.addEventListener('touchend', stop);
-        };
-
-        window.clearKdPracticeCanvas = function(id) {
-            const canvas = document.getElementById('kdPracticeCanvas' + id);
-            if (!canvas) return;
-            const ctx = canvas.getContext('2d');
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.beginPath(); 
-            ctx.strokeStyle = '#e2e8f0'; 
-            ctx.setLineDash([4,4]);
-            ctx.lineWidth = 2;
-            ctx.moveTo(canvas.width/2, 0); ctx.lineTo(canvas.width/2, canvas.height);
-            ctx.moveTo(0, canvas.height/2); ctx.lineTo(canvas.width, canvas.height/2); 
-            ctx.stroke();
-            ctx.setLineDash([]);
-            kdHasDrawn[id] = false;
-        };
 
         window.playCorrectSound = function() {
             try {
@@ -1098,84 +1016,6 @@
                 playTone(784, 0, 0.2);
                 playTone(1046.5, 0.2, 0.4);
             } catch(e) {}
-        };
-
-        window.handleKanjiDetailKeydown = function(event, input, answer) {
-            if (event.key === 'Enter') {
-                event.preventDefault();
-                const userVal = input.value.trim().replace(/[\u30a1-\u30f6]/g, m => String.fromCharCode(m.charCodeAt(0)-0x60));
-                if (userVal === answer) {
-                    window.checkKanjiDetailReading(input, answer);
-                } else if (userVal !== '') {
-                    window.showAnswer(input, answer);
-                } else {
-                    window.nextKanjiDetailInput(input);
-                }
-            }
-        };
-
-        window.checkKanjiDetailReading = function(input, answer) {
-            input.style.color = '';
-            
-            if (input.dataset.mustClear === "true") {
-                if (input.value !== answer && input.value !== '') {
-                    input.value = '';
-                }
-                if (input.value === '') {
-                    input.dataset.mustClear = "false";
-                    const circle = input.parentElement.querySelector('.correct-mark');
-                    if (circle) circle.remove();
-                }
-                return;
-            }
-            
-            const userVal = input.value.trim().replace(/[\u30a1-\u30f6]/g, m => String.fromCharCode(m.charCodeAt(0)-0x60));
-            if (userVal === answer) {
-                window.playCorrectSound();
-                
-                input.classList.add('correct');
-                input.disabled = true;
-                
-                let circle = input.parentElement.querySelector('.correct-mark');
-                if (!circle) {
-                    circle = document.createElement('span');
-                    circle.className = 'correct-mark';
-                    circle.textContent = '〇';
-                    circle.style.cssText = 'position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #e53e3e; font-size: 2.5rem; font-weight: bold; pointer-events: none; opacity: 0.8; z-index: 10; font-family: sans-serif; writing-mode: horizontal-tb;';
-                    input.parentElement.appendChild(circle);
-                }
-
-                const key = input.getAttribute('data-key');
-                if (key && !completedKanjiReadings.has(key)) {
-                    kanjiPracticeScore += 2;
-                    completedKanjiReadings.add(key);
-                } else {
-                    kanjiPracticeScore += 1;
-                }
-                
-                window.updateScoreDisplay();
-                
-                const allInputs = Array.from(document.querySelectorAll('#kdSentencesList .kanji-detail-input'));
-                if (allInputs.length > 0 && allInputs.every(i => i.disabled || completedKanjiReadings.has(i.getAttribute('data-key')))) {
-                    if (!completedKanjis.has(window.kdCurrentKanji)) {
-                        completedKanjis.add(window.kdCurrentKanji);
-                        window.saveProgressToStorage();
-                        const kanjiBtn = document.querySelector(`.kanji-practice-btn[data-kanji="${window.kdCurrentKanji}"]`);
-                        if (kanjiBtn) kanjiBtn.classList.add('completed');
-                    }
-                }
-
-                setTimeout(() => window.nextKanjiDetailInput(input), 300);
-            }
-        };
-
-        window.nextKanjiDetailInput = function(currentInput) {
-            const allInputs = Array.from(document.querySelectorAll('#kdSentencesList .kanji-detail-input'));
-            const idx = allInputs.indexOf(currentInput);
-            if (idx > -1 && idx < allInputs.length - 1) {
-                const next = allInputs.slice(idx + 1).find(i => !i.disabled);
-                if (next) next.focus();
-            }
         };
 
         window.goToPracticeMode = () => { 
@@ -1309,7 +1149,7 @@
 
             const ansBtn = document.createElement('button');
             ansBtn.textContent = '答え';
-            ansBtn.style.cssText = 'width: 25%; min-width: 60px; background:white; border:2px solid #cbd5e0; border-radius:6px; padding:5px 0; font-weight:bold; cursor:pointer; font-size: 0.9rem; color: #4a5568; box-sizing: border-box; text-align: center; writing-mode: horizontal-tb;';
+            ansBtn.style.cssText = 'width: 100%; min-width: 60px; background:white; border:2px solid #cbd5e0; border-radius:6px; padding:5px 0; font-weight:bold; cursor:pointer; font-size: 0.9rem; color: #4a5568; box-sizing: border-box; text-align: center; writing-mode: horizontal-tb;';
 
             let currentLocalAnimId = 0;
             ansBtn.onclick = async () => {
@@ -1381,24 +1221,6 @@
             return block;
         }
 
-        window.updateWriteSentenceDisplay = (idx) => {};
-
-        window.prevWriteProblem = () => {
-            if (currentRenderedProblems.length === 0) return;
-            currentWriteIndex = (currentWriteIndex - 1 + currentRenderedProblems.length) % currentRenderedProblems.length;
-            const block = document.querySelector(`.sentence-card[data-prob-index="${currentWriteIndex}"]`);
-            if (block) block.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        };
-        window.nextWriteProblem = () => {
-            if (currentRenderedProblems.length === 0) return;
-            currentWriteIndex = (currentWriteIndex + 1) % currentRenderedProblems.length;
-            const block = document.querySelector(`.sentence-card[data-prob-index="${currentWriteIndex}"]`);
-            if (block) block.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        };
-
-        // =====================
-        // 読み取りモード
-        // =====================
         window.goToReadingMode = () => {
             window.goToTopMode();
             document.getElementById('topPage').style.display = 'none';
@@ -1590,9 +1412,6 @@
             }
         };
 
-        // =====================
-        // フラッシュカード
-        // =====================
         window.goToFlashcardMode = () => {
             window.goToTopMode();
             document.getElementById('topPage').style.display = 'none';
@@ -1766,16 +1585,13 @@
                 const pageNumDisplay = totalPages > 1 ? `${pIdx + 1} / ${totalPages}` : "";
                 const unitTitle = unit === 'all' ? 'すべて' : unit;
                 
-                // 問題ページを安全にオブジェクトのまま追加
                 const qPage = window.createPrintPageDOM(grade, unitTitle, probs, pIdx * 10, false, pageNumDisplay);
                 container.appendChild(qPage);
                 
-                // 改ページを挿入
                 const pageBreak1 = document.createElement('div');
                 pageBreak1.className = 'page-break';
                 container.appendChild(pageBreak1);
                 
-                // 解答ページを安全にオブジェクトのまま追加
                 const aPage = window.createPrintPageDOM(grade, unitTitle + " 【解答】", probs, pIdx * 10, true, pageNumDisplay);
                 container.appendChild(aPage);
                 
@@ -1929,7 +1745,7 @@
         window.goToMinigameMenu = () => {
             const total = readScore + kanjiPracticeScore;
             const plays = Math.floor(total / 100) * 3 - minigamePlayCount;
-            if (plays <= 0) { alert("ポイントが足りません！"); return; }
+            if (plays <= 0) { window.showToast("ポイントが足りません！"); return; }
             document.getElementById('minigameRemainingPlays').textContent = `あと ${plays} 回あそべるよ！`;
             window.goToTopMode();
             document.getElementById('topPage').style.display = 'none';
@@ -1969,7 +1785,7 @@
         window.startMinigame = (type, category = '') => {
             const total = readScore + kanjiPracticeScore;
             const plays = Math.floor(total / 100) * 3 - minigamePlayCount;
-            if (plays <= 0) { alert("ポイントが足りません！"); return; }
+            if (plays <= 0) { window.showToast("ポイントが足りません！"); return; }
             minigamePlayCount++;
             window.updateScoreDisplay(); 
 
@@ -2026,7 +1842,6 @@
                 input.oninput = () => {
                     const userVal = input.value.trim();
                     const userYomi = userVal.replace(/[\u30a1-\u30f6]/g, m => String.fromCharCode(m.charCodeAt(0)-0x60));
-                    // 確実に1文字以上の入力があり（userVal !== ""）、かつ正解（漢字またはよみ）と一致する場合のみ判定
                     if (userVal !== "" && (userVal === prob.aKanji || userYomi === prob.aYomi) && !input.disabled) {
                         window.playCorrectSound();
                         input.disabled = true;
@@ -2059,7 +1874,7 @@
                 [...prob.choices].sort(() => Math.random() - 0.5).forEach(choice => {
                     const btn = document.createElement('button');
                     btn.textContent = choice;
-                    btn.style.cssText = 'padding:15px 30px; font-size:1.8rem; border-radius:15px; border:2px solid #cbd5e0; background:white; color:#4a5568; pointer; font-weight:bold; min-width:200px; transition:all 0.2s;';
+                    btn.style.cssText = 'padding:15px 30px; font-size:1.8rem; border-radius:15px; border:2px solid #cbd5e0; background:white; color:#4a5568; cursor:pointer; font-weight:bold; min-width:200px; transition:all 0.2s;';
                     btn.onmouseover = () => { btn.style.background = '#edf2f7'; btn.style.transform = 'scale(1.05)'; };
                     btn.onmouseout = () => { btn.style.background = 'white'; btn.style.transform = 'scale(1)'; };
                     btn.onclick = () => window.handleMgAnswer(choice === prob.a, btn);
@@ -2115,7 +1930,7 @@
                 document.getElementById('passwordSection').style.display = 'none';
                 document.getElementById('editSection').style.display = 'flex';
                 window.loadProblemEditor();
-            } else alert('パスワードが間違っています。');
+            } else window.showToast('パスワードが間違っています。');
         };
 
         window.loadProblemEditor = () => {
@@ -2179,7 +1994,7 @@
             table.innerHTML += `<tr><td style="text-align:center;border:1px solid #d1d5db;"><input type="checkbox" class="row-selector" data-row="${rows}"></td><td style="text-align:center;border:1px solid #d1d5db;">${rows+1}</td><td style="border:1px solid #d1d5db;"><input type="text" class="cell-input" data-row="${rows}" data-col="grade" style="width:100%;border:none;outline:none;" onpaste="window.handlePaste(event)"></td><td style="border:1px solid #d1d5db;"><input type="text" class="cell-input" data-row="${rows}" data-col="unit" style="width:100%;border:none;outline:none;" onpaste="window.handlePaste(event)"></td><td style="border:1px solid #d1d5db;"><input type="text" class="cell-input" data-row="${rows}" data-col="sentence" style="width:100%;border:none;outline:none;" onpaste="window.handlePaste(event)"></td></tr>`;
         };
         window.deleteSelectedRows = () => { document.querySelectorAll('.row-selector:checked').forEach(c => { c.closest('tr').querySelectorAll('.cell-input').forEach(i => i.value = ''); c.checked = false; }); };
-        window.clearAll = () => { if(confirm("クリアしますか？")) document.querySelectorAll('.cell-input').forEach(i => i.value = ''); };
+        window.clearAll = () => { document.querySelectorAll('.cell-input').forEach(i => i.value = ''); window.showToast('入力項目をクリアしました'); };
         
         window.saveProblems = () => {
             const newProbs = [];
@@ -2187,7 +2002,7 @@
             for(let i=0; i<inputs.length; i+=3) {
                 if(inputs[i+2].value.trim()) newProbs.push({ grade: inputs[i].value.trim() || '未分類', unit: inputs[i+1].value.trim() || '未分類', sentence: inputs[i+2].value.trim() });
             }
-            if (newProbs.length > 0) { allProblems = newProbs; window.updateSelectors(); alert('保存しました！'); }
+            if (newProbs.length > 0) { allProblems = newProbs; window.updateSelectors(); window.showToast('問題データを保存しました！'); }
         };
         window.saveAndReturn = () => { window.saveProblems(); window.closeEditDialog(); };
 
@@ -2206,8 +2021,8 @@
 
                 const rows = window.parseCSV(text);
                 const newProbs = rows.slice(1).map(r => ({ grade: r[0]?.trim() || "未分類", unit: r[1]?.trim() || "未分類", sentence: r[2]?.trim() || "" })).filter(p => p.sentence);
-                if (newProbs.length > 0) { allProblems = newProbs; window.updateSelectors(); window.loadProblemEditor(); alert('読み込みました'); }
-            } catch(e) { alert('読み込みに失敗しました。URLや権限設定を確認してください。'); }
+                if (newProbs.length > 0) { allProblems = newProbs; window.updateSelectors(); window.loadProblemEditor(); window.showToast('問題データを読み込みました！'); }
+            } catch(e) { window.showToast('読み込みに失敗しました。URLや共有設定を確認してください。'); }
         };
 
         window.addEventListener('DOMContentLoaded', () => {
