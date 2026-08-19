@@ -3,7 +3,7 @@
  <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>漢字練習サイト</title>
+  <title>漢字マスター★キングダム</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Klee+One:wght@400;600&display=swap" rel="stylesheet">
@@ -15,8 +15,8 @@
         #headerArea, #readHeaderArea, #kanjiPracticeHeaderArea { margin-bottom: 20px; display: flex; flex-direction: row; align-items: flex-start; gap: 15px; writing-mode: vertical-rl; text-orientation: upright; z-index: 100; flex-shrink: 0; }
         #cardsArea, #readCardsArea, #kanjiPracticeContentArea { display: flex; flex-direction: column; flex-wrap: wrap; align-content: flex-start; height: 100%; overflow-x: auto; padding: 10px 0; }
         .title-text { color: #4a5568; font-size: 0.6rem; font-weight: bold; margin: 0; writing-mode: vertical-rl; text-orientation: upright; line-height: 1.2; }
-        .sentence-card { background: #f7fafc; border-radius: 15px; padding: 15px; margin: 40px 10px 10px 10px; border-top: 5px solid #667eea; writing-mode: vertical-rl; text-orientation: upright; display: inline-block; vertical-align: top; min-height: 60vh; max-height: 85vh; width: 55px; position: relative; flex-shrink: 0; }
-        .sentence { font-size: 1.5rem; line-height: 1.8; color: #2d3748; writing-mode: vertical-rl; text-orientation: upright; margin-top: 10px; }
+        .sentence-card { background: #ffffff; border-radius: 15px; padding: 15px; margin: 40px 10px 10px 10px; border-top: 5px solid #667eea; writing-mode: vertical-rl; text-orientation: upright; display: inline-block; vertical-align: top; min-height: 50vh; max-height: 75vh; width: 180px; position: relative; flex-shrink: 0; box-shadow: 0 10px 25px rgba(0,0,0,0.08); }
+        .sentence { font-size: 1.2rem; line-height: 2.0; color: #2d3748; writing-mode: vertical-rl; text-orientation: upright; margin-top: 10px; }
         .problem-number { position: absolute; top: -30px; left: 50%; transform: translateX(-50%); font-size: 1.2rem; font-weight: bold; color: #667eea; background: white; padding: 5px 10px; border-radius: 15px; border: 2px solid #667eea; writing-mode: vertical-rl; text-orientation: upright; }
 
         .top-menu { display: flex; flex-direction: column; gap: 25px; margin-right: 15%; }
@@ -25,7 +25,6 @@
         .btn-flashcard { background: white; color: #ed8936; border: 4px solid #ed8936; }
         .btn-read { background: white; color: #48bb78; border: 4px solid #48bb78; }
         .btn-write { background: white; color: #4299e1; border: 4px solid #4299e1; }
-        .btn-print { background: white; color: #8b5cf6; border: 4px solid #8b5cf6; }
         .btn-minigame { background: white; color: #d53f8c; border: 4px solid #d53f8c; }
         .btn-kanji-practice { background: white; color: #e53e3e; border: 4px solid #e53e3e; }
 
@@ -42,68 +41,67 @@
         .btn-blue { background: #3182ce; color: white; border: none; padding: 10px 20px; border-radius: 25px; cursor: pointer; font-weight: bold; }
         .loading-spinner { width: 16px; height: 16px; border: 2px solid #ffffff; border-top: 2px solid transparent; border-radius: 50%; animation: spin 1s linear infinite; display: inline-block; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .reading-input { writing-mode: vertical-rl; text-orientation: upright; width: 1.5em; font-size: 1.2rem; border: 2px dashed #cbd5e0; border-radius: 6px; text-align: center; padding: 4px 0; outline: none; background: white; }
+        .reading-input { writing-mode: vertical-rl; text-orientation: upright; width: 1.5em; font-size: 1.1rem; border: 2px dashed #cbd5e0; border-radius: 6px; text-align: center; padding: 2px 0; outline: none; background: white; }
         .reading-input.correct { border-color: #48bb78; background: #f0fff4; }
-        .controls { margin-right: 15px; display: flex; flex-direction: row; align-items: center; gap: 15px; writing-mode: vertical-rl; text-orientation: upright; flex-shrink: 0; padding-top: 20px; }
+        .controls { margin-right: 15px; display: flex; flex-direction: row; align-items: center; gap: 15px; writing-mode: vertical-rl; text-orientation: upright; flex-shrink: 0; padding-top: 0; }
         .progress { margin-right: 10px; font-size: 1.1rem; color: #4a5568; font-weight: bold; writing-mode: vertical-rl; text-orientation: upright; }
 
         .mode-switch-btn { position: fixed; left: 20px; top: 20px; background: linear-gradient(135deg, #ed8936, #dd6b20); color: white; border: none; padding: 20px 12px; border-radius: 15px; font-size: 1.1rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2); z-index: 1000; writing-mode: vertical-rl; text-orientation: upright; transition: transform 0.2s; }
         .mode-switch-btn:hover { transform: scale(1.05); }
         .fc-card-container { width: 350px; max-width: 90%; height: 85vh; max-height: 1200px; margin: 0 20px; }
         .fc-card-inner { width: 100%; height: 100%; background: white; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; }
-        @media (max-width: 600px) { .container { padding: 20px; margin: 10px; } .sentence { font-size: 1.2rem; } .fc-card-container { width: 280px; height: 85vh; } .fc-card-inner { padding: 20px; } .top-title { position: static; transform: none; font-size: 1.6rem; margin-right: 20px; white-space: nowrap; } .top-menu { margin-right: 0; gap: 10px; flex-direction: column; } .top-menu-btn { width: 60px; height: 280px; font-size: 1.1rem; padding: 15px 5px; } }
+        @media (max-width: 600px) { .container { padding: 20px; margin: 10px; } .sentence { font-size: 1.1rem; } .fc-card-container { width: 280px; height: 85vh; } .fc-card-inner { padding: 20px; } .top-title { position: static; transform: none; font-size: 1.6rem; margin-right: 20px; white-space: nowrap; } .top-menu { margin-right: 0; gap: 10px; flex-direction: column; } .top-menu-btn { width: 60px; height: 280px; font-size: 1.1rem; padding: 15px 5px; } }
 
         #printPage { display: none; background: #e2e8f0; min-height: 100vh; width: 100vw; writing-mode: horizontal-tb; padding: 20px; box-sizing: border-box; overflow-y: auto; flex-direction: column; align-items: center; gap: 20px; }
-        .print-controls { background: white; padding: 15px 25px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); display: flex; gap: 15px; align-items: center; flex-wrap: wrap; justify-content: center; width: 100%; max-width: 1000px; box-sizing: border-box; }
+        .print-controls { background: white; padding: 15px 25px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); display: flex; gap: 12px; align-items: center; flex-wrap: wrap; justify-content: center; width: 100%; max-width: 1000px; box-sizing: border-box; z-index: 10; }
         .print-controls select { padding: 8px 12px; border-radius: 8px; border: 2px solid #cbd5e0; font-weight: bold; font-size: 1rem; cursor: pointer; outline: none; }
         
-        #printAreaWrapper { display: flex; flex-direction: column; gap: 40px; align-items: center; width: 100%; }
-        .page-wrapper { margin: 0 auto; padding: 0; width: 297mm; height: 210mm; box-shadow: 0 10px 25px rgba(0,0,0,0.15); background: white; box-sizing: border-box; position: relative; overflow: hidden; page-break-after: always; break-after: page; flex-shrink: 0; }
-        .print-area-page { width: 100%; height: 100%; padding: 15mm 12mm 15mm 15mm; box-sizing: border-box; display: flex; flex-direction: row; writing-mode: vertical-rl; text-orientation: upright; font-family: 'Klee One', 'UD デジタル 教科書体 N-R', '教科書体', serif; background: white; overflow: hidden; }
+        #printAreaWrapper { display: flex; flex-direction: column; gap: 20px; align-items: center; width: 100%; max-width: 100%; overflow-x: auto; overflow-y: visible; padding-bottom: 40px; }
 
-        .print-meta-col { width: 32mm; height: 100%; border: 2px solid #000; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; padding: 5mm 1mm; margin-left: 8mm; position: relative; flex-shrink: 0; }
-        .print-badge-wrap { display: flex; flex-direction: column; align-items: center; margin-bottom: 4mm; }
-        .print-badge-sub { font-size: 8.5pt; font-weight: bold; letter-spacing: 0.1em; margin-bottom: 1.5mm; }
-        .print-badge-main { background: #e2e8f0; color: #000; font-size: 14pt; font-weight: bold; padding: 4mm 1.5mm; border-radius: 8mm / 4mm; text-align: center; width: 6mm; line-height: 1.1; border: 1.5px solid #000; }
-        .print-instruction { font-size: 9pt; line-height: 1.4; margin-bottom: 4mm; font-weight: bold; text-align: left; width: 100%; padding: 0 1.5mm; box-sizing: border-box; }
-        .print-unit-title-wrap { flex-grow: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .print-unit-desc { font-size: 8pt; color: #4a5568; margin-bottom: 2mm; }
-        .print-unit-title { font-size: 16pt; font-weight: bold; margin: 0; line-height: 1.3; text-align: center; }
-        .print-page-meta { font-size: 8pt; margin-bottom: 3mm; border-bottom: 1px solid #000; width: 80%; text-align: center; padding-bottom: 1mm; }
-        .print-name-area { width: 100%; display: flex; flex-direction: column; border-top: 2px solid #000; box-sizing: border-box; }
-        .print-grade-group { height: 15mm; display: flex; align-items: center; justify-content: flex-end; padding-left: 2mm; border-bottom: 1px solid #000; font-size: 9.5pt; font-weight: bold; }
-        .print-name-field { height: 35mm; display: flex; align-items: center; justify-content: flex-end; padding-left: 2mm; font-size: 10.5pt; font-weight: bold; }
-        .name-space { flex-grow: 1; }
+        .page-scaler { width: 364mm; height: 257mm; display: flex; justify-content: center; align-items: flex-start; flex-shrink: 0; position: relative; }
+        .page-wrapper { margin: 0; padding: 0; width: 364mm; height: 257mm; box-shadow: 0 10px 25px rgba(0,0,0,0.15); background: white; box-sizing: border-box; position: relative; overflow: hidden; page-break-after: always; break-after: page; flex-shrink: 0; transform-origin: top left; }
+        .print-area-page { width: 100%; height: 100%; padding: 8mm 10mm; box-sizing: border-box; font-family: 'Klee One', 'UD デジタル 教科書体 N-R', '教科書体', serif; background: white; overflow: hidden; position: relative; display: flex; flex-direction: row-reverse; justify-content: flex-start; align-items: stretch; gap: 6mm; writing-mode: horizontal-tb; }
 
-        .print-problems-grid { flex-grow: 1; display: flex; flex-direction: row; justify-content: space-between; height: 100%; min-width: 0; }
-        .print-problem-col { width: 16mm; height: 100%; display: block; position: relative; flex-shrink: 0; text-align: center; }
+        .print-meta-col { width: 32mm; height: 100%; border: 2px solid #000; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 6mm 2mm; flex-shrink: 0; writing-mode: vertical-rl; text-orientation: upright; white-space: normal; background: white; }
+        .print-meta-unit-area { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; width: 100%; margin-top: 2mm; }
+        .print-meta-unit-title { font-size: 15pt; font-weight: bold; margin: 0; line-height: 1.4; text-align: center; letter-spacing: 0.05em; }
+        .print-meta-name-area { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; width: 100%; margin-bottom: 4mm; font-size: 12pt; font-weight: bold; white-space: nowrap; }
+
+        .print-problems-grid { flex: 1; height: 100%; display: flex; flex-direction: column; justify-content: space-between; white-space: nowrap; overflow: visible; box-sizing: border-box; }
+        .print-tier { height: 114mm; width: 100%; display: block; writing-mode: vertical-rl; text-orientation: upright; white-space: nowrap; overflow: visible; box-sizing: border-box; padding: 2mm 6mm 2mm 2mm; }
+        .print-tier-divider { width: 100%; height: 1px; border-top: 1px dashed #a0aec0; margin: 1mm 0; box-sizing: border-box; }
+        
+        .print-problem-col { display: inline-block; vertical-align: top; width: 26mm; height: 100%; margin-left: 2.5mm; position: relative; box-sizing: border-box; text-align: center; font-size: 10pt; writing-mode: vertical-rl; text-orientation: upright; white-space: nowrap; flex-shrink: 0; }
         .print-problem-col.empty { visibility: hidden; }
         
-        .print-prob-num { font-size: 14pt; font-weight: bold; margin-bottom: 5mm; display: block; width: 100%; text-align: center; }
-        .print-prob-text-line { font-size: 14pt; line-height: 1.9; text-align: left; writing-mode: vertical-rl; text-orientation: upright; display: block; width: 100%; height: auto; }
+        .print-prob-num { font-size: 11pt; font-weight: bold; margin-bottom: 2.5mm; display: inline-block; text-align: center; line-height: 1; }
+        .print-prob-text-line { font-size: 10pt; line-height: 1.25; writing-mode: vertical-rl; text-orientation: upright; display: block; width: 100%; height: 100%; text-align: start; white-space: nowrap; }
         
-        .print-char-block { display: inline-block; margin: 1.5mm 0; position: relative; vertical-align: middle; text-align: center; }
-        .print-kanji-cell { width: 14mm; height: 14mm; border: 1.5px solid #000; background: white; display: inline-block; position: relative; vertical-align: middle; box-sizing: border-box; }
+        .print-text-char { display: inline-block; line-height: 1.15; margin: 0; }
+
+        .print-char-block { display: inline-block; margin: 0.3mm 0; position: relative; vertical-align: middle; text-align: center; width: 10mm; }
+        .print-kanji-cell { width: 10mm; height: 10mm; border: 1.5px solid #000; background: white; display: block; position: relative; box-sizing: border-box; margin: 0 auto; }
         .print-kanji-cell::before { content: ''; position: absolute; top: 0; left: 50%; width: 0; height: 100%; border-left: 1px dashed #999; }
         .print-kanji-cell::after { content: ''; position: absolute; top: 50%; left: 0; width: 100%; height: 0; border-top: 1px dashed #999; }
-        .print-yomi-cell { font-size: 8.5pt; line-height: 1.1; position: absolute; right: -5.5mm; top: 50%; transform: translateY(-50%); width: 4.5mm; text-align: center; font-weight: bold; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .print-ans-char { font-family: 'Klee One', 'UD デジタル 教科書体 N-R', serif; font-size: 22pt; color: #e53e3e; font-weight: bold; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 5; }
+        .print-yomi-cell { font-size: 6.5pt; line-height: 1.05; position: absolute; right: -4mm; top: 50%; transform: translateY(-50%); width: 3.5mm; text-align: center; font-weight: bold; writing-mode: vertical-rl; text-orientation: upright; color: #000; }
+        .print-ans-char { font-family: 'Klee One', 'UD デジタル 教科書体 N-R', serif; font-size: 15pt; color: #e53e3e; font-weight: bold; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 5; line-height: 1; }
 
-        .print-bracket-cell { display: inline-block; position: relative; margin: 1.5mm 0; text-align: center; vertical-align: middle; width: 14mm; height: 28mm; }
-        .print-bracket-cell::before { content: '〔'; font-size: 15pt; position: absolute; top: 0; left: 50%; transform: translateX(-50%); }
-        .print-bracket-cell::after { content: '〕'; font-size: 15pt; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); }
-        .print-bracket-ans { font-family: 'Klee One', 'UD デジタル 教科書体 N-R', serif; font-size: 15pt; color: #e53e3e; font-weight: bold; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); writing-mode: vertical-rl; }
-        .print-bracket-side-yomi { font-size: 8.5pt; position: absolute; right: -5.5mm; top: 50%; transform: translateY(-50%); writing-mode: vertical-rl; font-weight: bold; text-align: center; width: 4.5mm; }
+        .print-bracket-cell { display: inline-block; position: relative; margin: 0.3mm 0; text-align: center; vertical-align: middle; width: 10mm; height: 15mm; }
+        .print-bracket-cell::before { content: '〔'; font-size: 10pt; position: absolute; top: 0; left: 50%; transform: translateX(-50%); }
+        .print-bracket-cell::after { content: '〕'; font-size: 10pt; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); }
+        .print-bracket-ans { font-family: 'Klee One', 'UD デジタル 教科書体 N-R', serif; font-size: 10pt; color: #e53e3e; font-weight: bold; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); writing-mode: vertical-rl; text-orientation: upright; }
+        .print-bracket-side-yomi { font-size: 6.5pt; position: absolute; right: -4mm; top: 50%; transform: translateY(-50%); writing-mode: vertical-rl; text-orientation: upright; font-weight: bold; text-align: center; width: 3.5mm; }
 
         @media print {
-            @page { size: A4 landscape; margin: 0; }
+            @page { size: B4 landscape; margin: 0; }
             body { background: white !important; margin: 0 !important; padding: 0 !important; writing-mode: horizontal-tb !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
             #topPage, #mainContainer, #readingContainer, #flashcardPage, #minigameMenuPage, #minigamePlayPage, #backToTopBtnMain, #editDialog, #kanjiDetailModal, #kanjiPracticeContainer, .print-controls, .print-hint { display: none !important; }
             #printPage { display: block !important; position: static !important; width: auto !important; height: auto !important; background: white !important; overflow: visible !important; padding: 0 !important; }
             #printAreaWrapper { margin: 0 !important; padding: 0 !important; display: block !important; max-width: none !important; gap: 0 !important; }
-            .page-wrapper { margin: 0 auto !important; padding: 0 !important; width: 297mm !important; height: 210mm !important; page-break-after: always !important; break-after: page !important; box-shadow: none !important; }
+            .page-scaler { width: 364mm !important; height: 257mm !important; display: block !important; }
+            .page-wrapper { margin: 0 auto !important; padding: 0 !important; width: 364mm !important; height: 257mm !important; page-break-after: always !important; break-after: page !important; box-shadow: none !important; transform: none !important; }
             .page-wrapper:last-child { page-break-after: auto !important; break-after: auto !important; }
-            .print-area-page { box-shadow: none !important; margin: 0 !important; width: 297mm !important; height: 210mm !important; }
+            .print-area-page { box-shadow: none !important; margin: 0 !important; width: 364mm !important; height: 257mm !important; }
             .page-break { display: none !important; }
         }
 
@@ -111,7 +109,6 @@
         .btn-red { background: #ef4444; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; }
         .btn-gray { background: #6b7280; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; }
 
-        /* カスタム通知トースト */
         .toast-msg { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #2d3748; color: white; padding: 12px 24px; border-radius: 30px; box-shadow: 0 10px 20px rgba(0,0,0,0.2); font-weight: bold; z-index: 10000; writing-mode: horizontal-tb; text-align: center; font-size: 1.1rem; pointer-events: none; transition: opacity 0.3s ease; opacity: 0; }
         .toast-msg.show { opacity: 1; }
   </style>
@@ -120,7 +117,7 @@
   <div id="toastMessage" class="toast-msg"></div>
 
   <div id="topPage" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); z-index: 4000; display: flex; flex-direction: column; align-items: center; justify-content: center; writing-mode: vertical-rl; text-orientation: upright;">
-      <h1 class="top-title" style="margin-right: 5%; color: white; font-size: 2.2rem; font-weight: bold;">漢字学習ナビ</h1>
+      <h1 class="top-title" style="margin-right: 5%; color: white; font-size: 2.2rem; font-weight: bold;">漢字マスター★キングダム</h1>
       <div class="top-menu">
           <button class="top-menu-btn btn-kanji-practice" onclick="goToKanjiPracticeMode()">
               <span>漢字練習</span>
@@ -135,7 +132,6 @@
               <span>正しく書けるかな？</span>
               <span style="font-size: 0.9rem; font-weight: normal; margin-right: 15px; line-height: 1.4;">えんぴつとノートをよういしてね</span>
           </button>
-          <button class="top-menu-btn btn-print" onclick="goToPrintMode()"><span>プリント印刷</span></button>
           <button id="topMinigameBtn" class="top-menu-btn btn-minigame" onclick="goToMinigameMenu()">
               <span>ミニゲーム</span>
           </button>
@@ -167,20 +163,33 @@
       <div id="writeSentenceDisplay" class="sentence" style="margin-right: 30px; display: none;"></div>
   </div>
 
-  <div class="container" id="readingContainer" style="display: none;">
+  <div class="container" id="readingContainer" style="display: none; max-height: 95vh; overflow: hidden;">
       <div id="readHeaderArea">
           <select id="readGradeSelector" onchange="onReadGradeChange()" style="background: white; border: 2px solid #cbd5e0; border-radius: 12px; padding: 8px 12px; font-size: 0.7rem; font-weight: bold; cursor: pointer; writing-mode: vertical-rl;"><option value="">学年...</option></select>
           <select id="readUnitSelector" onchange="onReadUnitChange()" style="background: white; border: 2px solid #cbd5e0; border-radius: 12px; padding: 8px 12px; font-size: 0.7rem; font-weight: bold; cursor: pointer; writing-mode: vertical-rl;"><option value="">単元...</option></select>
           <select id="readRangeSelector" onchange="onReadRangeChange()" style="display: none;"><option value="only" selected>だけ</option></select>
       </div>
-      <div style="display: flex; flex-direction: row; gap: 15px; margin-right: 20px;">
+      <div style="display: flex; flex-direction: row; gap: 15px; margin-right: 20px; align-items: center; flex-shrink: 0;">
           <div id="readProgress" class="progress" style="margin: 0;">0 / 0</div>
           <div id="readScoreDisplay" style="margin: 0; color: #ed8936; font-size: 1.1rem; font-weight: bold; writing-mode: horizontal-tb;">0 pt</div>
+          <div id="readTimerDisplay" style="margin: 0; color: #e53e3e; font-size: 1.1rem; font-weight: bold; writing-mode: horizontal-tb;"></div>
       </div>
-      <div id="readCardsArea"></div>
-      <div class="controls" style="gap: 15px;">
-          <button onclick="prevReadingProblem()" style="padding: 15px 8px; font-size: 1rem; font-weight: bold; background: #e2e8f0; color: #4a5568; border-radius: 12px; border: none; cursor: pointer; writing-mode: vertical-rl;">前へ</button>
-          <button onclick="nextReadingProblem()" style="padding: 15px 8px; font-size: 1rem; font-weight: bold; background: #48bb78; color: white; border-radius: 12px; border: none; cursor: pointer; writing-mode: vertical-rl;">次へ</button>
+      
+      <div id="readTimeSelectArea" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; margin: auto; padding: 20px; flex-grow: 1;">
+          <div style="font-size: 1.4rem; font-weight: bold; color: #2d3748; writing-mode: vertical-rl; margin-bottom: 10px;">じかんをえらんでスタート！</div>
+          <div style="display: flex; flex-direction: row; gap: 20px; writing-mode: vertical-rl;">
+              <button onclick="startReadingGame(180)" style="padding: 25px 12px; font-size: 1.3rem; font-weight: bold; background: #ed8936; color: white; border-radius: 15px; border: none; cursor: pointer; box-shadow: 0 4px 10px rgba(237, 137, 54, 0.3); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">三分間</button>
+              <button onclick="startReadingGame(300)" style="padding: 25px 12px; font-size: 1.3rem; font-weight: bold; background: #4299e1; color: white; border-radius: 15px; border: none; cursor: pointer; box-shadow: 0 4px 10px rgba(66, 153, 225, 0.3); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">五分間</button>
+              <button onclick="startReadingGame(null)" style="padding: 25px 12px; font-size: 1.3rem; font-weight: bold; background: #48bb78; color: white; border-radius: 15px; border: none; cursor: pointer; box-shadow: 0 4px 10px rgba(72, 187, 120, 0.3); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">無制限</button>
+          </div>
+      </div>
+
+      <div id="readGameArea" style="display: none; flex-direction: row; align-items: center; justify-content: center; height: 100%; max-height: 100%; gap: 15px; flex-shrink: 0;">
+          <div id="readCardsArea" style="display: flex; align-items: center; justify-content: center; height: 100%; max-height: 100%;"></div>
+          <div class="controls" style="gap: 15px; margin-right: 5px; padding-top: 0; flex-shrink: 0;">
+              <button onclick="prevReadingProblem()" style="padding: 15px 8px; font-size: 1rem; font-weight: bold; background: #e2e8f0; color: #4a5568; border-radius: 12px; border: none; cursor: pointer; writing-mode: vertical-rl;">前へ</button>
+              <button onclick="nextReadingProblem()" style="padding: 15px 8px; font-size: 1rem; font-weight: bold; background: #48bb78; color: white; border-radius: 12px; border: none; cursor: pointer; writing-mode: vertical-rl;">次へ</button>
+          </div>
       </div>
   </div>
 
@@ -218,11 +227,12 @@
               <option value="up-to">まで</option>
               <option value="only" selected>だけ</option>
           </select>
-          <button onclick="triggerPrint()" style="background: #8b5cf6; color: white; padding: 8px 20px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">印刷する</button>
+          <button onclick="triggerPrint()" style="background: #8b5cf6; color: white; padding: 8px 20px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">🖨️ 印刷する / PDF保存</button>
+          <button onclick="openPrintWindow()" style="background: #3182ce; color: white; padding: 8px 20px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">↗ 別ウィンドウで開く</button>
           <button onclick="goToTopFromPrint()" style="background: #718096; color: white; padding: 8px 20px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">トップへ戻る</button>
       </div>
-      <div class="print-hint" style="background: #ebf8ff; color: #2b6cb0; padding: 12px 20px; border-radius: 10px; margin: 0 20px 20px 20px; font-weight: bold; font-size: 1.1rem; border: 2px solid #90cdf4; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); max-width: 800px; writing-mode: horizontal-tb;">
-          💡 表に問題、裏に解答を印刷するには、印刷ダイアログの設定で「両面印刷（短辺とじ）」を選んでください。
+      <div class="print-hint" style="background: #ebf8ff; color: #2b6cb0; padding: 12px 20px; border-radius: 10px; margin: 0 20px 10px 20px; font-weight: bold; font-size: 1rem; border: 2px solid #90cdf4; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); max-width: 850px; writing-mode: horizontal-tb;">
+          💡 表に問題、裏に解答を印刷するには、印刷設定で「用紙: B4」「向き: 横」「両面印刷（短辺とじ）」を選択してください。
       </div>
       <div id="printAreaWrapper"></div>
   </div>
@@ -376,7 +386,6 @@
         let mgStartTime = null;
         let mgTimerInterval = null;
 
-        // トースト通知表示関数
         window.showToast = function(msg) {
             const toast = document.getElementById('toastMessage');
             if (!toast) return;
@@ -403,7 +412,7 @@
             "からだ": [
                 "{頭|あたま}隠して尻隠さず", "{目|め}から鼻へ抜ける", "{耳|みみ}にたこができる", "{口|くち}は災いの元", "{歯|は}に衣着せぬ",
                 "{腹|はら}が減っては戦はできぬ", "{手|て}も足も出ない", "{足|あし}元から鳥が立つ", "{喉|のど}元過ぎれば熱さを忘れる",
-                "{目|め}を疑う", "{耳|みみ}を疑う", "{口|くち}がすべる", "{鼻|はな}が高い", "{肩|かた}で風を切る",
+                "{目|me}を疑う", "{耳|みみ}を疑う", "{口|くち}がすべる", "{鼻|はな}が高い", "{肩|かた}で風を切る",
                 "{手|て}を抜く", "{足|あし}を洗う", "{胸|むね}をなでおろす", "{腹|はら}をくくる", "{背|せ}に腹は代えられない",
                 "{目|め}の中に入れても痛くない"
             ],
@@ -456,17 +465,27 @@
         window.showAnswer = function(input, answer) {
             if (input.disabled) return;
             
-            if (input.value === answer && input.dataset.mustClear === "true") {
-                input.value = '';
-                input.style.color = '';
-                input.dataset.mustClear = "false";
-                const circle = input.parentElement.querySelector('.correct-mark');
-                if (circle) circle.remove();
-            } else {
-                input.value = answer;
-                input.style.color = '#e53e3e';
-                input.dataset.mustClear = "true";
+            // 既存タイマーの解除
+            if (input.dataset.clearTimer) {
+                clearTimeout(parseInt(input.dataset.clearTimer, 10));
             }
+
+            // 赤字で答えを表示
+            input.value = answer;
+            input.style.color = '#e53e3e';
+            input.dataset.mustClear = "true";
+
+            // 2秒（2000ms）後に自動消去
+            const timerId = setTimeout(() => {
+                if (!input.disabled) {
+                    input.value = '';
+                    input.style.color = '';
+                    input.dataset.mustClear = "false";
+                }
+                delete input.dataset.clearTimer;
+            }, 2000);
+
+            input.dataset.clearTimer = timerId;
             input.focus();
         };
 
@@ -608,6 +627,7 @@
 
         window.goToTopMode = function() {
             if (mgTimerInterval) clearInterval(mgTimerInterval);
+            if (typeof readTimerInterval !== 'undefined' && readTimerInterval) clearInterval(readTimerInterval);
             document.getElementById('topPage').style.display = 'flex';
             document.querySelectorAll('.container, #flashcardPage, #minigameMenuPage, #minigamePlayPage, #printPage').forEach(el => el.style.display = 'none');
             document.getElementById('backToTopBtnMain').style.display = 'none';
@@ -1214,42 +1234,102 @@
                     if (loop < 2 && currentLocalAnimId === animId) await new Promise(r => setTimeout(r, 1000));
                 }
             };
-            
+
             ansGroup.appendChild(ansDisplayWrapper);
             ansGroup.appendChild(ansBtn);
             block.appendChild(ansGroup);
             return block;
         }
 
+        let readTimerInterval = null;
+        let readRemainingTime = null;
+
         window.goToReadingMode = () => {
             window.goToTopMode();
             document.getElementById('topPage').style.display = 'none';
             document.getElementById('readingContainer').style.display = 'flex';
             document.getElementById('backToTopBtnMain').style.display = 'block';
-            window.onReadUnitChange();
+            window.resetReadModeToSelect();
+        };
+
+        window.resetReadModeToSelect = () => {
+            if (readTimerInterval) clearInterval(readTimerInterval);
+            document.getElementById('readTimeSelectArea').style.display = 'flex';
+            document.getElementById('readGameArea').style.display = 'none';
+            document.getElementById('readTimerDisplay').textContent = '';
+        };
+
+        window.startReadingGame = (seconds) => {
+            const grade = document.getElementById('readGradeSelector').value;
+            const unit = document.getElementById('readUnitSelector').value;
+            if (!grade || !unit) {
+                if (window.showToast) window.showToast('学年と単元をえらんでね！');
+                return;
+            }
+            
+            readProbs = allProblems.filter(p => p.grade === grade && (unit === 'all' || p.unit === unit));
+            if (readProbs.length === 0) {
+                if (window.showToast) window.showToast('問題がありません');
+                return;
+            }
+
+            currentReadIndex = 0;
+            document.getElementById('readTimeSelectArea').style.display = 'none';
+            document.getElementById('readGameArea').style.display = 'flex';
+            
+            if (readTimerInterval) clearInterval(readTimerInterval);
+            
+            if (seconds !== null) {
+                readRemainingTime = seconds;
+                window.updateReadTimerDisplay();
+                readTimerInterval = setInterval(() => {
+                    readRemainingTime--;
+                    window.updateReadTimerDisplay();
+                    if (readRemainingTime <= 0) {
+                        clearInterval(readTimerInterval);
+                        window.finishReadingGame();
+                    }
+                }, 1000);
+            } else {
+                readRemainingTime = null;
+                document.getElementById('readTimerDisplay').textContent = '無制限';
+            }
+            
+            window.renderReadCards();
+        };
+
+        window.updateReadTimerDisplay = () => {
+            const timerEl = document.getElementById('readTimerDisplay');
+            if (!timerEl) return;
+            if (readRemainingTime === null) {
+                timerEl.textContent = '無制限';
+            } else {
+                const m = Math.floor(readRemainingTime / 60);
+                const s = readRemainingTime % 60;
+                timerEl.textContent = `⏱️ ${m}:${s.toString().padStart(2, '0')}`;
+            }
+        };
+
+        window.finishReadingGame = () => {
+            if (window.showToast) window.showToast('⏱️ じかんぎれ！');
+            document.querySelectorAll('.reading-input').forEach(i => i.disabled = true);
+            setTimeout(() => {
+                window.resetReadModeToSelect();
+            }, 2500);
         };
 
         window.onReadGradeChange = () => {
             window.syncGrade(document.getElementById('readGradeSelector').value);
-            window.onReadUnitChange();
+            window.resetReadModeToSelect();
         };
 
         window.onReadUnitChange = () => {
             window.syncUnit(document.getElementById('readUnitSelector').value);
-            const grade = document.getElementById('readGradeSelector').value;
-            const unit = document.getElementById('readUnitSelector').value;
-            if (!grade || !unit) { 
-                readProbs = [];
-                window.renderReadCards();
-                return; 
-            }
-            readProbs = allProblems.filter(p => p.grade === grade && (unit === 'all' || p.unit === unit));
-            currentReadIndex = 0;
-            window.renderReadCards();
+            window.resetReadModeToSelect();
         };
         window.onReadRangeChange = () => { 
             window.syncRange(document.getElementById('readRangeSelector').value);
-            window.onReadUnitChange(); 
+            window.resetReadModeToSelect(); 
         };
 
         window.renderReadCards = () => {
@@ -1258,29 +1338,31 @@
             if (readProbs.length === 0) return;
             document.getElementById('readProgress').textContent = `${currentReadIndex + 1} / ${readProbs.length}`;
             const p = readProbs[currentReadIndex];
+            
+            // 白いカードの横幅を2倍（180px）にし、縦方向にすっきり収めてスクロールを不要にする
             const card = document.createElement('div');
             card.className = 'sentence-card';
-            card.style.cssText = 'min-width: 100px; padding-top: 40px; text-align: center;';
+            card.style.cssText = 'min-width: 180px; width: 180px; max-height: 72vh; height: auto; padding: 25px 15px 15px 15px; margin: 0 5px; text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center; background: #ffffff; box-shadow: 0 10px 25px rgba(0,0,0,0.08);';
             
-            let inputsHtml = '<div style="font-size: 1.5rem; line-height: 2.5; margin-top: 0; letter-spacing: 0.05em; white-space: nowrap; margin-left: 10px;">';
-            let sentenceHtml = '<div class="sentence" style="margin-top: 0; letter-spacing: 0.05em; white-space: nowrap; line-height: 2.5;">';
+            let inputsHtml = '<div style="font-size: 1.15rem; line-height: 2.0; margin-top: 0; letter-spacing: 0.05em; white-space: nowrap; margin-left: 8px;">';
+            let sentenceHtml = '<div class="sentence" style="margin-top: 0; font-size: 1.15rem; letter-spacing: 0.05em; white-space: nowrap; line-height: 2.0;">';
             
             const parts = p.sentence.split(/(\{.+?\|.+?\})/);
             
             parts.forEach(part => {
                 if (part.startsWith('{')) {
                     const [kanji, yomi] = part.slice(1, -1).split('|');
-                    const boxHeight = Math.max(4, yomi.length * 1.2 + 2) + 'em'; 
-                    const inputHeight = (yomi.length * 1.1 + 0.5) + 'em';
+                    const boxHeight = Math.max(3.0, yomi.length * 1.0 + 1.0) + 'em'; 
+                    const inputHeight = (yomi.length * 0.9 + 0.3) + 'em';
                     
                     inputsHtml += `
-                        <span class="reading-input-wrapper" style="display: inline-flex; flex-direction: column; align-items: center; justify-content: center; writing-mode: horizontal-tb; vertical-align: middle; margin: 0 5px;">
+                        <span class="reading-input-wrapper" style="display: inline-flex; flex-direction: column; align-items: center; justify-content: center; writing-mode: horizontal-tb; vertical-align: middle; margin: 0 3px;">
                             <span style="position: relative; display: inline-flex; align-items: center; justify-content: center; writing-mode: vertical-rl; height: ${boxHeight};">
-                                <span style="font-size: 1.2rem;">（</span>
-                                <input type="text" class="reading-input" data-answer="${yomi}" style="height: ${inputHeight}; font-size: 1.1rem; padding: 2px 0;" oninput="window.checkReading(this, '${yomi}')" onkeydown="window.handleReadingKeydown(event, this, '${yomi}')">
-                                <span style="font-size: 1.2rem;">）</span>
+                                <span style="font-size: 1rem;">（</span>
+                                <input type="text" class="reading-input" data-answer="${yomi}" style="height: ${inputHeight}; font-size: 0.95rem; padding: 1px 0;" oninput="window.checkReading(this, '${yomi}')" onkeydown="window.handleReadingKeydown(event, this, '${yomi}')">
+                                <span style="font-size: 1rem;">）</span>
                             </span>
-                            <button onclick="window.showAnswer(this.previousElementSibling.querySelector('input'), '${yomi}')" tabindex="-1" style="font-size: 0.75rem; padding: 2px 8px; border: 1px solid #cbd5e0; border-radius: 4px; background: white; cursor: pointer; color: #4a5568; line-height: 1.2; margin-top: 6px; white-space: nowrap;">答え</button>
+                            <button onclick="window.showAnswer(this.previousElementSibling.querySelector('input'), '${yomi}')" tabindex="-1" style="font-size: 0.65rem; padding: 2px 5px; border: 1px solid #cbd5e0; border-radius: 4px; background: white; cursor: pointer; color: #4a5568; line-height: 1.2; margin-top: 3px; white-space: nowrap;">答え</button>
                         </span>
                     `;
                     sentenceHtml += `<span style="color:#2b6cb0;font-weight:bold;text-decoration:underline;text-decoration-color:#cbd5e0;text-decoration-thickness:2px; display: inline-flex; align-items: center; justify-content: center; height: ${boxHeight}; vertical-align: middle;">${kanji}</span>`;
@@ -1294,7 +1376,7 @@
             sentenceHtml += '</div>';
             
             card.innerHTML = `
-                <div class="problem-number">${currentReadIndex+1}</div>
+                <div class="problem-number" style="top: -20px; font-size: 1rem; padding: 2px 8px;">${currentReadIndex+1}</div>
                 <div style="display: inline-block; text-align: left;">
                     ${inputsHtml}
                     ${sentenceHtml}
@@ -1327,6 +1409,11 @@
         window.checkReading = function(input, answer) {
             input.style.color = '';
             
+            if (input.dataset.clearTimer) {
+                clearTimeout(parseInt(input.dataset.clearTimer, 10));
+                delete input.dataset.clearTimer;
+            }
+            
             if (input.dataset.mustClear === "true") {
                 if (input.value !== answer && input.value !== '') {
                     input.value = '';
@@ -1353,7 +1440,7 @@
                     circle = document.createElement('span');
                     circle.className = 'correct-mark';
                     circle.textContent = '〇';
-                    circle.style.cssText = 'position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #e53e3e; font-size: 2.5rem; font-weight: bold; pointer-events: none; opacity: 0.8; z-index: 10; font-family: sans-serif; writing-mode: horizontal-tb;';
+                    circle.style.cssText = 'position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #e53e3e; font-size: 2.2rem; font-weight: bold; pointer-events: none; opacity: 0.8; z-index: 10; font-family: sans-serif; writing-mode: horizontal-tb;';
                     input.parentElement.appendChild(circle);
                 }
 
@@ -1394,21 +1481,62 @@
             }
         };
         window.goToNextUnitRead = () => {
-            const grade = document.getElementById('readGradeSelector').value;
+            const currentGrade = document.getElementById('readGradeSelector').value;
             const currentUnit = document.getElementById('readUnitSelector').value;
+
+            if (!currentGrade) {
+                currentReadIndex = 0;
+                window.renderReadCards();
+                return;
+            }
+
             if (currentUnit === 'all') {
                 currentReadIndex = 0;
                 window.renderReadCards();
                 return;
             }
-            const units = [...new Set(allProblems.filter(p => p.grade === grade).map(p => p.unit))];
-            const currentIndex = units.indexOf(currentUnit);
-            if (currentIndex > -1 && currentIndex < units.length - 1) {
-                document.getElementById('readUnitSelector').value = units[currentIndex + 1];
-                window.onReadUnitChange();
-            } else {
+
+            const currentGradeUnits = [...new Set(allProblems.filter(p => p.grade === currentGrade).map(p => p.unit))];
+            const currentIndex = currentGradeUnits.indexOf(currentUnit);
+
+            if (currentIndex > -1 && currentIndex < currentGradeUnits.length - 1) {
+                const nextUnit = currentGradeUnits[currentIndex + 1];
+                document.getElementById('readUnitSelector').value = nextUnit;
+                window.syncUnit(nextUnit);
+                readProbs = allProblems.filter(p => p.grade === currentGrade && p.unit === nextUnit);
                 currentReadIndex = 0;
+                if (window.showToast) window.showToast(`つぎのたんげん：${nextUnit}`);
                 window.renderReadCards();
+            } else {
+                const gradeIndex = unitOrder.indexOf(currentGrade);
+                if (gradeIndex > -1 && gradeIndex < unitOrder.length - 1) {
+                    const nextGrade = unitOrder[gradeIndex + 1];
+                    const nextGradeUnits = [...new Set(allProblems.filter(p => p.grade === nextGrade).map(p => p.unit))];
+                    if (nextGradeUnits.length > 0) {
+                        const nextUnit = nextGradeUnits[0];
+                        document.getElementById('readGradeSelector').value = nextGrade;
+                        window.syncGrade(nextGrade);
+                        document.getElementById('readUnitSelector').value = nextUnit;
+                        window.syncUnit(nextUnit);
+                        readProbs = allProblems.filter(p => p.grade === nextGrade && p.unit === nextUnit);
+                        currentReadIndex = 0;
+                        if (window.showToast) window.showToast(`つぎのがくねん：${nextGrade} ${nextUnit}`);
+                        window.renderReadCards();
+                        return;
+                    }
+                }
+                if (currentGradeUnits.length > 0) {
+                    const firstUnit = currentGradeUnits[0];
+                    document.getElementById('readUnitSelector').value = firstUnit;
+                    window.syncUnit(firstUnit);
+                    readProbs = allProblems.filter(p => p.grade === currentGrade && p.unit === firstUnit);
+                    currentReadIndex = 0;
+                    if (window.showToast) window.showToast(`さいしょのたんげんにもどります：${firstUnit}`);
+                    window.renderReadCards();
+                } else {
+                    currentReadIndex = 0;
+                    window.renderReadCards();
+                }
             }
         };
 
@@ -1576,8 +1704,8 @@
             if (filtered.length === 0) { container.innerHTML = '<div style="padding:50px; font-weight: bold; writing-mode: horizontal-tb;">問題がありません。</div>'; return; }
 
             const chunks = [];
-            for (let i = 0; i < filtered.length; i += 10) {
-                chunks.push(filtered.slice(i, i + 10));
+            for (let i = 0; i < filtered.length; i += 20) {
+                chunks.push(filtered.slice(i, i + 20));
             }
 
             chunks.forEach((probs, pIdx) => {
@@ -1585,15 +1713,21 @@
                 const pageNumDisplay = totalPages > 1 ? `${pIdx + 1} / ${totalPages}` : "";
                 const unitTitle = unit === 'all' ? 'すべて' : unit;
                 
-                const qPage = window.createPrintPageDOM(grade, unitTitle, probs, pIdx * 10, false, pageNumDisplay);
-                container.appendChild(qPage);
+                const qPageScaler = document.createElement('div');
+                qPageScaler.className = 'page-scaler';
+                const qPage = window.createPrintPageDOM(grade, unitTitle, probs, pIdx * 20, false, pageNumDisplay);
+                qPageScaler.appendChild(qPage);
+                container.appendChild(qPageScaler);
                 
                 const pageBreak1 = document.createElement('div');
                 pageBreak1.className = 'page-break';
                 container.appendChild(pageBreak1);
                 
-                const aPage = window.createPrintPageDOM(grade, unitTitle + " 【解答】", probs, pIdx * 10, true, pageNumDisplay);
-                container.appendChild(aPage);
+                const aPageScaler = document.createElement('div');
+                aPageScaler.className = 'page-scaler';
+                const aPage = window.createPrintPageDOM(grade, unitTitle + " 【解答】", probs, pIdx * 20, true, pageNumDisplay);
+                aPageScaler.appendChild(aPage);
+                container.appendChild(aPageScaler);
                 
                 if (pIdx < chunks.length - 1) {
                     const pageBreak2 = document.createElement('div');
@@ -1601,6 +1735,43 @@
                     container.appendChild(pageBreak2);
                 }
             });
+
+            setTimeout(() => {
+                window.adjustPrintPreviewScale();
+            }, 50);
+        };
+
+        window.adjustPrintPreviewScale = function() {
+            const scalers = document.querySelectorAll('.page-scaler');
+            const container = document.getElementById('printAreaWrapper');
+            if (!container || scalers.length === 0) return;
+
+            const b4WidthPx = 1375.75; // 364mm at 96DPI
+            const b4HeightPx = 971.34; // 257mm at 96DPI
+
+            const availableWidth = Math.max(280, Math.min(container.clientWidth - 40, 1350));
+
+            if (availableWidth < b4WidthPx) {
+                const scale = availableWidth / b4WidthPx;
+                scalers.forEach(scaler => {
+                    scaler.style.width = `${b4WidthPx * scale}px`;
+                    scaler.style.height = `${b4HeightPx * scale}px`;
+                    const wrap = scaler.querySelector('.page-wrapper');
+                    if (wrap) {
+                        wrap.style.transform = `scale(${scale})`;
+                        wrap.style.transformOrigin = 'top left';
+                    }
+                });
+            } else {
+                scalers.forEach(scaler => {
+                    scaler.style.width = `${b4WidthPx}px`;
+                    scaler.style.height = `${b4HeightPx}px`;
+                    const wrap = scaler.querySelector('.page-wrapper');
+                    if (wrap) {
+                        wrap.style.transform = 'none';
+                    }
+                });
+            }
         };
 
         window.createPrintPageDOM = function(grade, unitTitle, problems, startIdx, showAns, pageNumDisplay) {
@@ -1610,128 +1781,134 @@
             const page = document.createElement('div');
             page.className = 'print-area-page';
 
+            let displayTitle = unitTitle || '';
+            if (grade && !displayTitle.includes(grade)) {
+                displayTitle = grade + ' ' + displayTitle;
+            }
+
             let metaHtml = `
                 <div class="print-meta-col">
-                    <div class="print-badge-wrap">
-                        <span class="print-badge-sub">たしかめよう</span>
-                        <div class="print-badge-main">国語</div>
+                    <div class="print-meta-unit-area">
+                        <h2 class="print-meta-unit-title">${displayTitle}</h2>
                     </div>
-                    <div class="print-instruction">
-                        漢字を書きましょう。（　）は、送りがなも書きましょう。
-                    </div>
-                    <div class="print-unit-title-wrap">
-                        <span class="print-unit-desc">${grade || ''}</span>
-                        <h2 class="print-unit-title">${unitTitle || ''}</h2>
-                    </div>
-                    ${pageNumDisplay ? `<div class="print-page-meta">${pageNumDisplay}</div>` : ''}
-                    <div class="print-name-area">
-                        <div class="print-grade-group">組</div>
-                        <div class="print-name-field">名前<span class="name-space"></span></div>
+                    <div class="print-meta-name-area">
+                        名前（<span style="letter-spacing: -0.2em;">　　　　　　　　</span>）
                     </div>
                 </div>
             `;
 
-            let problemsHtml = `<div class="print-problems-grid">`;
-            
-            problems.forEach((prob, idx) => {
-                const circleNum = window.getCircleNumber(startIdx + idx + 1);
-                let sentenceBlocksHtml = '';
-                
-                const sentenceText = prob.sentence || '';
-                const parts = sentenceText.split(/(\{.+?\|.+?\})/);
-                
-                parts.forEach(part => {
-                    if (part.startsWith('{') && part.endsWith('}')) {
-                        let [kanji, reading] = part.slice(1, -1).split('|');
-                        if (!kanji) kanji = '';
-                        if (!reading) reading = '';
-                        
-                        const kanjiChars = Array.from(kanji);
-                        const isAllKanji = kanjiChars.length > 0 && kanjiChars.every(c => c.match(/[\u4E00-\u9FFF々]/));
-                        
-                        if (isAllKanji) {
-                            kanjiChars.forEach((char, cIdx) => {
-                                let charYomi = reading;
-                                if (kanjiChars.length > 1) {
-                                    const yomiLen = Math.ceil(reading.length / kanjiChars.length);
-                                    charYomi = reading.substring(cIdx * yomiLen, (cIdx + 1) * yomiLen);
+            const renderTierHtml = (tierProbs, tierStartIdx) => {
+                let tierHtml = `<div class="print-tier">`;
+                tierProbs.forEach((prob, idx) => {
+                    const circleNum = window.getCircleNumber(tierStartIdx + idx + 1);
+                    let sentenceBlocksHtml = '';
+                    
+                    const sentenceText = prob.sentence || '';
+                    const parts = sentenceText.split(/(\{.+?\|.+?\})/);
+                    
+                    parts.forEach(part => {
+                        if (part.startsWith('{') && part.endsWith('}')) {
+                            let [kanji, reading] = part.slice(1, -1).split('|');
+                            if (!kanji) kanji = '';
+                            if (!reading) reading = '';
+                            
+                            const kanjiChars = Array.from(kanji);
+                            const isAllKanji = kanjiChars.length > 0 && kanjiChars.every(c => c.match(/[\u4E00-\u9FFF々]/));
+                            
+                            if (isAllKanji) {
+                                kanjiChars.forEach((char, cIdx) => {
+                                    let charYomi = reading;
+                                    if (kanjiChars.length > 1) {
+                                        const yomiLen = Math.ceil(reading.length / kanjiChars.length);
+                                        charYomi = reading.substring(cIdx * yomiLen, (cIdx + 1) * yomiLen);
+                                    }
+                                    sentenceBlocksHtml += `
+                                        <span class="print-char-block">
+                                            <span class="print-kanji-cell">
+                                                ${showAns ? `<span class="print-ans-char">${char}</span>` : ''}
+                                            </span>
+                                            <span class="print-yomi-cell">
+                                                ${Array.from(charYomi || '').map(ch => `<span>${ch}</span>`).join('')}
+                                            </span>
+                                        </span>
+                                    `;
+                                });
+                            } else {
+                                let currentKanjiPart = '';
+                                let currentKanaPart = '';
+                                
+                                kanjiChars.forEach(char => {
+                                    if (char.match(/[\u4E00-\u9FFF々]/)) {
+                                        currentKanjiPart += char;
+                                    } else {
+                                        currentKanaPart += char;
+                                    }
+                                });
+                                
+                                let pureYomi = reading;
+                                if (currentKanaPart && reading && reading.endsWith(currentKanaPart)) {
+                                    pureYomi = reading.substring(0, reading.length - currentKanaPart.length);
                                 }
-                                sentenceBlocksHtml += `
-                                    <span class="print-char-block">
-                                        <span class="print-kanji-cell">
-                                            ${showAns ? `<span class="print-ans-char">${char}</span>` : ''}
+
+                                Array.from(currentKanjiPart).forEach((char, cIdx) => {
+                                    let charYomi = pureYomi;
+                                    if (currentKanjiPart.length > 1 && pureYomi) {
+                                        const yomiLen = Math.ceil(pureYomi.length / currentKanjiPart.length);
+                                        charYomi = pureYomi.substring(cIdx * yomiLen, (cIdx + 1) * yomiLen);
+                                    }
+                                    sentenceBlocksHtml += `
+                                        <span class="print-char-block">
+                                            <span class="print-kanji-cell">
+                                                ${showAns ? `<span class="print-ans-char">${char}</span>` : ''}
+                                            </span>
+                                            <span class="print-yomi-cell">
+                                                ${Array.from(charYomi || '').map(ch => `<span>${ch}</span>`).join('')}
+                                            </span>
                                         </span>
-                                        <span class="print-yomi-cell">
-                                            ${Array.from(charYomi || '').map(ch => `<span>${ch}</span>`).join('')}
+                                    `;
+                                });
+
+                                if (currentKanaPart) {
+                                    sentenceBlocksHtml += `
+                                        <span class="print-bracket-cell">
+                                            ${showAns ? `<span class="print-bracket-ans">${currentKanaPart}</span>` : ''}
+                                            <span class="print-bracket-side-yomi">${currentKanaPart}</span>
                                         </span>
-                                    </span>
-                                `;
-                            });
+                                    `;
+                                }
+                            }
                         } else {
-                            let currentKanjiPart = '';
-                            let currentKanaPart = '';
-                            
-                            kanjiChars.forEach(char => {
-                                if (char.match(/[\u4E00-\u9FFF々]/)) {
-                                    currentKanjiPart += char;
-                                } else {
-                                    currentKanaPart += char;
-                                }
-                            });
-                            
-                            let pureYomi = reading;
-                            if (currentKanaPart && reading && reading.endsWith(currentKanaPart)) {
-                                pureYomi = reading.substring(0, reading.length - currentKanaPart.length);
-                            }
-
-                            Array.from(currentKanjiPart).forEach((char, cIdx) => {
-                                let charYomi = pureYomi;
-                                if (currentKanjiPart.length > 1 && pureYomi) {
-                                    const yomiLen = Math.ceil(pureYomi.length / currentKanjiPart.length);
-                                    charYomi = pureYomi.substring(cIdx * yomiLen, (cIdx + 1) * yomiLen);
-                                }
-                                sentenceBlocksHtml += `
-                                    <span class="print-char-block">
-                                        <span class="print-kanji-cell">
-                                            ${showAns ? `<span class="print-ans-char">${char}</span>` : ''}
-                                        </span>
-                                        <span class="print-yomi-cell">
-                                            ${Array.from(charYomi || '').map(ch => `<span>${ch}</span>`).join('')}
-                                        </span>
-                                    </span>
-                                `;
-                            });
-
-                            if (currentKanaPart) {
-                                sentenceBlocksHtml += `
-                                    <span class="print-bracket-cell">
-                                        ${showAns ? `<span class="print-bracket-ans">${currentKanaPart}</span>` : ''}
-                                        <span class="print-bracket-side-yomi">${currentKanaPart}</span>
-                                    </span>
-                                `;
-                            }
+                            sentenceBlocksHtml += Array.from(part || '').map(char => {
+                                return `<span class="print-text-char">${char}</span>`;
+                            }).join('');
                         }
-                    } else {
-                        sentenceBlocksHtml += Array.from(part || '').map(char => {
-                            return `<span style="line-height: 1.1; display: inline-block; margin: 0.2mm 0;">${char}</span>`;
-                        }).join('');
-                    }
-                });
-                
-                problemsHtml += `
-                    <div class="print-problem-col">
-                        <div class="print-prob-num">${circleNum}</div>
-                        <div class="print-prob-text-line">
-                            ${sentenceBlocksHtml}
+                    });
+                    
+                    tierHtml += `
+                        <div class="print-problem-col">
+                            <div class="print-prob-text-line">
+                                <span class="print-prob-num">${circleNum}</span>
+                                ${sentenceBlocksHtml}
+                            </div>
                         </div>
-                    </div>
-                `;
-            });
+                    `;
+                });
 
-            for (let j = problems.length; j < 10; j++) {
-                problemsHtml += `<div class="print-problem-col empty"></div>`;
-            }
+                for (let j = tierProbs.length; j < 10; j++) {
+                    tierHtml += `<div class="print-problem-col empty"></div>`;
+                }
 
+                tierHtml += `</div>`;
+                return tierHtml;
+            };
+
+            const topProbs = problems.slice(0, 10);
+            const bottomProbs = problems.slice(10, 20);
+
+            let problemsHtml = `<div class="print-problems-grid">`;
+            problemsHtml += renderTierHtml(topProbs, startIdx);
+            problemsHtml += `<div class="print-tier-divider"></div>`;
+            problemsHtml += renderTierHtml(bottomProbs, startIdx + 10);
             problemsHtml += `</div>`;
             
             page.innerHTML = metaHtml + problemsHtml;
@@ -1739,7 +1916,92 @@
             return wrap;
         }
 
-        window.triggerPrint = () => { window.print(); };
+        window.triggerPrint = () => {
+            const printArea = document.getElementById('printAreaWrapper');
+            if (!printArea || !printArea.querySelector('.page-wrapper')) {
+                if (window.showToast) {
+                    window.showToast("印刷する問題を選択してください。");
+                }
+                return;
+            }
+
+            const isInIframe = (window.self !== window.top);
+            if (isInIframe) {
+                window.openPrintWindow();
+            } else {
+                try {
+                    window.focus();
+                    window.print();
+                } catch (e) {
+                    console.warn("Direct window.print() failed, opening print window fallback:", e);
+                    window.openPrintWindow();
+                }
+            }
+        };
+
+        window.openPrintWindow = () => {
+            const printArea = document.getElementById('printAreaWrapper');
+            if (!printArea || !printArea.querySelector('.page-wrapper')) {
+                if (window.showToast) window.showToast("印刷する問題を選択してください。");
+                return;
+            }
+
+            const printWin = window.open('', '_blank');
+            if (!printWin) {
+                if (window.showToast) {
+                    window.showToast("ポップアップがブロックされました。ブラウザの設定で許可してください。");
+                }
+                return;
+            }
+
+            const clonedPrintArea = printArea.cloneNode(true);
+            clonedPrintArea.querySelectorAll('.page-scaler').forEach(s => {
+                s.style.width = '364mm';
+                s.style.height = '257mm';
+            });
+            clonedPrintArea.querySelectorAll('.page-wrapper').forEach(wrap => {
+                wrap.style.transform = 'none';
+                wrap.style.marginBottom = '0';
+            });
+
+            const styles = Array.from(document.querySelectorAll('link[rel="stylesheet"], style'))
+                .map(el => el.outerHTML)
+                .join('\n');
+
+            printWin.document.write(`<!doctype html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>漢字かきとりプリント (B4)</title>
+    ${styles}
+    <style>
+        @page { size: B4 landscape; margin: 0; }
+        body { background: white !important; margin: 0 !important; padding: 0 !important; writing-mode: horizontal-tb !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        #printAreaWrapper { margin: 0 !important; padding: 0 !important; display: block !important; max-width: none !important; gap: 0 !important; }
+        .page-scaler { width: 364mm !important; height: 257mm !important; display: block !important; }
+        .page-wrapper { margin: 0 auto !important; padding: 0 !important; width: 364mm !important; height: 257mm !important; page-break-after: always !important; break-after: page !important; box-shadow: none !important; transform: none !important; }
+        .page-wrapper:last-child { page-break-after: auto !important; break-after: auto !important; }
+        .print-area-page { box-shadow: none !important; margin: 0 !important; width: 364mm !important; height: 257mm !important; }
+        .page-break { display: none !important; }
+    </style>
+</head>
+<body>
+    <div id="printAreaWrapper">
+        ${clonedPrintArea.innerHTML}
+    </div>
+    <script>
+        window.onload = function() {
+            setTimeout(function() {
+                window.focus();
+                window.print();
+            }, 300);
+        };
+    <\/script>
+</body>
+</html>`);
+            printWin.document.close();
+        };
+
         window.goToTopFromPrint = () => window.goToTopMode();
 
         window.goToMinigameMenu = () => {
@@ -2024,6 +2286,13 @@
                 if (newProbs.length > 0) { allProblems = newProbs; window.updateSelectors(); window.loadProblemEditor(); window.showToast('問題データを読み込みました！'); }
             } catch(e) { window.showToast('読み込みに失敗しました。URLや共有設定を確認してください。'); }
         };
+
+        window.addEventListener('resize', () => {
+            const printPage = document.getElementById('printPage');
+            if (printPage && printPage.style.display === 'flex') {
+                window.adjustPrintPreviewScale();
+            }
+        });
 
         window.addEventListener('DOMContentLoaded', () => {
             window.loadProgressFromStorage();
