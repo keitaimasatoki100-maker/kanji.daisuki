@@ -264,7 +264,7 @@
 
   <div id="minigamePlayPage" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #ebf8ff; z-index: 3500; flex-direction: column; align-items: center; justify-content: flex-start; writing-mode: horizontal-tb; overflow-y: auto; padding: 20px; box-sizing: border-box;">
       <div style="width: 100%; max-width: 1000px; display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 15px; margin-bottom: 20px; flex-shrink: 0;">
-          <button onclick="goToMinigameMenu()" style="background: linear-gradient(135deg, #718096, #4a5568); color: white; border: none; padding: 10px 20px; border-radius: 10px; font-size: 1rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">やめる</button>
+          <button onclick="quitMinigame()" style="background: linear-gradient(135deg, #718096, #4a5568); color: white; border: none; padding: 10px 20px; border-radius: 10px; font-size: 1rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">やめる</button>
           <div style="display: flex; gap: 15px; flex-wrap: wrap;">
               <div id="mgTimer" style="font-size: 1.5rem; font-weight: bold; color: #4a5568; background: white; padding: 10px 20px; border-radius: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">00:00</div>
               <div id="mgScore" style="font-size: 1.5rem; font-weight: bold; color: #4a5568; background: white; padding: 10px 20px; border-radius: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">0 / 10 問</div>
@@ -385,13 +385,15 @@
         let currentMgCategory = '';
         let mgStartTime = null;
         let mgTimerInterval = null;
+        let mgSessionId = 0;
 
         window.showToast = function(msg) {
             const toast = document.getElementById('toastMessage');
             if (!toast) return;
             toast.textContent = msg;
             toast.classList.add('show');
-            setTimeout(() => {
+            if (window._toastTimer) clearTimeout(window._toastTimer);
+            window._toastTimer = setTimeout(() => {
                 toast.classList.remove('show');
             }, 2500);
         };
@@ -412,7 +414,7 @@
             "からだ": [
                 "{頭|あたま}隠して尻隠さず", "{目|め}から鼻へ抜ける", "{耳|みみ}にたこができる", "{口|くち}は災いの元", "{歯|は}に衣着せぬ",
                 "{腹|はら}が減っては戦はできぬ", "{手|て}も足も出ない", "{足|あし}元から鳥が立つ", "{喉|のど}元過ぎれば熱さを忘れる",
-                "{目|me}を疑う", "{耳|みみ}を疑う", "{口|くち}がすべる", "{鼻|はな}が高い", "{肩|かた}で風を切る",
+                "{目|め}を疑う", "{耳|みみ}を疑う", "{口|くち}がすべる", "{鼻|はな}が高い", "{肩|かた}で風を切る",
                 "{手|て}を抜く", "{足|あし}を洗う", "{胸|むね}をなでおろす", "{腹|はら}をくくる", "{背|せ}に腹は代えられない",
                 "{目|め}の中に入れても痛くない"
             ],
@@ -425,12 +427,12 @@
                 "{針|はり}のむしろ"
             ],
             "自然・数・人・その他": [
-                "{雨|あめ}降って地固まる", "{月|つき}とすっぽん", "{風|かぜ}の前の塵", "{雲|くも}をつかむよう", "{雪|ゆき}に雪折れなし",
-                "{天|てん}は二物を与えず", "光{陰|いん}矢の如し", "{一|いち}石二鳥", "{二|に}度あることは三度ある", "{三|さん}人寄れば文殊の知恵",
+                "{雨|あめ}降って地固まる", "{月|つき}とすっぽん", "{風|かぜ}の前の塵", "{雲|くも}をつかむよう", "{柳|やなぎ}に雪折れなし",
+                "{天|てん}は二物を与えず", "光{陰|いん}矢の如し", "{一|いっ}石二鳥", "{二|に}度あることは三度ある", "{三|さん}人寄れば文殊の知恵",
                 "{十|じゅう}人十色", "{百|ひゃく}聞は一見に如かず", "{千|せん}里の道も一歩から", "{万|ばん}事休す", "{急|いそ}がば回れ",
                 "{善|ぜん}は急げ", "{笑|わら}う門には福来たる", "{泣|な}く子と地頭には勝てぬ", "{知|し}らぬが仏", "{仏|ほとけ}の顔も三度まで",
-                "{鬼|おに}の居ぬ間に洗濯", "{鬼|おに}に金棒", "{親|おや}しき仲にも礼儀あり", "{子|こ}はかすがい", "{朱|しゅ}に交われば赤くなる",
-                "{類|るい}は友を呼ぶ", "{良|よ}薬は口に苦し", "{嘘|うそ}も方便", "{備|そな}えあれば憂いなし", "{石|いし}橋をたたいて渡る"
+                "{鬼|おに}の居ぬ間に洗濯", "{鬼|おに}に金棒", "{親|した}しき仲にも礼儀あり", "{子|こ}はかすがい", "{朱|しゅ}に交われば赤くなる",
+                "{類|るい}は友を呼ぶ", "{良|りょう}薬は口に苦し", "{嘘|うそ}も方便", "{備|そな}えあれば憂いなし", "{石|いし}橋をたたいて渡る"
             ]
         };
 
@@ -628,6 +630,7 @@
         window.goToTopMode = function() {
             if (mgTimerInterval) clearInterval(mgTimerInterval);
             if (typeof readTimerInterval !== 'undefined' && readTimerInterval) clearInterval(readTimerInterval);
+            if (typeof readFinishTimeout !== 'undefined' && readFinishTimeout) { clearTimeout(readFinishTimeout); readFinishTimeout = null; }
             document.getElementById('topPage').style.display = 'flex';
             document.querySelectorAll('.container, #flashcardPage, #minigameMenuPage, #minigamePlayPage, #printPage').forEach(el => el.style.display = 'none');
             document.getElementById('backToTopBtnMain').style.display = 'none';
@@ -667,6 +670,8 @@
         window.updateSelectors = function() {
             const grades = [...new Set(allProblems.map(p => p.grade).filter(v => v))].sort((a,b) => unitOrder.indexOf(a) - unitOrder.indexOf(b));
             ['gradeSelector', 'readGradeSelector', 'fcGradeSelector', 'printGradeSelector', 'kanjiPracticeSelector'].forEach(id => {
+                // 漢字練習の学年リストは漢字シートから作るので、読込済みなら上書きしない
+                if (id === 'kanjiPracticeSelector' && kanjiPracticeDataLoaded) return;
                 const el = document.getElementById(id);
                 if (el) {
                     const currentVal = el.value;
@@ -677,7 +682,12 @@
             });
         }
 
+        let lastSyncedGrade = null;
         window.syncGrade = function(val) {
+            // 学年が変わっていなければ、選択中の単元を維持する
+            const prevUnit = document.getElementById('unitSelector')?.value || '';
+            const sameGrade = (val === lastSyncedGrade);
+            lastSyncedGrade = val;
             ['gradeSelector', 'readGradeSelector', 'fcGradeSelector', 'printGradeSelector', 'kanjiPracticeSelector'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.value = val;
@@ -690,7 +700,11 @@
                     units.forEach(u => sel.innerHTML += `<option value="${u}">${u}</option>`);
                 }
             });
-            window.syncUnit(""); 
+            if (sameGrade && prevUnit && (prevUnit === 'all' || units.includes(prevUnit))) {
+                window.syncUnit(prevUnit);
+            } else {
+                window.syncUnit("");
+            }
         };
 
         window.syncUnit = function(val) {
@@ -809,9 +823,11 @@
             const url = `https://cdn.jsdelivr.net/gh/KanjiVG/kanjivg@master/kanji/${code}.svg`;
             try {
                 const res = await fetch(url);
+                if (!res.ok) throw new Error('KanjiVG not found');
                 let svgText = await res.text();
                 const svgMatch = svgText.match(/<svg[^>]*>[\s\S]*<\/svg>/i);
-                if (svgMatch) svgText = svgMatch[0];
+                if (!svgMatch) throw new Error('Invalid SVG');
+                svgText = svgMatch[0];
                 
                 if (currentAnimId !== animId) return;
 
@@ -855,9 +871,11 @@
             const url = `https://cdn.jsdelivr.net/gh/KanjiVG/kanjivg@master/kanji/${code}.svg`;
             try {
                 const res = await fetch(url);
+                if (!res.ok) throw new Error('KanjiVG not found');
                 let svgText = await res.text();
                 const svgMatch = svgText.match(/<svg[^>]*>[\s\S]*<\/svg>/i);
-                if (svgMatch) svgText = svgMatch[0];
+                if (!svgMatch) throw new Error('Invalid SVG');
+                svgText = svgMatch[0];
 
                 if (currentAnimId !== animId) return;
                 
@@ -903,7 +921,12 @@
                     p.style.opacity = '1';
                     await new Promise(r => setTimeout(r, 200));
                 }
-            } catch(e) { console.error(e); }
+            } catch(e) {
+                console.error(e);
+                if (currentAnimId === animId) {
+                    container.innerHTML = `<span style="font-size:4rem;">${kanji}</span>`;
+                }
+            }
         }
 
         window.createKanjiQuestionHtml = function(text, kanji) {
@@ -911,7 +934,10 @@
             return text.replace(new RegExp(kanji, 'g'), `<span style="border-bottom:3px solid #e53e3e; font-weight:bold; color:#e53e3e;">${kanji}</span>`);
         };
 
+        let kdDetailToken = 0;
         window.showKanjiDetail = async (kanji) => {
+            const myToken = ++kdDetailToken;
+            const isStale = () => myToken !== kdDetailToken;
             currentAnimId++; 
             document.getElementById('kdKanjiTitle').textContent = kanji;
             document.getElementById('kdOnReading').innerHTML = '<span class="loading-spinner" style="border-color:#3182ce; border-top-color:transparent; width: 12px; height: 12px; border-width: 2px; vertical-align: middle;"></span>';
@@ -931,6 +957,7 @@
             try {
                 const res = await fetch(`https://kanjiapi.dev/v1/kanji/${encodeURIComponent(kanji)}`);
                 const data = await res.json();
+                if (isStale()) return;
                 document.getElementById('kdOnReading').textContent = data.on_readings?.slice(0, 3).join('、') || 'なし';
                 
                 const kunReadings = data.kun_readings?.slice(0, 3).map(r => {
@@ -942,6 +969,7 @@
                 }).join('、') || 'なし';
                 document.getElementById('kdKunReading').innerHTML = kunReadings;
             } catch(e) {
+                if (isStale()) return;
                 document.getElementById('kdOnReading').textContent = '未取得';
                 document.getElementById('kdKunReading').textContent = '取得できませんでした';
             }
@@ -968,6 +996,7 @@
                 for (const s of sentences) {
                     const li = document.createElement('li');
                     const furiganaHtml = await window.processFurigana(s);
+                    if (isStale()) return;
                     li.innerHTML = window.createKanjiQuestionHtml(furiganaHtml, kanji);
                     li.style.marginBottom = '15px';
                     li.style.lineHeight = '2';
@@ -979,6 +1008,7 @@
                     for (const p of sentences) {
                         const li = document.createElement('li');
                         const furiganaHtml = await window.processFurigana(p.sentence);
+                        if (isStale()) return;
                         li.innerHTML = window.createKanjiQuestionHtml(furiganaHtml, kanji);
                         li.style.marginBottom = '15px';
                         li.style.lineHeight = '2';
@@ -1005,7 +1035,9 @@
 
             const yArea = document.getElementById('kdYColumnDataArea');
             if (oboekataColumnData && oboekataColumnData.trim() !== '') {
-                document.getElementById('kdYColumnText').innerHTML = await window.processFurigana(oboekataColumnData);
+                const oboekataHtml = await window.processFurigana(oboekataColumnData);
+                if (isStale()) return;
+                document.getElementById('kdYColumnText').innerHTML = oboekataHtml;
                 yArea.style.display = 'block';
             } else {
                 yArea.style.display = 'none';
@@ -1014,7 +1046,7 @@
             window.kdCurrentKanji = kanji;
         }
 
-        window.closeKanjiDetailModal = () => { currentAnimId++; document.getElementById('kanjiDetailModal').style.display = 'none'; };
+        window.closeKanjiDetailModal = () => { currentAnimId++; kdDetailToken++; document.getElementById('kanjiDetailModal').style.display = 'none'; };
 
         window.playCorrectSound = function() {
             try {
@@ -1181,9 +1213,11 @@
                     let svgText = '';
                     try {
                         const res = await fetch(url);
+                        if (!res.ok) throw new Error('KanjiVG not found');
                         svgText = await res.text();
                         const svgMatch = svgText.match(/<svg[^>]*>[\s\S]*<\/svg>/i);
-                        if (svgMatch) svgText = svgMatch[0];
+                        if (!svgMatch) throw new Error('Invalid SVG');
+                        svgText = svgMatch[0];
                     } catch(e) {
                         svgText = null;
                     }
@@ -1243,6 +1277,8 @@
 
         let readTimerInterval = null;
         let readRemainingTime = null;
+        let readFinishTimeout = null;
+        let readSessionId = 0;
 
         window.goToReadingMode = () => {
             window.goToTopMode();
@@ -1254,6 +1290,8 @@
 
         window.resetReadModeToSelect = () => {
             if (readTimerInterval) clearInterval(readTimerInterval);
+            if (readFinishTimeout) { clearTimeout(readFinishTimeout); readFinishTimeout = null; }
+            readSessionId++;
             document.getElementById('readTimeSelectArea').style.display = 'flex';
             document.getElementById('readGameArea').style.display = 'none';
             document.getElementById('readTimerDisplay').textContent = '';
@@ -1274,6 +1312,8 @@
             }
 
             currentReadIndex = 0;
+            readSessionId++;
+            if (readFinishTimeout) { clearTimeout(readFinishTimeout); readFinishTimeout = null; }
             document.getElementById('readTimeSelectArea').style.display = 'none';
             document.getElementById('readGameArea').style.display = 'flex';
             
@@ -1313,7 +1353,9 @@
         window.finishReadingGame = () => {
             if (window.showToast) window.showToast('⏱️ じかんぎれ！');
             document.querySelectorAll('.reading-input').forEach(i => i.disabled = true);
-            setTimeout(() => {
+            readSessionId++;
+            readFinishTimeout = setTimeout(() => {
+                readFinishTimeout = null;
                 window.resetReadModeToSelect();
             }, 2500);
         };
@@ -1391,8 +1433,16 @@
         };
 
         window.handleReadingKeydown = function(event, input, answer) {
+            // IME変換確定のEnterは解答として扱わない
+            if (event.isComposing || event.keyCode === 229) return;
             if (event.key === 'Enter') {
                 event.preventDefault();
+                // 正解で自動移動した直後の空欄へのEnter（確定キーの押し残し）は1回だけ無視する
+                if (input.dataset.skipEmptyEnter === "true" && input.value.trim() === '') {
+                    input.dataset.skipEmptyEnter = "false";
+                    return;
+                }
+                input.dataset.skipEmptyEnter = "false";
                 const userVal = input.value.trim().replace(/[\u30a1-\u30f6]/g, m => String.fromCharCode(m.charCodeAt(0)-0x60));
                 if (userVal === answer) {
                     window.checkReading(input, answer);
@@ -1448,10 +1498,20 @@
                 window.updateScoreDisplay();
                 const allInputs = Array.from(document.querySelectorAll('.reading-input'));
                 if(allInputs.every(i => i.classList.contains('correct'))) {
-                    setTimeout(() => window.nextReadingProblem(), 1000);
+                    const solvedIndex = currentReadIndex;
+                    const solvedSession = readSessionId;
+                    setTimeout(() => {
+                        // その間に「次へ」を押した・時間切れ・画面を離れた場合は進めない
+                        if (solvedIndex !== currentReadIndex || solvedSession !== readSessionId) return;
+                        if (document.getElementById('readGameArea').style.display === 'none') return;
+                        window.nextReadingProblem();
+                    }, 1000);
                 } else {
                     const next = allInputs.find(i => !i.classList.contains('correct'));
-                    if (next) next.focus();
+                    if (next) {
+                        next.dataset.skipEmptyEnter = "true";
+                        next.focus();
+                    }
                 }
             } else if (userVal.length >= 10 && !answer.startsWith(userVal)) {
                 input.value = answer;
@@ -1565,7 +1625,7 @@
         window.filterFlashcards = () => {
             const grade = document.getElementById('fcGradeSelector').value;
             const unit = document.getElementById('fcUnitSelector').value;
-            if (!grade || !unit) { fcProbs = []; return; }
+            if (!grade || !unit) { fcProbs = []; fcIdx = 0; fcState = 'question'; window.showFc(); return; }
             fcProbs = allProblems.filter(p => p.grade === grade && (unit === 'all' || p.unit === unit));
             fcIdx = 0; fcState = 'question'; 
             window.showFc();
@@ -1578,7 +1638,7 @@
         };
 
         window.showFc = () => {
-            if(fcProbs.length === 0) { document.getElementById('fcFrontText').textContent = "問題がありません"; return; }
+            if(fcProbs.length === 0) { document.getElementById('fcFrontText').textContent = "問題がありません"; document.getElementById('fcProgress').textContent = '0 / 0'; return; }
             const p = fcProbs[fcIdx];
             document.getElementById('fcProgress').textContent = `${fcIdx + 1} / ${fcProbs.length}`;
             
@@ -1620,6 +1680,7 @@
         };
 
         window.nextFlashcard = () => {
+            if (fcProbs.length === 0) return;
             if(fcState === 'question') { 
                 fcState = 'answer'; 
                 window.showFc(); 
@@ -1634,6 +1695,7 @@
             }
         };
         window.prevFlashcard = () => {
+            if (fcProbs.length === 0) return;
             if(fcState === 'answer') { fcState = 'question'; window.showFc(); }
             else { fcIdx = (fcIdx - 1 + fcProbs.length) % fcProbs.length; fcState = 'question'; window.showFc(); }
         };
@@ -2044,6 +2106,16 @@
             window.updateMgBestRecordsDisplay();
         };
 
+        window.quitMinigame = () => {
+            mgSessionId++;
+            if (mgTimerInterval) clearInterval(mgTimerInterval);
+            document.getElementById('mgResultOverlay').style.display = 'none';
+            const total = readScore + kanjiPracticeScore;
+            const plays = Math.floor(total / 100) * 3 - minigamePlayCount;
+            if (plays > 0) window.goToMinigameMenu();
+            else window.goToTopMode();
+        };
+
         window.startMinigame = (type, category = '') => {
             const total = readScore + kanjiPracticeScore;
             const plays = Math.floor(total / 100) * 3 - minigamePlayCount;
@@ -2068,6 +2140,7 @@
             }
             
             currentMgIndex = 0; currentMgScore = 0; mgStartTime = Date.now();
+            mgSessionId++;
             if (mgTimerInterval) clearInterval(mgTimerInterval);
             document.getElementById('mgTimer').textContent = "00:00";
             mgTimerInterval = setInterval(() => {
@@ -2112,6 +2185,7 @@
                 };
                 
                 input.onkeydown = (e) => {
+                    if (e.isComposing || e.keyCode === 229) return;
                     if (e.key === 'Enter') {
                         e.preventDefault();
                         const userVal = input.value.trim();
@@ -2162,7 +2236,11 @@
             const displayAns = currentMgType === 'kotowaza' ? `${currentProb.aKanji}（${currentProb.aYomi}）` : currentProb.a;
             document.getElementById('mgResultText').textContent = isCorrect ? 'せいかい！' : `ざんねん... せいかいは「${displayAns}」`;
             
-            setTimeout(() => { overlay.style.display = 'none'; currentMgIndex++; window.loadMgQuestion(); }, 1500);
+            const answeredSession = mgSessionId;
+            setTimeout(() => {
+                if (answeredSession !== mgSessionId) return;
+                overlay.style.display = 'none'; currentMgIndex++; window.loadMgQuestion();
+            }, 1500);
         };
 
         window.endMinigame = () => {
