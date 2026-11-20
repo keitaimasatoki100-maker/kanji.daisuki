@@ -68,7 +68,7 @@
         .print-meta-name-area { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; width: 100%; margin-bottom: 4mm; font-size: 12pt; font-weight: bold; white-space: nowrap; }
 
         .print-problems-grid { flex: 1; height: 100%; display: flex; flex-direction: column; justify-content: space-between; white-space: nowrap; overflow: visible; box-sizing: border-box; }
-        .print-tier { height: 114mm; width: 100%; display: block; writing-mode: vertical-rl; text-orientation: upright; white-space: nowrap; overflow: visible; box-sizing: border-box; padding: 2mm 6mm 2mm 2mm; }
+        .print-tier { height: 114mm; width: 100%; display: block; writing-mode: vertical-rl; text-orientation: upright; white-space: nowrap; overflow: visible; box-sizing: border-box; padding: 2mm 6mm 2mm 2mm; white-space: normal; }
         .print-tier-divider { width: 100%; height: 1px; border-top: 1px dashed #a0aec0; margin: 1mm 0; box-sizing: border-box; }
         
         .print-problem-col { display: inline-block; vertical-align: top; width: 26mm; height: 100%; margin-left: 2.5mm; position: relative; box-sizing: border-box; text-align: center; font-size: 10pt; writing-mode: vertical-rl; text-orientation: upright; white-space: nowrap; flex-shrink: 0; }
@@ -135,6 +135,10 @@
           <button id="topMinigameBtn" class="top-menu-btn btn-minigame" onclick="goToMinigameMenu()">
               <span>ミニゲーム</span>
           </button>
+      </div>
+      <div style="position: absolute; left: 20px; bottom: 20px; display: flex; gap: 10px; writing-mode: horizontal-tb;">
+          <button onclick="goToPrintMode()" style="background: rgba(255,255,255,0.9); color: #553c9a; border: none; padding: 10px 16px; border-radius: 10px; font-size: 0.95rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.15);">🖨️ プリント印刷</button>
+          <button onclick="showEditDialog()" style="background: rgba(255,255,255,0.6); color: #4a5568; border: none; padding: 10px 16px; border-radius: 10px; font-size: 0.95rem; font-weight: bold; cursor: pointer;">⚙ 問題編集</button>
       </div>
   </div>
 
@@ -221,7 +225,7 @@
 
   <div id="printPage">
       <div class="print-controls">
-          <select id="printGradeSelector" onchange="onPrintGradeChange()"></select>
+          <select id="printGradeSelector" onchange="onPrintGradeChange()"><option value="">学年...</option></select>
           <select id="printUnitSelector" onchange="onPrintUnitChange()"></select>
           <select id="printRangeSelector" onchange="onPrintRangeChange()">
               <option value="up-to">まで</option>
@@ -305,6 +309,8 @@
               <button id="kdReplayBtn" class="btn-blue" style="padding: 8px 16px;">▶ 書き順</button>
           </div>
 
+          <button id="kdDoneBtn" onclick="markKanjiPracticed()" style="margin-bottom: 15px; background: #e53e3e; color: white; border: none; padding: 12px 28px; border-radius: 25px; font-size: 1.1rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(229,62,62,0.3);">✏️ ノートに書けた！（+5pt）</button>
+
           <div id="kdYColumnDataArea" style="width: 100%; text-align: left; font-size: 1.1rem; color: #2d3748; background: #fff5f5; padding: 15px; border-radius: 10px; border: 2px solid #fed7d7; box-sizing: border-box; line-height: 1.5; font-weight: bold; margin-bottom: 15px; display: none;">
               <div style="font-size: 0.9rem; color: #e53e3e; margin-bottom: 5px;">💡 <ruby>覚<rt>おぼ</rt></ruby>え<ruby>方<rt>かた</rt></ruby></div>
               <div id="kdYColumnText"></div>
@@ -327,7 +333,7 @@
      <div style="margin-bottom: 20px; padding: 15px; background: #f0f9ff; border: 2px solid #3b82f6; border-radius: 8px;">
         <label style="display: block; margin-bottom: 8px; font-weight: bold; color: #1e40af;">📊 スプレッドシートURL:</label>
         <div style="display: flex; gap: 10px; align-items: center;">
-            <input type="text" id="spreadsheetUrl" placeholder="GoogleスプレッドシートのURL" style="flex: 1; padding: 10px; border: 2px solid #93c5fd; border-radius: 6px; font-size: 14px;">
+            <input type="text" id="spreadsheetUrl" value="https://docs.google.com/spreadsheets/d/1a2CyIJCM5Nqy6Hah6249_Era1jyw11QmhAIJQGzoesA/edit?gid=649883566#gid=649883566" placeholder="GoogleスプレッドシートのURL" style="flex: 1; padding: 10px; border: 2px solid #93c5fd; border-radius: 6px; font-size: 14px;">
             <button onclick="loadFromUrl()" class="btn-blue">読み込む</button>
         </div>
      </div>
@@ -398,7 +404,7 @@
             }, 2500);
         };
 
-        const mgBushuData = [{q:"<span style='font-size:4rem;color:#e53e3e;'>氵</span><br>この部首のなまえは？",a:"さんずい",choices:["さんずい","きへん","ごんべん","にんべん"]},{q:"<span style='font-size:4rem;color:#e53e3e;'>訁</span><br>この部首のなまえは？",a:"ごんべん",choices:["ごんべん","しんにょう","くさかんむり","きへん"]},{q:"<span style='font-size:4rem;color:#e53e3e;'>木</span><br>この部首のなまえは？",a:"きへん",choices:["きへん","くさかんむり","つちへん","さんずい"]},{q:"<span style='font-size:4rem;color:#e53e3e;'>亻</span><br>この部首のなまえは？",a:"にんべん",choices:["にんべん","きへん","ぎょうにんべん","てへん"]},{q:"<span style='font-size:4rem;color:#e53e3e;'>艹</span><br>この部首のなまえは？",a:"くさかんむり",choices:["くさかんむり","たけかんむり","うかんむり","あめかんむり"]},{q:"<span style='font-size:4rem;color:#e53e3e;'>⻌</span><br>この部首のなまえは？",a:"しんにょう",choices:["しんにょう","えんにょう","ぎょうにんべん","さんずい"]},{q:"<span style='font-size:4rem;color:#e53e3e;'>口</span><br>この部首のなまえは？",a:"くちへん",choices:["くちへん","くにがまえ","めへん","ひへん"]},{q:"<span style='font-size:4rem;color:#e53e3e;'>釒</span><br>この部首のなまえは？",a:"かねへん",choices:["かねへん","いしへん","きへん","さんずい"]},{q:"<span style='font-size:4rem;color:#e53e3e;'>穴</span><br>この部首のなまえは？",a:"あなかんむり",choices:["あなかんむり","うかんむり","わかんむり","あめかんむり"]},{q:"<span style='font-size:4rem;color:#e53e3e;'>日</span><br>この部首のなまえは？",a:"ひへん",choices:["ひへん","つきへん","めへん","田"]}];
+        const mgBushuData = [{q:"<span style='font-size:4rem;color:#e53e3e;'>氵</span><br>この部首のなまえは？",a:"さんずい",choices:["さんずい","きへん","ごんべん","にんべん"]},{q:"<span style='font-size:4rem;color:#e53e3e;'>訁</span><br>この部首のなまえは？",a:"ごんべん",choices:["ごんべん","しんにょう","くさかんむり","きへん"]},{q:"<span style='font-size:4rem;color:#e53e3e;'>木</span><br>この部首のなまえは？",a:"きへん",choices:["きへん","くさかんむり","つちへん","さんずい"]},{q:"<span style='font-size:4rem;color:#e53e3e;'>亻</span><br>この部首のなまえは？",a:"にんべん",choices:["にんべん","きへん","ぎょうにんべん","てへん"]},{q:"<span style='font-size:4rem;color:#e53e3e;'>艹</span><br>この部首のなまえは？",a:"くさかんむり",choices:["くさかんむり","たけかんむり","うかんむり","あめかんむり"]},{q:"<span style='font-size:4rem;color:#e53e3e;'>⻌</span><br>この部首のなまえは？",a:"しんにょう",choices:["しんにょう","えんにょう","ぎょうにんべん","さんずい"]},{q:"<span style='font-size:4rem;color:#e53e3e;'>口</span><br>この部首のなまえは？",a:"くちへん",choices:["くちへん","くにがまえ","めへん","ひへん"]},{q:"<span style='font-size:4rem;color:#e53e3e;'>釒</span><br>この部首のなまえは？",a:"かねへん",choices:["かねへん","いしへん","きへん","さんずい"]},{q:"<span style='font-size:4rem;color:#e53e3e;'>穴</span><br>この部首のなまえは？",a:"あなかんむり",choices:["あなかんむり","うかんむり","わかんむり","あめかんむり"]},{q:"<span style='font-size:4rem;color:#e53e3e;'>日</span><br>この部首のなまえは？",a:"ひへん",choices:["ひへん","つきへん","めへん","たへん"]}];
         const mgNaritachiData = [{q:"<span style='font-size:4rem;'>☀️</span><br>たいようの形からできたものは？",a:"日",choices:["日","月","木","水"]},{q:"<span style='font-size:4rem;'>🌙</span><br>みかづきの形からできたものは？",a:"月",choices:["月","日","夕","夜"]},{q:"<span style='font-size:4rem;'>🌊</span><br>みずが流れる様子からできたものは？",a:"川",choices:["川","水","雨","海"]},{q:"<span style='font-size:4rem;'>🌳</span><br>木の根元に印をつけて「もと」を表したものは？",a:"本",choices:["本","木","末","未"]},{q:"<span style='font-size:4rem;'>🚶🌳</span><br>ひとが木に寄りかかってやすむ様子からできたものは？",a:"休",choices:["休","体","林","保"]},{q:"<span style='font-size:4rem;'>🌲🌲</span><br>木がふたつ並んで、たくさん木があることを表すものは？",a:"林",choices:["林","森","木","枝"]},{q:"<span style='font-size:4rem;'>👁️</span><br>めの形からできたものは？",a:"目",choices:["目","見","貝","自"]},{q:"<span style='font-size:4rem;'>🪶</span><br>とりのはねの形からできたものは？",a:"羽",choices:["羽","鳥","飛","翼"]},{q:"<span style='font-size:4rem;'>⛰️</span><br>やまの形からできたものは？",a:"山",choices:["山","川","石","岩"]},{q:"<span style='font-size:4rem;'>🧍</span><br>ひとが立っている様子を横から見てできたものは？",a:"人",choices:["人","入","大","立"]}];
         const mgKeisanData = [{q:"<span style='font-size:4rem;'>山 ＋ 石</span><br>＝ ？",a:"岩",choices:["岩","砂","炭","岸"]},{q:"<span style='font-size:4rem;'>木 ＋ 木</span><br>＝ ？",a:"林",choices:["林","森","本","枝"]},{q:"<span style='font-size:4rem;'>日 ＋ 月</span><br>＝ ？",a:"明",choices:["明","星","晴","朝"]},{q:"<span style='font-size:4rem;'>人 ＋ 木</span><br>＝ ？",a:"休",choices:["休","体","保","信"]},{q:"<span style='font-size:4rem;'>口 ＋ 鳥</span><br>＝ ？",a:"鳴",choices:["鳴","唄","唱","叫"]},{q:"<span style='font-size:4rem;'>門 ＋ 日</span><br>＝ ？",a:"間",choices:["間","問","開","閉"]},{q:"<span style='font-size:4rem;'>女 ＋ 子</span><br>＝ ？",a:"好",choices:["好","妹","姉","娘"]},{q:"<span style='font-size:4rem;'>木 ＋ 目</span><br>＝ ？",a:"相",choices:["相","箱","想","植"]},{q:"<span style='font-size:4rem;'>言 ＋ 舌</span><br>＝ ？",a:"話",choices:["話","語","読","記"]},{q:"<span style='font-size:4rem;'>禾 ＋ 火</span><br>＝ ？",a:"秋",choices:["秋","冬","春","夏"]}];
 
@@ -647,25 +653,67 @@
             return text;
         };
 
-        window.fetchProblems = async function() {
-            try {
-                const url = `https://docs.google.com/spreadsheets/d/1a2CyIJCM5Nqy6Hah6249_Era1jyw11QmhAIJQGzoesA/gviz/tq?tqx=out:csv&gid=649883566`;
-                const res = await fetch(`${url}&t=${Date.now()}`);
-                const data = await res.text();
-                
-                if (data.trim().startsWith('<!DOCTYPE html>') || data.includes('<html')) {
-                    console.error("データの取得に失敗しました。");
-                    return;
-                }
+        const SHEET_ID = "1a2CyIJCM5Nqy6Hah6249_Era1jyw11QmhAIJQGzoesA";
 
-                const rows = window.parseCSV(data);
+        // スプレッドシートをCSVで読む。2種類のURLで試し、どちらもだめなら前回読めたデータを使う
+        window.loadSheetCsv = async function(gid) {
+            const urls = [
+                `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&gid=${gid}`,
+                `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${gid}`
+            ];
+            const cacheKey = `kanjiSheetCache_${gid}`;
+            for (const url of urls) {
+                try {
+                    const res = await fetch(`${url}&t=${Date.now()}`);
+                    if (!res.ok) continue;
+                    const text = await res.text();
+                    if (!text.trim() || text.trim().startsWith('<!DOCTYPE') || text.includes('<html')) continue;
+                    try { localStorage.setItem(cacheKey, text); } catch(e) {}
+                    return { text, fromCache: false };
+                } catch(e) { console.warn("シート取得失敗:", url, e); }
+            }
+            try {
+                const cached = localStorage.getItem(cacheKey);
+                if (cached) return { text: cached, fromCache: true };
+            } catch(e) {}
+            throw new Error("シートを読み込めませんでした");
+        };
+
+        const GRADE_SELECTOR_IDS = ['gradeSelector', 'readGradeSelector', 'fcGradeSelector', 'printGradeSelector'];
+        window.setGradeSelectorsMessage = function(msg) {
+            GRADE_SELECTOR_IDS.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.innerHTML = `<option value="">${msg}</option>`;
+            });
+        };
+
+        let problemsLoading = false;
+        window.fetchProblems = async function() {
+            if (problemsLoading) return;
+            problemsLoading = true;
+            if (allProblems.length === 0) window.setGradeSelectorsMessage('読込中...');
+            try {
+                const { text, fromCache } = await window.loadSheetCsv(649883566);
+                const rows = window.parseCSV(text);
                 allProblems = rows.slice(1).map(cols => {
-                    return { grade: cols[0], unit: cols[1], sentence: cols[2], raw: cols };
-                }).filter(p => p.sentence);
-                
+                    return { grade: (cols[0] || '').trim(), unit: (cols[1] || '').trim(), sentence: cols[2], raw: cols };
+                }).filter(p => p.sentence && p.grade);
                 window.updateSelectors();
-            } catch(e) { console.error("データ取得エラー", e); }
-        }
+                if (fromCache) window.showToast('ネットにつながらないため、前回読み込んだ問題を使っています');
+                if (allProblems.length === 0) window.setGradeSelectorsMessage('問題がありません');
+            } catch(e) {
+                console.error("データ取得エラー", e);
+                window.setGradeSelectorsMessage('⚠ 読込失敗（タップで再読込）');
+                window.showToast('問題データを読み込めませんでした。インターネット接続を確認してください');
+            } finally {
+                problemsLoading = false;
+            }
+        };
+
+        // 読み込みに失敗していたら、学年セレクターに触れたときにもう一度読み込む
+        window.retryIfNoProblems = function() {
+            if (allProblems.length === 0 && !problemsLoading) window.fetchProblems();
+        };
 
         window.updateSelectors = function() {
             const grades = [...new Set(allProblems.map(p => p.grade).filter(v => v))].sort((a,b) => unitOrder.indexOf(a) - unitOrder.indexOf(b));
@@ -726,20 +774,16 @@
             const selector = document.getElementById('kanjiPracticeSelector');
             selector.innerHTML = '<option value="">読込中...</option>';
             try {
-                const url = `https://docs.google.com/spreadsheets/d/1a2CyIJCM5Nqy6Hah6249_Era1jyw11QmhAIJQGzoesA/gviz/tq?tqx=out:csv&gid=589390040`;
-                const res = await fetch(`${url}&t=${Date.now()}`);
-                const csv = await res.text();
-
-                if (csv.trim().startsWith('<!DOCTYPE html>') || csv.includes('<html')) {
-                    throw new Error("Invalid data format");
-                }
-
+                const { text: csv } = await window.loadSheetCsv(589390040);
                 kanjiPracticeRawData = window.parseCSV(csv);
                 const grades = [...new Set(kanjiPracticeRawData.slice(1).map(r => r[0]?.trim()).filter(v => v))];
                 selector.innerHTML = '<option value="">学年を選択...</option>';
                 grades.forEach(g => selector.innerHTML += `<option value="${g}">${g}</option>`);
                 kanjiPracticeDataLoaded = true;
-            } catch(e) { selector.innerHTML = '<option value="">失敗</option>'; }
+            } catch(e) {
+                selector.innerHTML = '<option value="">⚠ 読込失敗（タップで再読込）</option>';
+                window.showToast('漢字データを読み込めませんでした。インターネット接続を確認してください');
+            }
         };
 
         window.goToKanjiPracticeMode = () => { 
@@ -953,6 +997,8 @@
             window.playKanjiAnimation(kanji, area);
             document.getElementById('kdReplayBtn').onclick = () => window.playKanjiAnimation(kanji, area);
             document.getElementById('kdAssembleBtn').onclick = () => window.playAssembleAnimation(kanji, area);
+            window.kdCurrentKanji = kanji;
+            window.updateKdDoneBtn();
             
             try {
                 const res = await fetch(`https://kanjiapi.dev/v1/kanji/${encodeURIComponent(kanji)}`);
@@ -1045,6 +1091,32 @@
 
             window.kdCurrentKanji = kanji;
         }
+
+        // 漢字練習：初めて「書けた！」を押した漢字だけ +5pt（同じ漢字で何度も点は入らない）
+        window.updateKdDoneBtn = function() {
+            const btn = document.getElementById('kdDoneBtn');
+            if (!btn) return;
+            const done = completedKanjis.has(window.kdCurrentKanji);
+            btn.disabled = done;
+            btn.textContent = done ? '✅ れんしゅうずみ' : '✏️ ノートに書けた！（+5pt）';
+            btn.style.background = done ? '#3182ce' : '#e53e3e';
+            btn.style.cursor = done ? 'default' : 'pointer';
+            btn.style.opacity = done ? '0.85' : '1';
+        };
+
+        window.markKanjiPracticed = function() {
+            const k = window.kdCurrentKanji;
+            if (!k || completedKanjis.has(k)) return;
+            completedKanjis.add(k);
+            kanjiPracticeScore += 5;
+            window.playCorrectSound();
+            window.updateScoreDisplay();
+            window.updateKdDoneBtn();
+            document.querySelectorAll('.kanji-practice-btn').forEach(b => {
+                if (b.dataset.kanji === k) b.classList.add('completed');
+            });
+            window.showToast(`「${k}」れんしゅうできたね！ +5pt`);
+        };
 
         window.closeKanjiDetailModal = () => { currentAnimId++; kdDetailToken++; document.getElementById('kanjiDetailModal').style.display = 'none'; };
 
@@ -1279,6 +1351,7 @@
         let readRemainingTime = null;
         let readFinishTimeout = null;
         let readSessionId = 0;
+        let readSolved = new Set(); // このゲーム中に正解した空欄（同じ問題で2回点が入らないように）
 
         window.goToReadingMode = () => {
             window.goToTopMode();
@@ -1312,6 +1385,7 @@
             }
 
             currentReadIndex = 0;
+            readSolved = new Set();
             readSessionId++;
             if (readFinishTimeout) { clearTimeout(readFinishTimeout); readFinishTimeout = null; }
             document.getElementById('readTimeSelectArea').style.display = 'none';
@@ -1390,9 +1464,11 @@
             let sentenceHtml = '<div class="sentence" style="margin-top: 0; font-size: 1.15rem; letter-spacing: 0.05em; white-space: nowrap; line-height: 2.0;">';
             
             const parts = p.sentence.split(/(\{.+?\|.+?\})/);
+            let blankIdx = 0;
             
             parts.forEach(part => {
                 if (part.startsWith('{')) {
+                    const blankKey = `${p.grade}|${p.unit}|${p.sentence}#${blankIdx++}`.replace(/"/g, '&quot;');
                     const [kanji, yomi] = part.slice(1, -1).split('|');
                     const boxHeight = Math.max(3.0, yomi.length * 1.0 + 1.0) + 'em'; 
                     const inputHeight = (yomi.length * 0.9 + 0.3) + 'em';
@@ -1401,7 +1477,7 @@
                         <span class="reading-input-wrapper" style="display: inline-flex; flex-direction: column; align-items: center; justify-content: center; writing-mode: horizontal-tb; vertical-align: middle; margin: 0 3px;">
                             <span style="position: relative; display: inline-flex; align-items: center; justify-content: center; writing-mode: vertical-rl; height: ${boxHeight};">
                                 <span style="font-size: 1rem;">（</span>
-                                <input type="text" class="reading-input" data-answer="${yomi}" style="height: ${inputHeight}; font-size: 0.95rem; padding: 1px 0;" oninput="window.checkReading(this, '${yomi}')" onkeydown="window.handleReadingKeydown(event, this, '${yomi}')">
+                                <input type="text" class="reading-input" data-answer="${yomi}" data-key="${blankKey}" style="height: ${inputHeight}; font-size: 0.95rem; padding: 1px 0;" oninput="window.checkReading(this, '${yomi}')" onkeydown="window.handleReadingKeydown(event, this, '${yomi}')">
                                 <span style="font-size: 1rem;">）</span>
                             </span>
                             <button onclick="window.showAnswer(this.previousElementSibling.querySelector('input'), '${yomi}')" tabindex="-1" style="font-size: 0.65rem; padding: 2px 5px; border: 1px solid #cbd5e0; border-radius: 4px; background: white; cursor: pointer; color: #4a5568; line-height: 1.2; margin-top: 3px; white-space: nowrap;">答え</button>
@@ -1425,9 +1501,19 @@
                 </div>
             `;
             container.appendChild(card);
+
+            // すでに正解した空欄は〇つきで表示（「前へ」で戻っても点は入らない）
+            container.querySelectorAll('.reading-input').forEach(inp => {
+                if (readSolved.has(inp.dataset.key)) {
+                    inp.value = inp.dataset.answer;
+                    inp.classList.add('correct');
+                    inp.disabled = true;
+                    window.addCorrectMark(inp);
+                }
+            });
             
             setTimeout(() => {
-                const anyInput = container.querySelector('.reading-input');
+                const anyInput = container.querySelector('.reading-input:not(.correct)');
                 if (anyInput) anyInput.focus();
             }, 50);
         };
@@ -1456,7 +1542,17 @@
             }
         };
 
+        window.addCorrectMark = function(input) {
+            if (input.parentElement.querySelector('.correct-mark')) return;
+            const circle = document.createElement('span');
+            circle.className = 'correct-mark';
+            circle.textContent = '〇';
+            circle.style.cssText = 'position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #e53e3e; font-size: 2.2rem; font-weight: bold; pointer-events: none; opacity: 0.8; z-index: 10; font-family: sans-serif; writing-mode: horizontal-tb;';
+            input.parentElement.appendChild(circle);
+        };
+
         window.checkReading = function(input, answer) {
+            if (input.disabled) return;
             input.style.color = '';
             
             if (input.dataset.clearTimer) {
@@ -1485,17 +1581,14 @@
                 input.classList.add('correct');
                 input.disabled = true;
 
-                let circle = input.parentElement.querySelector('.correct-mark');
-                if (!circle) {
-                    circle = document.createElement('span');
-                    circle.className = 'correct-mark';
-                    circle.textContent = '〇';
-                    circle.style.cssText = 'position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #e53e3e; font-size: 2.2rem; font-weight: bold; pointer-events: none; opacity: 0.8; z-index: 10; font-family: sans-serif; writing-mode: horizontal-tb;';
-                    input.parentElement.appendChild(circle);
-                }
+                window.addCorrectMark(input);
 
-                readScore += 3;
-                window.updateScoreDisplay();
+                const key = input.dataset.key;
+                if (!readSolved.has(key)) {
+                    readSolved.add(key);
+                    readScore += 3;
+                    window.updateScoreDisplay();
+                }
                 const allInputs = Array.from(document.querySelectorAll('.reading-input'));
                 if(allInputs.every(i => i.classList.contains('correct'))) {
                     const solvedIndex = currentReadIndex;
@@ -1626,7 +1719,18 @@
             const grade = document.getElementById('fcGradeSelector').value;
             const unit = document.getElementById('fcUnitSelector').value;
             if (!grade || !unit) { fcProbs = []; fcIdx = 0; fcState = 'question'; window.showFc(); return; }
-            fcProbs = allProblems.filter(p => p.grade === grade && (unit === 'all' || p.unit === unit));
+            const range = document.getElementById('fcRangeSelector').value;
+            let filtered = allProblems.filter(p => p.grade === grade);
+            if (unit !== 'all') {
+                if (range === 'only') {
+                    filtered = filtered.filter(p => p.unit === unit);
+                } else {
+                    const gradeUnits = [...new Set(filtered.map(p => p.unit))];
+                    const targetIdx = gradeUnits.indexOf(unit);
+                    filtered = filtered.filter(p => gradeUnits.indexOf(p.unit) <= targetIdx);
+                }
+            }
+            fcProbs = filtered;
             fcIdx = 0; fcState = 'question'; 
             window.showFc();
         };
@@ -1702,7 +1806,7 @@
         window.goToNextUnitFc = () => {
             const grade = document.getElementById('fcGradeSelector').value;
             const currentUnit = document.getElementById('fcUnitSelector').value;
-            if (currentUnit === 'all') {
+            if (currentUnit === 'all' || document.getElementById('fcRangeSelector').value === 'up-to') {
                 fcIdx = 0;
                 fcState = 'question';
                 window.showFc();
@@ -2375,6 +2479,16 @@
         window.addEventListener('DOMContentLoaded', () => {
             window.loadProgressFromStorage();
             window.fetchProblems();
+            GRADE_SELECTOR_IDS.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) ['mousedown', 'touchstart', 'focus'].forEach(ev => el.addEventListener(ev, window.retryIfNoProblems));
+            });
+            const kpSel = document.getElementById('kanjiPracticeSelector');
+            if (kpSel) ['mousedown', 'touchstart', 'focus'].forEach(ev => kpSel.addEventListener(ev, () => {
+                if (!kanjiPracticeDataLoaded) window.loadKanjiPracticeData();
+            }));
+            // オンラインに戻ったら自動で再読込
+            window.addEventListener('online', window.retryIfNoProblems);
         });
   </script>
  </body>
